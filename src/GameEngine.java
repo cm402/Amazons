@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Random;
 
 public class GameEngine {
 
@@ -20,6 +19,7 @@ public class GameEngine {
         this.players.add(p1);
         this.players.add(p2);
 
+        // white goes first, so whoever is white to being is currentPlayer
         if(p1.isWhite()){
             this.currentPlayer = p1;
         } else {
@@ -32,92 +32,6 @@ public class GameEngine {
         this.board.printBoard();
     }
 
-    private ArrayList<Move> getValidMoves(){
-
-        ArrayList<Move> validMoves = new ArrayList<Move>();
-
-        // looping through amazon pieces
-        for(Piece piece: currentPlayer.getPieces()){
-
-            ArrayList<Square> validSquares = board.getValidSquares(piece.getPosition());
-
-            // looping through the squares they can move to
-            for(Square square: validSquares){
-
-                ArrayList<Square> validShotSquares = board.getValidSquares(square);
-
-                // looping through the squares they can then shoot at
-                for(Square validShotSquare: validShotSquares){
-
-                    validMoves.add(new Move(currentPlayer, piece.getPosition(), square, validShotSquare));
-                }
-            }
-
-        }
-        return validMoves;
-    }
-
-    public Move getRandomMove(ArrayList<Move> moves){
-        Random rand = new Random();
-        return moves.get(rand.nextInt(moves.size()));
-    }
-
-
-    private Move getAIMove(){
-
-        ArrayList<Move> validMoves = getValidMoves();
-
-        if(validMoves.isEmpty()){
-            gameStatus = "finished";
-            return null;
-        } else {
-            return getRandomMove(validMoves);
-        }
-    }
-
-    private Move getHumanMove(){
-
-        ArrayList<Move> validMoves = getValidMoves();
-
-        while(true){
-
-            Move humanMove = askForMove();
-
-            if(!isMoveValid(humanMove)){
-                System.out.println("please retry");
-            } else {
-                return humanMove;
-            }
-
-
-
-        }
-
-    }
-
-    private boolean isMoveValid(Move move){
-
-        // 1. check player has amazon in correct start position
-        // 2. check end position square is in valid squares for start position
-        // 3. check shoot position square is in valid squares for end position
-
-        if(!currentPlayer.getPieces().contains(move.getPiece())){
-            System.out.println("Amazon start location co-ordinates are invalid");
-            return false;
-        }
-
-        if(!board.getValidSquares(move.getStartPosition()).contains(move.getEndPosition())){
-            System.out.println("Amazon end location co-ordinates are invalid");
-            return false;
-        }
-
-        if(!board.getValidSquares(move.getEndPosition()).contains(move.getBurnedSquare())){
-            System.out.println("Amazons arrow location co-ordinates are invalid");
-            return false;
-        }
-
-        return true;
-    }
 
     private static int getUserInput(String inputPrompt){
         Scanner sc = new Scanner(System.in);
@@ -126,26 +40,9 @@ public class GameEngine {
         return Integer.parseInt(in);
     }
 
-    private Move askForMove(){
+    private Move getPlayerMove() {
 
-        int startX = getUserInput("Please enter the x co-ordinate of the amazon you wish to move");
-        int startY = getUserInput("Please enter the y co-ordinate of the amazon you wish to move");
-        int endX = getUserInput("Please enter the x co-ordinate where you wish to move your amazon to");
-        int endY = getUserInput("Please enter the y co-ordinate where you wish to move your amazon to");
-        int shootX = getUserInput("Please enter the x co-ordinate where you wish to shoot to");
-        int shootY = getUserInput("Please enter the y co-ordinate where you wish to shoot to");
-
-        return new Move(currentPlayer, board.getSquare(startX, startY), board.getSquare(endX, endY), board.getSquare(shootX, shootY));
-    }
-
-    private Move getPlayerMove(){
-
-        if(currentPlayer.isHuman()){
-            return getHumanMove();
-        }else {
-            return getAIMove();
-        }
-
+        return currentPlayer.getMove(board, gameStatus);
 
     }
 
@@ -240,14 +137,15 @@ public class GameEngine {
         ArrayList<Player> players = new ArrayList<Player>();
 
         if(noOfHumanPlayers == 0){
-            players.add(new Player(true, false));
-            players.add(new Player(false, false));
+
+            players.add(new AIPlayer(true));
+            players.add(new AIPlayer(false));
         } else if(noOfHumanPlayers == 1){
-            players.add(new Player(true, true));
-            players.add(new Player(false, false));
+            players.add(new HumanPlayer(true));
+            players.add(new AIPlayer(false));
         } else {
-            players.add(new Player(true, true));
-            players.add(new Player(false, true));
+            players.add(new HumanPlayer(true));
+            players.add(new AIPlayer(false));
         }
 
         return players;
@@ -292,8 +190,8 @@ public class GameEngine {
 
         GameEngine engine = new GameEngine();
 
-        GameFile gf = engine.inputGameFile();
-        engine.printGameFile(gf);
+        //GameFile gf = engine.inputGameFile();
+        //engine.printGameFile(gf);
 
         ArrayList<Player> players = engine.getNoOfPlayers();
 
