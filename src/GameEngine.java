@@ -172,7 +172,6 @@ public class GameEngine {
 
     }
 
-
     public int getBoardSize(){
 
         int boardSize = -1;
@@ -187,6 +186,7 @@ public class GameEngine {
         return boardSize;
     }
 
+    // getting the dimensions of the partition board
     public BoardPartition getPartitionBoardSize(){
 
         int noOfColumns = -1;
@@ -215,54 +215,108 @@ public class GameEngine {
 
     }
 
-    public void getSquaresToBurn(BoardPartition partition){
+    // Ask the user for co-ordinates, returns either an ArrayList of the 2 coordinates,
+    // or null if the user is finished
+    // xcoord = index 0
+    // ycoord = index 1
+    // TODO: validate that the sqaure is also empty (doesn't have a piece already or is burnt)
+    public ArrayList<Integer> getCoordinates(BoardPartition partition, String outputType){
+
+        int xCoord = -2;
+        int yCoord = -2;
+
+        ArrayList<Integer> coordinates = new ArrayList<Integer>();
+
+        // validating that the x co-ordinate entered is valid, for the board size
+        while (xCoord < 0 || xCoord >= partition.getColumnBoardSize()) {
+
+            xCoord = getUserInput("Enter the x co-ordinate " +  outputType + ", or -1 if you are finished");
+
+            if (xCoord == -1) {
+                return null;
+            } else if(xCoord < 0 || xCoord >= partition.getColumnBoardSize()){
+                System.out.println("Error, please enter a valid x co-ordinate (0 to " + (partition.getColumnBoardSize() - 1) + ")");
+            } else {
+                coordinates.add(xCoord);
+            }
+        }
+
+        // validating that the y co-ordinate entered is valid, for the board size
+        while (yCoord < 0 || yCoord >= partition.getRowBoardSize()) {
+
+            yCoord = getUserInput("Enter the y co-ordinate " + outputType + ", or -1 if you are finished");
+
+            if (yCoord == -1) {
+                return null;
+            } else if(yCoord < 0 || yCoord >= partition.getRowBoardSize()){
+                System.out.println("Error, please enter a valid x co-ordinate (0 to " + (partition.getRowBoardSize() - 1) + ")");
+            } else {
+                coordinates.add(yCoord);
+            }
+        }
+
+        return coordinates;
+
+    }
+
+    // getting the pieces information for the partition
+    public void getPartitionPieces(BoardPartition partition){
+
+        // asking for white pieces
+        while(true){
+
+            ArrayList<Integer> coordinates = getCoordinates(partition, "of a white piece");
+
+            // break used to allow black pieces to also be given
+            if(coordinates == null){
+                break;
+            }
+
+            // adding a new white piece at the given coordinates
+            partition.addPiece(coordinates.get(0), coordinates.get(1), new Piece(true));
+        }
+
+        // asking for black pieces
+        while(true){
+
+            ArrayList<Integer> coordinates = getCoordinates(partition, "of a black piece");
+
+            if(coordinates == null){
+                return;
+            }
+
+            // adding a new white piece at the given coordinates
+            partition.addPiece(coordinates.get(0), coordinates.get(1), new Piece(false));
+        }
+    }
+
+
+    // getting the burnt squares information for the partition
+    public void getPartitionBurntSquares(BoardPartition partition){
 
         // looping to ensure that the user can burn as many squares as they want
         while(true) {
 
-            int xCoord = -2;
-            int yCoord = -2;
+            ArrayList<Integer> coordinates = getCoordinates(partition, "of a square you would like to burn");
 
-            // validating that the x co-ordinate entered is valid, for the board size
-            while (xCoord < 0 || xCoord >= partition.getColumnBoardSize()) {
-
-                xCoord = getUserInput("Enter the x co-ordinate of a square you would like to burn, or -1 if you are finished burning squares");
-
-                if (xCoord == -1) {
-                    return;
-                }
-
-                if(xCoord < 0 || xCoord >= partition.getColumnBoardSize()){
-                    System.out.println("Error, please enter a valid x co-ordinate (0 to " + (partition.getColumnBoardSize() - 1) + ")");
-                }
+            if(coordinates == null){
+                return;
             }
 
-            // validating that the y co-ordinate entered is valid, for the board size
-            while (yCoord < 0 || yCoord >= partition.getRowBoardSize()) {
-
-                yCoord = getUserInput("Enter the y co-ordinate of a square you would like to burn, or -1 if you are finished burning squares");
-
-                if (yCoord == -1) {
-                    return;
-                }
-
-                if(yCoord < 0 || yCoord >= partition.getRowBoardSize()){
-                    System.out.println("Error, please enter a valid x co-ordinate (0 to " + (partition.getRowBoardSize() - 1) + ")");
-                }
-            }
-
-            partition.burnSquare(xCoord, yCoord);
+            partition.burnSquare(coordinates.get(0), coordinates.get(1));
         }
     }
 
-     // testing that a board partition is set up correctly
+    // testing that a board partition is set up correctly
     public void testBoardPartition(){
 
         BoardPartition partition = getPartitionBoardSize();
 
         partition.setupBoard();
 
-        getSquaresToBurn(partition);
+        getPartitionBurntSquares(partition);
+        
+        getPartitionPieces(partition);
 
         partition.printBoard();
 

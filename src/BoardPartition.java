@@ -41,6 +41,14 @@ public class BoardPartition {
         this.squares[x][y].burnSquare();
     }
 
+    // adding a piece to a square
+    public void addPiece(int x, int y, Piece piece){
+
+        this.squares[x][y].setAmazon(piece);
+        piece.setPosition(squares[x][y]);
+    }
+
+    // moving a piece from 1 square to another
     public void setSquarePiece(int x, int y, Piece piece){
         // remove amazon from old square, place it on new square
         piece.getPosition().removeAmazon();

@@ -13,7 +13,6 @@ public class Piece implements Serializable {
         this.position = square;
     }
 
-
     public Piece(boolean white){
         this.setWhite(white);
     }
