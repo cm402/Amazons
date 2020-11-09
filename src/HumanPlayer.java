@@ -14,6 +14,11 @@ public class HumanPlayer extends Player implements Serializable {
 
         ArrayList<Move> validMoves = getValidMoves(board);
 
+        // if no valid moves, don't ask user for move
+        if(validMoves.isEmpty()){
+            return null;
+        }
+
         while(true){
 
             Move move = askForMove(board);
