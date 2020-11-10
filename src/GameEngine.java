@@ -1,59 +1,41 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameEngine {
 
-    private ArrayList<Player> players;
-    private Board board;
-    private Player currentPlayer;
-    private String gameStatus;
-    private ArrayList<Move> movesPlayed;
+    private Player setupPlayers(Player p1, Player p2){
 
-    private void setupGame(Player p1, Player p2, int boardSize){
-
-        players = new ArrayList<Player>();
-        board = new Board(boardSize);
-        gameStatus = "Setup";
-        movesPlayed = new ArrayList<Move>();
-
-        this.players.add(p1);
-        this.players.add(p2);
+        Player currentPlayer;
 
         // white goes first, so whoever is white to being is currentPlayer
         if(p1.isWhite()){
-            this.currentPlayer = p1;
+            currentPlayer = p1;
         } else {
-            this.currentPlayer = p2;
+            currentPlayer = p2;
         }
 
-        this.board.resetBoard(p1, p2);
-        this.movesPlayed.clear();
+        return currentPlayer;
+    }
 
-        this.board.printBoard();
+    private Board setupBoard(int boardSize, ArrayList<Player> players){
+
+        Board board = new Board(boardSize);
+        board.resetBoard(players.get(0), players.get(1));
+        board.printBoard();
+
+        return board;
     }
 
 
-    private static int getUserInput(String inputPrompt){
-        Scanner sc = new Scanner(System.in);
-        System.out.println(inputPrompt);
-        String in = sc.nextLine().trim().toLowerCase();
-        return Integer.parseInt(in);
-    }
-
-    private Move getPlayerMove() {
-
-        return currentPlayer.getMove(board, gameStatus);
-
-    }
-
-    private void updateBoard(Move nextMove){
+    private void updateBoard(Move nextMove, Board board){
 
         board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
         board.burnSquare(nextMove.getBurnedSquare().getX(), nextMove.getBurnedSquare().getY());
         board.printBoard();
     }
 
-    private void swapPlayers(){
+    private void swapPlayers(ArrayList<Player> players, Player currentPlayer){
 
         if(players.indexOf(currentPlayer) == 0){
             currentPlayer = players.get(1);
@@ -62,7 +44,7 @@ public class GameEngine {
         }
     }
 
-    private void outputMove(Move move){
+    private void outputMove(Move move, Player currentPlayer, ArrayList<Player> players){
 
         String colour = "";
         if(currentPlayer.isWhite()){
@@ -75,15 +57,15 @@ public class GameEngine {
         System.out.println(move.toString());
     }
 
-    private void finishGame(){
+    private void finishGame(ArrayList<Player> players, Player currentPlayer, ArrayList<Move> movesPlayed, Board board){
         System.out.println("");
         System.out.println("player " + players.indexOf(currentPlayer) + " is unable to move, and therefore has lost");
         System.out.println("This game lasted " + movesPlayed.size() + " moves");
-        outputGameFile();
+        outputGameFile(movesPlayed, board);
         System.exit(0);
     }
 
-    public void outputGameFile(){
+    public void outputGameFile(ArrayList<Move> movesPlayed, Board board){
 
         GameFile gameFile = new GameFile(movesPlayed, board.getBoardSize());
 
@@ -111,23 +93,23 @@ public class GameEngine {
         }
     }
 
-    private void startGame(){
+    private void startGame(String gameStatus, Board board, ArrayList<Move> movesPlayed, Player currentPlayer, ArrayList<Player> players){
 
         gameStatus = "started";
 
         while(!gameStatus.equals("finished")){
 
-            Move nextMove = getPlayerMove();
+            Move nextMove = currentPlayer.getMove(board, gameStatus);
             movesPlayed.add(nextMove);
 
             if(nextMove == null){
                 gameStatus = "finished";
-                finishGame();
+                finishGame(players, currentPlayer, movesPlayed, board);
             }
 
-            updateBoard(nextMove);
-            outputMove(nextMove);
-            swapPlayers();
+            updateBoard(nextMove, board);
+            outputMove(nextMove, currentPlayer, players);
+            swapPlayers(players, currentPlayer);
         }
 
     }
@@ -205,27 +187,29 @@ public class GameEngine {
 
     public static void main(String Args[]){
 
+        Board board;
+        Player currentPlayer;
+        String gameStatus = "starting";
+        ArrayList<Move> movesPlayed = new ArrayList<>();
+
         GameEngine engine = new GameEngine();
 
         //GameFile gf = engine.inputGameFile();
         //engine.printGameFile(gf);
 
-        /*
         IO io = new IO();
 
         ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
 
-        int boardSize = io.getBoardSize();
+        board = engine.setupBoard(io.getBoardSize(), players);
 
-        engine.setupGame(players.get(0), players.get(1), boardSize);
+        currentPlayer = engine.setupPlayers(players.get(0), players.get(1));
 
-        engine.startGame();
+        engine.startGame(gameStatus, board, movesPlayed, currentPlayer, players);
 
-        engine.outputGameFile();
+        engine.outputGameFile(movesPlayed, board);
 
-        */
-
-        engine.testBoardPartition();
+        //engine.testBoardPartition();
 
     }
 
