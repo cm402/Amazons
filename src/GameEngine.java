@@ -47,6 +47,7 @@ public class GameEngine {
     }
 
     private void updateBoard(Move nextMove){
+
         board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
         board.burnSquare(nextMove.getBurnedSquare().getX(), nextMove.getBurnedSquare().getY());
         board.printBoard();
@@ -110,8 +111,6 @@ public class GameEngine {
         }
     }
 
-
-
     private void startGame(){
 
         gameStatus = "started";
@@ -163,9 +162,44 @@ public class GameEngine {
 
         io.getPartitionBurntSquares(partition);
 
-        io.getPartitionPieces(partition);
+        ArrayList<Player> partitionPlayers = setupPlayers(0); // both AI players
+
+        io.getPartitionPieces(partition, partitionPlayers);
+
+        // 0 = white to move, 1 = black to move
+        int firstToMove = io.getPartitionFirstToMove(partition);
 
         partition.printBoard();
+
+
+        // now, to play the game through 100 times
+        /*
+        Player partitionCurrentPlayer;
+
+        if(firstToMove == 0){
+            partitionCurrentPlayer = partitionPlayers.get(0);
+        } else {
+            partitionCurrentPlayer = partitionPlayers.get(1);
+        }
+
+        String partitionGameStatus = "started";
+
+        while(!partitionGameStatus.equals("finished")){
+
+            Move nextMove = partitionCurrentPlayer.getPartitionMove(partition, partitionGameStatus);
+
+            if(nextMove == null){
+                gameStatus = "finished";
+                finishGame();
+            }
+
+            // TODO: update these to so they don't work on the current board, but the
+            //updateBoard(nextMove);
+            //outputMove(nextMove);
+            //swapPlayers();
+        }
+        */
+
 
     }
 
@@ -189,7 +223,7 @@ public class GameEngine {
 
         engine.outputGameFile();
 
-       */
+        */
 
         engine.testBoardPartition();
 

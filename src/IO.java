@@ -4,6 +4,7 @@ import java.util.Scanner;
 public class IO {
 
     private static int getUserInput(String inputPrompt){
+
         Scanner sc = new Scanner(System.in);
         System.out.println(inputPrompt);
         String in = sc.nextLine().trim().toLowerCase();
@@ -115,7 +116,10 @@ public class IO {
     }
 
     // getting the pieces information for the partition
-    public void getPartitionPieces(BoardPartition partition){
+    public void getPartitionPieces(BoardPartition partition, ArrayList<Player> players){
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
 
         // asking for white pieces
         while(true){
@@ -129,6 +133,12 @@ public class IO {
 
             // adding a new white piece at the given coordinates
             partition.addPiece(coordinates.get(0), coordinates.get(1), new Piece(true));
+
+            Piece whitePiece = new Piece(true);
+            whitePiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
+            whitePieces.add(whitePiece);
+            players.get(0).addPieces(whitePieces);
+
         }
 
         // asking for black pieces
@@ -142,6 +152,12 @@ public class IO {
 
             // adding a new white piece at the given coordinates
             partition.addPiece(coordinates.get(0), coordinates.get(1), new Piece(false));
+
+
+            Piece blackPiece = new Piece(false);
+            blackPiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
+            blackPieces.add(blackPiece);
+            players.get(1).addPieces(blackPieces);
         }
     }
 
@@ -160,5 +176,19 @@ public class IO {
 
             partition.burnSquare(coordinates.get(0), coordinates.get(1));
         }
+    }
+
+    public int getPartitionFirstToMove(BoardPartition partition){
+
+        int firstToMove = -1;
+
+        while(firstToMove < 0 || firstToMove > 1){
+            firstToMove = getUserInput("Please enter who is first to move, 0 for white, 1 for black");
+
+            if(firstToMove < 0 || firstToMove > 1) {
+                System.out.println("Error, you must enter a value in the range (0-1)");
+            }
+        }
+        return firstToMove;
     }
 }
