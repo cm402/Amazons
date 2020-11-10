@@ -64,6 +64,7 @@ public class HumanPlayer extends Player implements Serializable {
         return Integer.parseInt(in);
     }
 
+    // TODO: validation isn't working on moves
     private Move askForMove(Board board){
 
         int startX = getUserInput("Please enter the x co-ordinate of the amazon you wish to move");
