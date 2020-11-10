@@ -10,7 +10,7 @@ public class HumanPlayer extends Player implements Serializable {
     }
 
     @Override
-    public Move getMove(Board board, String gameStatus){
+    public Move getMove(Board board){
 
         ArrayList<Move> validMoves = getValidMoves(board);
 

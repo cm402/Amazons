@@ -35,12 +35,12 @@ public class GameEngine {
         board.printBoard();
     }
 
-    private void swapPlayers(ArrayList<Player> players, Player currentPlayer){
+    private Player swapPlayers(ArrayList<Player> players, Player currentPlayer){
 
         if(players.indexOf(currentPlayer) == 0){
-            currentPlayer = players.get(1);
+            return players.get(1);
         } else {
-            currentPlayer = players.get(0);
+            return players.get(0);
         }
     }
 
@@ -94,23 +94,20 @@ public class GameEngine {
         }
     }
 
-    private void startGame(String gameStatus, Board board, ArrayList<Move> movesPlayed, Player currentPlayer, ArrayList<Player> players){
+    private void startGame(Board board, ArrayList<Move> movesPlayed, Player currentPlayer, ArrayList<Player> players){
 
-        gameStatus = "started";
+        while(true){
 
-        while(!gameStatus.equals("finished")){
-
-            Move nextMove = currentPlayer.getMove(board, gameStatus);
+            Move nextMove = currentPlayer.getMove(board);
             movesPlayed.add(nextMove);
 
             if(nextMove == null){
-                gameStatus = "finished";
                 finishGame(players, currentPlayer, movesPlayed, board);
             }
 
             updateBoard(nextMove, board);
             outputMove(nextMove, currentPlayer, players);
-            swapPlayers(players, currentPlayer);
+            currentPlayer = swapPlayers(players, currentPlayer);
         }
 
     }
@@ -132,6 +129,23 @@ public class GameEngine {
         }
 
         return players;
+    }
+
+    // simulates the game board that is passed in
+    // returns true if white wins, false if black wins
+    private Boolean simulateGame(Board board, Player currentPlayer, ArrayList<Player> players){
+
+        while(true){
+
+            Move nextMove = currentPlayer.getMove(board);
+
+            if(nextMove == null){
+                return currentPlayer.isWhite();
+            }
+
+            updateBoard(nextMove, board);
+            currentPlayer = swapPlayers(players, currentPlayer);
+        }
     }
 
     // testing that a board partition is set up correctly
@@ -156,7 +170,7 @@ public class GameEngine {
 
 
         // now, to play the game through 100 times
-        /*
+
         Player partitionCurrentPlayer;
 
         if(firstToMove == 0){
@@ -165,32 +179,13 @@ public class GameEngine {
             partitionCurrentPlayer = partitionPlayers.get(1);
         }
 
-        String partitionGameStatus = "started";
-
-        while(!partitionGameStatus.equals("finished")){
-
-            Move nextMove = partitionCurrentPlayer.getPartitionMove(partition, partitionGameStatus);
-
-            if(nextMove == null){
-                gameStatus = "finished";
-                finishGame();
-            }
-
-            // TODO: update these to so they don't work on the current board, but the
-            //updateBoard(nextMove);
-            //outputMove(nextMove);
-            //swapPlayers();
-        }
-        */
-
-
+        simulateGame(partition, partitionCurrentPlayer, partitionPlayers);
     }
 
     public static void main(String Args[]){
 
         Board board;
         Player currentPlayer;
-        String gameStatus = "starting";
         ArrayList<Move> movesPlayed = new ArrayList<>();
 
         GameEngine engine = new GameEngine();
@@ -207,9 +202,10 @@ public class GameEngine {
 
         currentPlayer = engine.setupPlayers(players.get(0), players.get(1));
 
-        engine.startGame(gameStatus, board, movesPlayed, currentPlayer, players);
+        engine.startGame(board, movesPlayed, currentPlayer, players);
 
         engine.outputGameFile(movesPlayed, board);
+
         */
 
         engine.testBoardPartition();

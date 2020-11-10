@@ -192,6 +192,9 @@ public class Board {
         ArrayList<Piece> whitePieces = new ArrayList<Piece>();
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
 
+        // must add
+
+
     }
 
     public void resetBoard(Player p1, Player p2){

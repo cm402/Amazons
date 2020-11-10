@@ -15,21 +15,9 @@ public class AIPlayer extends Player implements Serializable {
     }
 
     @Override
-    public Move getMove(Board board, String gameStatus){
+    public Move getMove(Board board){
 
         ArrayList<Move> validMoves = super.getValidMoves(board);
-
-        if(validMoves.isEmpty()){
-            return null;
-        } else {
-            return getRandomMove(validMoves);
-        }
-    }
-
-    @Override
-    public Move getPartitionMove(BoardPartition board, String gameStatus){
-
-        ArrayList<Move> validMoves = super.getPartitionValidMoves(board);
 
         if(validMoves.isEmpty()){
             return null;

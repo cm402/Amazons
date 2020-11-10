@@ -137,7 +137,6 @@ public class IO {
             Piece whitePiece = new Piece(true);
             whitePiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
             whitePieces.add(whitePiece);
-            players.get(0).addPieces(whitePieces);
 
         }
 
@@ -147,7 +146,7 @@ public class IO {
             ArrayList<Integer> coordinates = getCoordinates(partition, "of a black piece");
 
             if(coordinates == null){
-                return;
+                break;
             }
 
             // adding a new white piece at the given coordinates
@@ -157,8 +156,11 @@ public class IO {
             Piece blackPiece = new Piece(false);
             blackPiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
             blackPieces.add(blackPiece);
-            players.get(1).addPieces(blackPieces);
         }
+
+        // giving the players their pieces
+        players.get(0).addPieces(whitePieces);
+        players.get(1).addPieces(blackPieces);
     }
 
 
