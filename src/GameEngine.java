@@ -20,7 +20,7 @@ public class GameEngine {
 
     private Board setupBoard(int boardSize, ArrayList<Player> players){
 
-        Board board = new Board(boardSize);
+        Board board = new Board(boardSize, boardSize);
         board.resetBoard(players.get(0), players.get(1));
         board.printBoard();
 
@@ -58,6 +58,7 @@ public class GameEngine {
     }
 
     private void finishGame(ArrayList<Player> players, Player currentPlayer, ArrayList<Move> movesPlayed, Board board){
+
         System.out.println("");
         System.out.println("player " + players.indexOf(currentPlayer) + " is unable to move, and therefore has lost");
         System.out.println("This game lasted " + movesPlayed.size() + " moves");
@@ -67,7 +68,7 @@ public class GameEngine {
 
     public void outputGameFile(ArrayList<Move> movesPlayed, Board board){
 
-        GameFile gameFile = new GameFile(movesPlayed, board.getBoardSize());
+        GameFile gameFile = new GameFile(movesPlayed, board.getRowBoardSize());
 
         GameFileWriterReader gfrw = new GameFileWriterReader();
 
@@ -138,7 +139,7 @@ public class GameEngine {
 
         IO io = new IO();
 
-        BoardPartition partition = io.getPartitionBoardSize();
+        Board partition = io.getPartitionBoardSize();
 
         partition.setupBoard();
 
@@ -149,7 +150,7 @@ public class GameEngine {
         io.getPartitionPieces(partition, partitionPlayers);
 
         // 0 = white to move, 1 = black to move
-        int firstToMove = io.getPartitionFirstToMove(partition);
+        int firstToMove = io.getPartitionFirstToMove();
 
         partition.printBoard();
 
@@ -197,6 +198,7 @@ public class GameEngine {
         //GameFile gf = engine.inputGameFile();
         //engine.printGameFile(gf);
 
+        /*
         IO io = new IO();
 
         ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
@@ -208,8 +210,9 @@ public class GameEngine {
         engine.startGame(gameStatus, board, movesPlayed, currentPlayer, players);
 
         engine.outputGameFile(movesPlayed, board);
+        */
 
-        //engine.testBoardPartition();
+        engine.testBoardPartition();
 
     }
 

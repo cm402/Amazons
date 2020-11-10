@@ -50,6 +50,7 @@ public class BoardPartition {
 
     // moving a piece from 1 square to another
     public void setSquarePiece(int x, int y, Piece piece){
+
         // remove amazon from old square, place it on new square
         piece.getPosition().removeAmazon();
         this.squares[x][y].setAmazon(piece);

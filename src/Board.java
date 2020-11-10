@@ -3,21 +3,28 @@ import java.util.ArrayList;
 public class Board {
 
     private Square[][] squares;
-    private int boardSize;
+    private int columnBoardSize, rowBoardSize;
 
+    // columnBoardSize = no of columns, so its the x co-ordinate
+    // rowBoardSize = no of rows, or the y co-ordinate
 
-    public Board(int boardSize){
-        squares = new Square[boardSize][boardSize];
-        this.boardSize = boardSize;
+    public Board(int columnBoardSize, int rowBoardSize){
+        squares = new Square[columnBoardSize][rowBoardSize];
+        this.columnBoardSize = columnBoardSize;
+        this.rowBoardSize = rowBoardSize;
     }
 
-    public int getBoardSize(){
-        return this.boardSize;
+    public int getColumnBoardSize(){
+        return this.columnBoardSize;
+    }
+
+    public int getRowBoardSize(){
+        return this.rowBoardSize;
     }
 
     public Square getSquare(int x, int y){
         
-        if (x >= boardSize || y >= boardSize || x < 0 || y < 0){
+        if (x >= columnBoardSize || y >= rowBoardSize || x < 0 || y < 0){
             System.out.println("Square out of range");
             return null;
         }
@@ -33,7 +40,15 @@ public class Board {
         this.squares[x][y].burnSquare();
     }
 
+    // adding a piece to a square
+    public void addPiece(int x, int y, Piece piece){
+
+        this.squares[x][y].setAmazon(piece);
+        piece.setPosition(squares[x][y]);
+    }
+
     public void setSquarePiece(int x, int y, Piece piece){
+
         // remove amazon from old square, place it on new square
         piece.getPosition().removeAmazon();
         this.squares[x][y].setAmazon(piece);
@@ -68,7 +83,7 @@ public class Board {
             }
         }
 
-        for(int x = startX + 1; x < boardSize; x++) {
+        for(int x = startX + 1; x < columnBoardSize; x++) {
 
             // checking right
             if (isSquareEmpty(squares[x][startY])) {
@@ -78,7 +93,7 @@ public class Board {
             }
         }
 
-        for (int y = startY + 1; y < boardSize; y++) {
+        for (int y = startY + 1; y < rowBoardSize; y++) {
             // checking up
             if(isSquareEmpty(squares[startX][y])){
                 validSquares.add(squares[startX][y]);
@@ -100,7 +115,7 @@ public class Board {
 
         outerloop:
         for(int x = startX - 1; x >= 0; x--) {
-            for (int y = startY + 1; y < boardSize; y++) {
+            for (int y = startY + 1; y < rowBoardSize; y++) {
 
                 if (Math.abs(startX - x) == Math.abs(startY - y)) {
                     // checking left/up
@@ -129,8 +144,8 @@ public class Board {
         }
 
         outerloop:
-        for(int x = startX + 1; x < boardSize; x++) {
-            for (int y = startY + 1; y < boardSize; y++) {
+        for(int x = startX + 1; x < columnBoardSize; x++) {
+            for (int y = startY + 1; y < rowBoardSize; y++) {
 
                 if (Math.abs(startX - x) == Math.abs(startY - y)) {
 
@@ -146,7 +161,7 @@ public class Board {
         }
 
         outerloop:
-        for(int x = startX + 1; x < boardSize; x++) {
+        for(int x = startX + 1; x < columnBoardSize; x++) {
             for(int y = startY - 1; y >= 0; y--){
 
                 if(Math.abs(startX - x) == Math.abs(startY - y)) {
@@ -164,11 +179,26 @@ public class Board {
 
     }
 
+    // used for board partitions
+    public void setupBoard(){
+
+        // create squares for board
+        for(int i = 0; i < columnBoardSize; i++){
+            for (int j = 0; j < rowBoardSize; j++){
+                createSquare(i, j);
+            }
+        }
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+
+    }
+
     public void resetBoard(Player p1, Player p2){
 
         // create squares for board
-        for(int i = 0; i < boardSize; i++){
-            for (int j = 0; j < boardSize; j++){
+        for(int i = 0; i < columnBoardSize; i++){
+            for (int j = 0; j < rowBoardSize; j++){
                 createSquare(i, j);
             }   
         }
@@ -176,7 +206,7 @@ public class Board {
         ArrayList<Piece> whitePieces = new ArrayList<Piece>();
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
 
-        if(boardSize == 6){
+        if(rowBoardSize == 6 && columnBoardSize == 6){
 
             // generating the amazon pieces
             for(int i = 0; i < 2; i++){
@@ -209,7 +239,7 @@ public class Board {
             squares[3][5].setAmazon(blackPieces.get(1));
         }
 
-        if(boardSize == 10) {
+        if(rowBoardSize == 10 && columnBoardSize == 10) {
 
             // generating the amazon pieces
             for(int i = 0; i < 4; i++){
@@ -276,17 +306,17 @@ public class Board {
 
         StringBuilder rowLine = new StringBuilder();
 
-        for(int i = 0; i < (boardSize * 4) + 1; i++){
+        for(int i = 0; i < (columnBoardSize * 4) + 1; i++){
             rowLine.append("-");
         }
 
-        for(int row = boardSize - 1; row >= 0; row--){
+        for(int row = rowBoardSize - 1; row >= 0; row--){
             System.out.println("");
             System.out.println(rowLine);
 
-            for (int column = 0; column < boardSize; column++){
+            for (int column = 0; column < columnBoardSize; column++){
                 printSquare(column, row);
-            }       
+            }
             System.out.print("|");
         }
         System.out.println("");

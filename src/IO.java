@@ -43,7 +43,7 @@ public class IO {
     }
 
     // getting the dimensions of the partition board
-    public BoardPartition getPartitionBoardSize(){
+    public Board getPartitionBoardSize(){
 
         int noOfColumns = -1;
         int noOfRows = -1;
@@ -67,7 +67,7 @@ public class IO {
             }
         }
 
-        return new BoardPartition(noOfColumns, noOfRows);
+        return new Board(noOfColumns, noOfRows);
 
     }
 
@@ -76,7 +76,7 @@ public class IO {
     // xcoord = index 0
     // ycoord = index 1
     // TODO: validate that the sqaure is also empty (doesn't have a piece already or is burnt)
-    public ArrayList<Integer> getCoordinates(BoardPartition partition, String outputType){
+    public ArrayList<Integer> getCoordinates(Board partition, String outputType){
 
         int xCoord = -2;
         int yCoord = -2;
@@ -116,7 +116,7 @@ public class IO {
     }
 
     // getting the pieces information for the partition
-    public void getPartitionPieces(BoardPartition partition, ArrayList<Player> players){
+    public void getPartitionPieces(Board partition, ArrayList<Player> players){
 
         ArrayList<Piece> whitePieces = new ArrayList<Piece>();
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
@@ -163,7 +163,7 @@ public class IO {
 
 
     // getting the burnt squares information for the partition
-    public void getPartitionBurntSquares(BoardPartition partition){
+    public void getPartitionBurntSquares(Board partition){
 
         // looping to ensure that the user can burn as many squares as they want
         while(true) {
@@ -178,7 +178,7 @@ public class IO {
         }
     }
 
-    public int getPartitionFirstToMove(BoardPartition partition){
+    public int getPartitionFirstToMove(){
 
         int firstToMove = -1;
 
