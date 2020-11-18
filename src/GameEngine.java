@@ -1,6 +1,4 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class GameEngine {
 
@@ -157,6 +155,7 @@ public class GameEngine {
 
         IO io = new IO();
         int noOfSimulations = 100;
+        int whiteWins = 0;
 
         // getting IO for partition setup
 
@@ -174,7 +173,8 @@ public class GameEngine {
         // 0 = white to move, 1 = black to move
         int firstToMove = io.getPartitionFirstToMove();
 
-        int whiteWins = 0;
+
+        // running through simulations
 
         for(int i = 0; i < noOfSimulations; i++){
 
