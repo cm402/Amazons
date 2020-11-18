@@ -60,7 +60,7 @@ public class BoardPartitionSetup {
     }
 
     public ArrayList<Integer> getXWhitePieceCoordinates() {
-        return this.xBurntSquareCoordinates;
+        return this.xWhitePieceCoordinates;
     }
 
     public void setXWhitePieceCoordinates(ArrayList<Integer> xWhitePieceCoordinates){
@@ -76,7 +76,7 @@ public class BoardPartitionSetup {
     }
 
     public ArrayList<Integer> getXBlackPieceCoordinates() {
-        return this.xBurntSquareCoordinates;
+        return this.xBlackPieceCoordinates;
     }
 
     public void setXBlackPieceCoordinates(ArrayList<Integer> xBlackPieceCoordinates){

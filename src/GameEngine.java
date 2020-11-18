@@ -28,11 +28,14 @@ public class GameEngine {
     }
 
 
-    private void updateBoard(Move nextMove, Board board){
+    private void updateBoard(Move nextMove, Board board, boolean printBoard){
 
         board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
         board.burnSquare(nextMove.getBurnedSquare().getX(), nextMove.getBurnedSquare().getY());
-        board.printBoard();
+
+        if(printBoard){
+            board.printBoard();
+        }
     }
 
     private Player swapPlayers(ArrayList<Player> players, Player currentPlayer){
@@ -105,7 +108,7 @@ public class GameEngine {
                 finishGame(players, currentPlayer, movesPlayed, board);
             }
 
-            updateBoard(nextMove, board);
+            updateBoard(nextMove, board, true);
             outputMove(nextMove, currentPlayer, players);
             currentPlayer = swapPlayers(players, currentPlayer);
         }
@@ -143,7 +146,7 @@ public class GameEngine {
                 return currentPlayer.isWhite();
             }
 
-            updateBoard(nextMove, board);
+            updateBoard(nextMove, board, false);
             currentPlayer = swapPlayers(players, currentPlayer);
         }
     }
