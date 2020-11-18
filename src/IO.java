@@ -152,10 +152,10 @@ public class IO {
 
             // creating a new black piece & setting its position
             Piece blackPiece = new Piece(false);
-            partition.addPiece(coordinates.get(0), coordinates.get(1), new Piece(false));
+            blackPiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
 
             // adding the new black piece at the given coordinates, in the board and to the pieces arraylist
-            blackPiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
+            partition.addPiece(coordinates.get(0), coordinates.get(1), blackPiece);
             blackPieces.add(blackPiece);
         }
 
