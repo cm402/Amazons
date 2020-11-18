@@ -191,6 +191,48 @@ public class Board {
         // pieces and burnt squares added later
     }
 
+    // burns all the squares and places the pieces in the correct places, given a setup object
+    public void setupPartitionPieces(BoardPartitionSetup setup, ArrayList<Player> partitionPlayers){
+
+        for(int i = 0; i < setup.getXBurntSquareCoordinates().size(); i++){
+            this.burnSquare(setup.getXBurntSquareCoordinates().get(i), setup.getYBurntSquareCoordinates().get(i));
+        }
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+
+        for(int i = 0; i < setup.getXWhitePieceCoordinates().size(); i++){
+
+            int xCoordinate = setup.getXWhitePieceCoordinates().get(i);
+            int yCoordinate = setup.getYWhitePieceCoordinates().get(i);
+
+            // creating a new white piece & setting its position
+            Piece whitePiece = new Piece(true);
+            whitePiece.setPosition(this.getSquare(xCoordinate, yCoordinate));
+
+            // adding the new white piece at the given coordinates, in the board and to the pieces arraylist
+            this.addPiece(xCoordinate, yCoordinate, whitePiece);
+            whitePieces.add(whitePiece);
+        }
+
+        for(int i = 0; i < setup.getXBlackPieceCoordinates().size(); i++){
+
+            int xCoordinate = setup.getXBlackPieceCoordinates().get(i);
+            int yCoordinate = setup.getYBlackPieceCoordinates().get(i);
+
+            // creating a new white piece & setting its position
+            Piece blackPiece = new Piece(false);
+            blackPiece.setPosition(this.getSquare(xCoordinate, yCoordinate));
+
+            // adding the new white piece at the given coordinates, in the board and to the pieces arraylist
+            this.addPiece(xCoordinate, yCoordinate, blackPiece);
+            blackPieces.add(blackPiece);
+        }
+
+        partitionPlayers.get(0).addPieces(whitePieces);
+        partitionPlayers.get(1).addPieces(blackPieces);
+    }
+
     // used for regular game board
     public void resetBoard(Player p1, Player p2){
 

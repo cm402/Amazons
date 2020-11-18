@@ -43,7 +43,7 @@ public class IO {
     }
 
     // getting the dimensions of the partition board
-    public Board getPartitionBoardSize(){
+    public void getPartitionBoardSize(BoardPartitionSetup setup){
 
         int noOfColumns = -1;
         int noOfRows = -1;
@@ -67,7 +67,10 @@ public class IO {
             }
         }
 
-        return new Board(noOfColumns, noOfRows);
+        setup.setNoOfColumns(noOfColumns);
+        setup.setNoOfRows(noOfRows);
+
+        return;
 
     }
 
@@ -116,10 +119,13 @@ public class IO {
     }
 
     // getting the pieces information for the partition
-    public void getPartitionPieces(Board partition, ArrayList<Player> players){
+    public void getPartitionPieces(Board partition, BoardPartitionSetup setup){
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        ArrayList<Integer> whiteXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> whiteYCoordinates = new ArrayList<Integer>();
+
+        ArrayList<Integer> blackXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackYCoordinates = new ArrayList<Integer>();
 
         // asking for white pieces
         while(true){
@@ -131,15 +137,13 @@ public class IO {
                 break;
             }
 
-            // creating a new white piece & setting its position
-            Piece whitePiece = new Piece(true);
-            whitePiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
-
-            // adding the new white piece at the given coordinates, in the board and to the pieces arraylist
-            partition.addPiece(coordinates.get(0), coordinates.get(1), whitePiece);
-            whitePieces.add(whitePiece);
+            whiteXCoordinates.add(coordinates.get(0));
+            whiteYCoordinates.add(coordinates.get(1));
 
         }
+
+        setup.setXWhitePieceCoordinates(whiteXCoordinates);
+        setup.setYWhitePieceCoordinates(whiteYCoordinates);
 
         // asking for black pieces
         while(true){
@@ -150,23 +154,21 @@ public class IO {
                 break;
             }
 
-            // creating a new black piece & setting its position
-            Piece blackPiece = new Piece(false);
-            blackPiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
-
-            // adding the new black piece at the given coordinates, in the board and to the pieces arraylist
-            partition.addPiece(coordinates.get(0), coordinates.get(1), blackPiece);
-            blackPieces.add(blackPiece);
+            blackXCoordinates.add(coordinates.get(0));
+            blackYCoordinates.add(coordinates.get(1));
         }
 
-        // giving the players their pieces
-        players.get(0).addPieces(whitePieces);
-        players.get(1).addPieces(blackPieces);
+        setup.setXBlackPieceCoordinates(blackXCoordinates);
+        setup.setYBlackPieceCoordinates(blackYCoordinates);
+
     }
 
 
     // getting the burnt squares information for the partition
-    public void getPartitionBurntSquares(Board partition){
+    public void getPartitionBurntSquares(Board partition, BoardPartitionSetup setup){
+
+        ArrayList<Integer> xCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> yCoordinates = new ArrayList<Integer>();
 
         // looping to ensure that the user can burn as many squares as they want
         while(true) {
@@ -174,11 +176,17 @@ public class IO {
             ArrayList<Integer> coordinates = getCoordinates(partition, "of a square you would like to burn");
 
             if(coordinates == null){
-                return;
+                break;
             }
 
-            partition.burnSquare(coordinates.get(0), coordinates.get(1));
+            //partition.burnSquare(coordinates.get(0), coordinates.get(1));
+
+            xCoordinates.add(coordinates.get(0));
+            yCoordinates.add(coordinates.get(1));
         }
+
+        setup.setXBurntSquareCoordinates(xCoordinates);
+        setup.setYBurntSquareCoordinates(yCoordinates);
     }
 
     public int getPartitionFirstToMove(){

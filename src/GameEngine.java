@@ -148,28 +148,31 @@ public class GameEngine {
         }
     }
 
+
     // testing that a board partition is set up correctly
     public void testBoardPartition(){
 
         IO io = new IO();
 
-        Board partition = io.getPartitionBoardSize();
+        BoardPartitionSetup setup = new BoardPartitionSetup();
+
+        io.getPartitionBoardSize(setup);
+
+        Board partition = new Board(setup.getNoOfColumns(), setup.getNoOfRows());
 
         partition.setupBoard();
 
-        io.getPartitionBurntSquares(partition);
+        io.getPartitionBurntSquares(partition, setup);
+        io.getPartitionPieces(partition, setup);
 
         ArrayList<Player> partitionPlayers = setupPlayers(0); // both AI players
 
-        io.getPartitionPieces(partition, partitionPlayers);
+        partition.setupPartitionPieces(setup, partitionPlayers);
 
         // 0 = white to move, 1 = black to move
         int firstToMove = io.getPartitionFirstToMove();
 
         partition.printBoard();
-
-
-        // now, to play the game through 100 times
 
         Player partitionCurrentPlayer;
 
@@ -179,7 +182,18 @@ public class GameEngine {
             partitionCurrentPlayer = partitionPlayers.get(1);
         }
 
-        simulateGame(partition, partitionCurrentPlayer, partitionPlayers);
+        int noOfSimulations = 100;
+
+        for(int i = 0; i < noOfSimulations; i++){
+
+            int whiteWins = 0;
+
+            if(simulateGame(partition, partitionCurrentPlayer, partitionPlayers)){
+                whiteWins++;
+            }
+
+        }
+
     }
 
     public static void main(String Args[]){
