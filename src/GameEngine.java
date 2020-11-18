@@ -153,6 +153,9 @@ public class GameEngine {
     public void testBoardPartition(){
 
         IO io = new IO();
+        int noOfSimulations = 100;
+
+        // getting IO for partition setup
 
         BoardPartitionSetup setup = new BoardPartitionSetup();
 
@@ -165,34 +168,40 @@ public class GameEngine {
         io.getPartitionBurntSquares(partition, setup);
         io.getPartitionPieces(partition, setup);
 
-        ArrayList<Player> partitionPlayers = setupPlayers(0); // both AI players
-
-        partition.setupPartitionPieces(setup, partitionPlayers);
-
         // 0 = white to move, 1 = black to move
         int firstToMove = io.getPartitionFirstToMove();
 
-        partition.printBoard();
-
-        Player partitionCurrentPlayer;
-
-        if(firstToMove == 0){
-            partitionCurrentPlayer = partitionPlayers.get(0);
-        } else {
-            partitionCurrentPlayer = partitionPlayers.get(1);
-        }
-
-        int noOfSimulations = 100;
+        int whiteWins = 0;
 
         for(int i = 0; i < noOfSimulations; i++){
 
-            int whiteWins = 0;
+            ArrayList<Player> partitionPlayers = setupPlayers(0); // both AI players
+
+            partition.setupPartitionPieces(setup, partitionPlayers);
+
+            // on first iteration, print board
+            if(i == 0){
+                partition.printBoard();
+            }
+
+            Player partitionCurrentPlayer;
+
+            if(firstToMove == 0){
+                partitionCurrentPlayer = partitionPlayers.get(0);
+            } else {
+                partitionCurrentPlayer = partitionPlayers.get(1);
+            }
 
             if(simulateGame(partition, partitionCurrentPlayer, partitionPlayers)){
                 whiteWins++;
             }
 
+            // clearing the partition board, for the next iteration
+            partition.setupBoard();
+
         }
+
+        System.out.println("From " + noOfSimulations + " simulations, white wins " + whiteWins + " times");
 
     }
 
