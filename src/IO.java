@@ -131,11 +131,12 @@ public class IO {
                 break;
             }
 
-            // adding a new white piece at the given coordinates
-            partition.addPiece(coordinates.get(0), coordinates.get(1), new Piece(true));
-
+            // creating a new white piece & setting its position
             Piece whitePiece = new Piece(true);
             whitePiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
+
+            // adding the new white piece at the given coordinates, in the board and to the pieces arraylist
+            partition.addPiece(coordinates.get(0), coordinates.get(1), whitePiece);
             whitePieces.add(whitePiece);
 
         }
@@ -149,11 +150,11 @@ public class IO {
                 break;
             }
 
-            // adding a new white piece at the given coordinates
+            // creating a new black piece & setting its position
+            Piece blackPiece = new Piece(false);
             partition.addPiece(coordinates.get(0), coordinates.get(1), new Piece(false));
 
-
-            Piece blackPiece = new Piece(false);
+            // adding the new black piece at the given coordinates, in the board and to the pieces arraylist
             blackPiece.setPosition(partition.getSquare(coordinates.get(0), coordinates.get(1)));
             blackPieces.add(blackPiece);
         }

@@ -50,9 +50,9 @@ public class Board {
     public void setSquarePiece(int x, int y, Piece piece){
 
         // remove amazon from old square, place it on new square
-        piece.getPosition().removeAmazon();
-        this.squares[x][y].setAmazon(piece);
-        piece.setPosition(squares[x][y]);
+        piece.getPosition().removeAmazon(); // removes amazon from square
+        this.squares[x][y].setAmazon(piece); // places amazon in new square
+        piece.setPosition(squares[x][y]); // updates new position within piece object
     }
 
     // returns if a square is empty or not
@@ -188,15 +188,10 @@ public class Board {
                 createSquare(i, j);
             }
         }
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-
-        // must add
-
-
+        // pieces and burnt squares added later
     }
 
+    // used for regular game board
     public void resetBoard(Player p1, Player p2){
 
         // create squares for board
