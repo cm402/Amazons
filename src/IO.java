@@ -179,8 +179,6 @@ public class IO {
                 break;
             }
 
-            //partition.burnSquare(coordinates.get(0), coordinates.get(1));
-
             xCoordinates.add(coordinates.get(0));
             yCoordinates.add(coordinates.get(1));
         }

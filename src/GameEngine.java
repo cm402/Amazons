@@ -149,38 +149,16 @@ public class GameEngine {
         }
     }
 
+    // simulates a partition game a number of times, returns the amount of wins white gets
+    public int simulateGames(int noOfSimulations, Board partition, int firstToMove, BoardPartitionSetup setup){
 
-    // testing that a board partition is set up correctly
-    public void testBoardPartition(){
-
-        IO io = new IO();
-        int noOfSimulations = 100;
         int whiteWins = 0;
-
-        // getting IO for partition setup
-
-        BoardPartitionSetup setup = new BoardPartitionSetup();
-
-        io.getPartitionBoardSize(setup);
-
-        Board partition = new Board(setup.getNoOfColumns(), setup.getNoOfRows());
-
-        partition.setupBoard();
-
-        io.getPartitionBurntSquares(partition, setup);
-        io.getPartitionPieces(partition, setup);
-
-        // 0 = white to move, 1 = black to move
-        int firstToMove = io.getPartitionFirstToMove();
-
-
-        // running through simulations
 
         for(int i = 0; i < noOfSimulations; i++){
 
             ArrayList<Player> partitionPlayers = setupPlayers(0); // both AI players
 
-            partition.setupPartitionPieces(setup, partitionPlayers);
+            partition.setupPartitionPieces(setup, partitionPlayers); // uses setup object to burn squares / place pieces
 
             // on first iteration, print board
             if(i == 0){
@@ -204,7 +182,91 @@ public class GameEngine {
 
         }
 
-        System.out.println("From " + noOfSimulations + " simulations, white wins " + whiteWins + " times");
+        return whiteWins;
+
+    }
+
+
+    // testing that a board partition is set up correctly
+    public void testBoardPartition(){
+
+        IO io = new IO();
+        int noOfSimulations = 100;
+
+        // getting partition setup information from IO
+
+        BoardPartitionSetup setup = new BoardPartitionSetup();
+        io.getPartitionBoardSize(setup);
+        Board partition = new Board(setup.getNoOfColumns(), setup.getNoOfRows());
+        partition.setupBoard();
+
+        io.getPartitionBurntSquares(partition, setup);
+        io.getPartitionPieces(partition, setup);
+
+        // 0 = white to move, 1 = black to move
+        int firstToMove = io.getPartitionFirstToMove();
+
+        // running through simulations
+        int totalWhiteWins = simulateGames(noOfSimulations, partition, firstToMove, setup);
+
+        System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
+
+    }
+
+    // The first board partition example, L shape 4 by 4 board
+    private void testBoardPartitionExample1(){
+
+        int noOfSimulations = 100;
+        int firstToMove = 0; // white first to move
+
+        BoardPartitionSetup setup = new BoardPartitionSetup();
+
+        // 1. store board size
+        setup.setNoOfColumns(4);
+        setup.setNoOfRows(4);
+
+        // 2. generate board partition, using board size
+        Board partition = new Board(setup.getNoOfColumns(), setup.getNoOfRows());
+        partition.setupBoard();
+
+        // 3. store burnt squares
+        ArrayList<Integer> xBurntCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> yBurntCoordinates = new ArrayList<Integer>();
+
+        int burntSquareSize = 3;
+
+        for(int i = 1; i <= burntSquareSize; i++) {
+            for (int j = 1; j <= burntSquareSize; j++) {
+                xBurntCoordinates.add(i);
+                yBurntCoordinates.add(j);
+            }
+        }
+
+        setup.setXBurntSquareCoordinates(xBurntCoordinates);
+        setup.setYBurntSquareCoordinates(yBurntCoordinates);
+
+        // 4. store black and white pieces
+        ArrayList<Integer> whiteXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> whiteYCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackYCoordinates = new ArrayList<Integer>();
+
+        whiteXCoordinates.add(0);
+        whiteYCoordinates.add(3);
+        blackXCoordinates.add(3);
+        blackYCoordinates.add(0);
+
+        setup.setXWhitePieceCoordinates(whiteXCoordinates);
+        setup.setYWhitePieceCoordinates(whiteYCoordinates);
+        setup.setXBlackPieceCoordinates(blackXCoordinates);
+        setup.setYBlackPieceCoordinates(blackYCoordinates);
+
+        // 5. simulating the games
+        int totalWhiteWins = simulateGames(noOfSimulations, partition, firstToMove, setup);
+
+        System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
+
+
 
     }
 
@@ -234,7 +296,8 @@ public class GameEngine {
 
         */
 
-        engine.testBoardPartition();
+        //engine.testBoardPartition();
+        engine.testBoardPartitionExample1();
 
     }
 
