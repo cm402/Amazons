@@ -215,8 +215,7 @@ public class GameEngine {
 
 
         PartitionTests partitionTests = new PartitionTests();
-        //partitionTests.testIO();
-        partitionTests.testU(5);
+        partitionTests.testStaircase(4);
 
     }
 
