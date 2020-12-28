@@ -266,9 +266,107 @@ public class GameEngine {
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
+    }
 
+    // The second board partition example, U shape 4 by 4 board
+    private void testBoardPartitionExample2(){
+
+        int noOfSimulations = 100;
+        int firstToMove = 0; // white first to move
+
+        BoardPartitionSetup setup = new BoardPartitionSetup();
+
+        // 1. store board size
+        setup.setNoOfColumns(4);
+        setup.setNoOfRows(4);
+
+        // 2. generate board partition, using board size
+        Board partition = new Board(setup.getNoOfColumns(), setup.getNoOfRows());
+        partition.setupBoard();
+
+        // 3. store burnt squares
+        ArrayList<Integer> xBurntCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> yBurntCoordinates = new ArrayList<Integer>();
+
+        for(int i = 1; i <= 2; i++) {
+            for (int j = 1; j <= 3; j++) {
+                xBurntCoordinates.add(i);
+                yBurntCoordinates.add(j);
+            }
+        }
+
+        setup.setXBurntSquareCoordinates(xBurntCoordinates);
+        setup.setYBurntSquareCoordinates(yBurntCoordinates);
+
+        // 4. store black and white pieces
+        ArrayList<Integer> whiteXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> whiteYCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackYCoordinates = new ArrayList<Integer>();
+
+        whiteXCoordinates.add(0);
+        whiteYCoordinates.add(3);
+        blackXCoordinates.add(3);
+        blackYCoordinates.add(3);
+
+        setup.setXWhitePieceCoordinates(whiteXCoordinates);
+        setup.setYWhitePieceCoordinates(whiteYCoordinates);
+        setup.setXBlackPieceCoordinates(blackXCoordinates);
+        setup.setYBlackPieceCoordinates(blackYCoordinates);
+
+        // 5. simulating the games
+        int totalWhiteWins = simulateGames(noOfSimulations, partition, firstToMove, setup);
+
+        System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
     }
+
+    // The third board partition example, line of 4 squares
+    private void testBoardPartitionExample3(){
+
+        int noOfSimulations = 100;
+        int firstToMove = 0; // white first to move
+
+        BoardPartitionSetup setup = new BoardPartitionSetup();
+
+        // 1. store board size
+        setup.setNoOfColumns(4);
+        setup.setNoOfRows(1);
+
+        // 2. generate board partition, using board size
+        Board partition = new Board(setup.getNoOfColumns(), setup.getNoOfRows());
+        partition.setupBoard();
+
+        // 3. store burnt squares
+        ArrayList<Integer> xBurntCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> yBurntCoordinates = new ArrayList<Integer>();
+
+        setup.setXBurntSquareCoordinates(xBurntCoordinates);
+        setup.setYBurntSquareCoordinates(yBurntCoordinates);
+
+        // 4. store black and white pieces
+        ArrayList<Integer> whiteXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> whiteYCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackYCoordinates = new ArrayList<Integer>();
+
+        whiteXCoordinates.add(0);
+        whiteYCoordinates.add(0);
+        blackXCoordinates.add(3);
+        blackYCoordinates.add(0);
+
+        setup.setXWhitePieceCoordinates(whiteXCoordinates);
+        setup.setYWhitePieceCoordinates(whiteYCoordinates);
+        setup.setXBlackPieceCoordinates(blackXCoordinates);
+        setup.setYBlackPieceCoordinates(blackYCoordinates);
+
+        // 5. simulating the games
+        int totalWhiteWins = simulateGames(noOfSimulations, partition, firstToMove, setup);
+
+        System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
+
+    }
+
 
     public static void main(String Args[]){
 
@@ -297,7 +395,7 @@ public class GameEngine {
         */
 
         //engine.testBoardPartition();
-        engine.testBoardPartitionExample1();
+        engine.testBoardPartitionExample3();
 
     }
 
