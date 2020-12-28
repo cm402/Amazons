@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PartitionTests {
 
@@ -236,7 +237,7 @@ public class PartitionTests {
 
     }
 
-    // The third board partition example, staircase shape
+    // The fifth board partition example, staircase shape
     public void testStaircase(int size){
 
         int noOfSimulations = 100;
@@ -281,6 +282,72 @@ public class PartitionTests {
         whiteXCoordinates.add(0);
         whiteYCoordinates.add(0);
         blackXCoordinates.add(size - 2);
+        blackYCoordinates.add(0);
+
+        setup.setXWhitePieceCoordinates(whiteXCoordinates);
+        setup.setYWhitePieceCoordinates(whiteYCoordinates);
+        setup.setXBlackPieceCoordinates(blackXCoordinates);
+        setup.setYBlackPieceCoordinates(blackYCoordinates);
+
+        // 5. simulating the games
+        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+
+        System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
+
+    }
+
+    // returns a random number, between 1 and max
+    private int getRandomNumber(int max){
+        Random rand = new Random();
+        return rand.nextInt(max) + 1;
+    }
+
+    // The fifth board partition example, staircase shape
+    public void testRandom(){
+
+        int noOfSimulations = 100;
+        int firstToMove = 0; // white first to move
+
+        BoardPartitionSetup setup = new BoardPartitionSetup();
+
+        // 1. store board size, random number between 1 and 10
+        setup.setNoOfColumns(getRandomNumber(10));
+        setup.setNoOfRows(getRandomNumber(10));
+
+        // 2. generate board partition, using board size
+        Board partition = new Board(setup.getNoOfColumns(), setup.getNoOfRows());
+        partition.setupBoard();
+
+        // 3. store burnt squares
+        ArrayList<Integer> xBurntCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> yBurntCoordinates = new ArrayList<Integer>();
+
+        // choose a random number of squares to burn
+        int noOfBurntSquares = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
+
+        for(int i = 0; i < noOfBurntSquares; i++){
+
+            int squareToBurn = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
+            int x = squareToBurn % setup.getNoOfColumns();
+            int y = squareToBurn / setup.getNoOfColumns();
+
+            xBurntCoordinates.add(x);
+            yBurntCoordinates.add(y);
+
+        }
+
+        setup.setXBurntSquareCoordinates(xBurntCoordinates);
+        setup.setYBurntSquareCoordinates(yBurntCoordinates);
+
+        // 4. store black and white pieces
+        ArrayList<Integer> whiteXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> whiteYCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> blackYCoordinates = new ArrayList<Integer>();
+
+        whiteXCoordinates.add(0);
+        whiteYCoordinates.add(0);
+        blackXCoordinates.add(1);
         blackYCoordinates.add(0);
 
         setup.setXWhitePieceCoordinates(whiteXCoordinates);
