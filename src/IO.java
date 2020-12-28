@@ -78,7 +78,7 @@ public class IO {
     // or null if the user is finished
     // xcoord = index 0
     // ycoord = index 1
-    // TODO: validate that the sqaure is also empty (doesn't have a piece already or is burnt)
+    // TODO: validate that the square is also empty (doesn't have a piece already or is burnt)
     public ArrayList<Integer> getCoordinates(Board partition, String outputType){
 
         int xCoord = -2;
