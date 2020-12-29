@@ -343,6 +343,31 @@ public class PartitionTests {
         return false;
     }
 
+    // generates coordinates that haven't been used already
+    // checks
+    public void generateCoordinates(BoardPartitionSetup setup, ArrayList<Integer> oldX, ArrayList<Integer> oldY, ArrayList<Integer> newX, ArrayList<Integer> newY){
+
+        while (true) { // looping until we get a square that hasn't already been burnt
+
+            // generating a random number, from 1 to the number of squares in the partition
+            int squareValue = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
+
+            // using the number generated to get the x and y coordinates associated
+            int x = getXCoordinate(squareValue, setup.getNoOfColumns());
+            int y = getYCoordinate(squareValue, setup.getNoOfColumns());
+
+            // checking that the square isn't already being used
+            if(checkCoordinates(oldX, oldY, x, y)){
+                continue;
+            }
+
+            // storing the new square
+            newX.add(x);
+            newY.add(y);
+            break;
+        }
+    }
+
     // The final board partition example, a random partition generator
     public void testRandom(){
 
@@ -368,25 +393,7 @@ public class PartitionTests {
 
         for(int i = 0; i < noOfBurntSquares; i++){
 
-            while (true) { // looping until we get a square that hasn't already been burnt
-
-                // generating a random number, from 1 to the number of squares in the partition
-                int squareToBurn = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
-
-                // using the number generated to get the x and y coordinates associated
-                int x = getXCoordinate(squareToBurn, setup.getNoOfColumns());
-                int y = getYCoordinate(squareToBurn, setup.getNoOfColumns());
-
-                // checking that the square hasn't already been burnt
-                if(checkCoordinates(xBurntCoordinates, yBurntCoordinates, x, y)){
-                    continue;
-                }
-
-                // storing the burnt square information
-                xBurntCoordinates.add(x);
-                yBurntCoordinates.add(y);
-                break;
-            }
+            generateCoordinates(setup, xBurntCoordinates, yBurntCoordinates, xBurntCoordinates, yBurntCoordinates);
 
         }
 
@@ -399,45 +406,17 @@ public class PartitionTests {
         ArrayList<Integer> blackXCoordinates = new ArrayList<Integer>();
         ArrayList<Integer> blackYCoordinates = new ArrayList<Integer>();
 
-        while (true) { // looping until we get a square that hasn't already been burnt, to assign a piece to
+        generateCoordinates(setup, xBurntCoordinates, yBurntCoordinates, whiteXCoordinates, whiteYCoordinates);
 
-            // generating a random number, from 1 to the number of squares in the partition
-            int whiteSquare = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
+        // storing all the coordinates used for both burnt squares and white pieces in 2 arraylists
+        ArrayList<Integer> usedXCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> usedYCoordinates = new ArrayList<Integer>();
+        usedXCoordinates.addAll(xBurntCoordinates);
+        usedXCoordinates.addAll(whiteXCoordinates);
+        usedYCoordinates.addAll(yBurntCoordinates);
+        usedYCoordinates.addAll(whiteYCoordinates);
 
-            // using the number generated to get the x and y coordinates associated
-            int x = getXCoordinate(whiteSquare, setup.getNoOfColumns());
-            int y = getYCoordinate(whiteSquare, setup.getNoOfColumns());
-
-            // checking that the square hasn't already been burnt
-            if(checkCoordinates(xBurntCoordinates, yBurntCoordinates, x, y)){
-                continue;
-            }
-
-            // storing the burnt square information
-            whiteXCoordinates.add(x);
-            whiteYCoordinates.add(y);
-            break;
-        }
-
-        while (true) { // looping until we get a square that hasn't already been burnt, or has a white piece
-
-            // generating a random number, from 1 to the number of squares in the partition
-            int blackSquare = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
-
-            // using the number generated to get the x and y coordinates associated
-            int x = getXCoordinate(blackSquare, setup.getNoOfColumns());
-            int y = getYCoordinate(blackSquare, setup.getNoOfColumns());
-
-            // checking that the square hasn't already been burnt, or has a white piece
-            if(checkCoordinates(xBurntCoordinates, yBurntCoordinates, x, y) || checkCoordinates(whiteXCoordinates, whiteYCoordinates, x, y)){
-                continue;
-            }
-
-            // storing the burnt square information
-            blackXCoordinates.add(x);
-            blackYCoordinates.add(y);
-            break;
-        }
+        generateCoordinates(setup, usedXCoordinates, usedYCoordinates, blackXCoordinates, blackYCoordinates);
 
         setup.setXWhitePieceCoordinates(whiteXCoordinates);
         setup.setYWhitePieceCoordinates(whiteYCoordinates);
