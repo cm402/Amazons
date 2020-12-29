@@ -335,7 +335,7 @@ public class PartitionTests {
         for (int j = 0; j < xCoordinates.size(); j++) {
 
             // if coordinates already stored in lists
-            if (xCoordinates.get(j) == x && xCoordinates.get(j) == y) {
+            if (xCoordinates.get(j) == x && yCoordinates.get(j) == y) {
                 return true;
             }
         }
