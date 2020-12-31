@@ -211,11 +211,13 @@ public class GameEngine {
 
         engine.outputGameFile(movesPlayed, board);
 
-        */
-
-
         PartitionTests partitionTests = new PartitionTests();
         partitionTests.testRandom();
+        */
+
+       BoardTests boardTests = new BoardTests();
+       boardTests.testSimplifyColumns();
+
 
     }
 

@@ -14,6 +14,141 @@ public class Board {
         this.rowBoardSize = rowBoardSize;
     }
 
+    private boolean isColumnBurnt(Board board, int columnIndex) {
+
+        // looping through each row, to check if a column
+        for (int i = 0; i < board.getRowBoardSize(); i++) {
+
+            // if square isn't burnt, then we stop checking
+            if (!board.getSquare(columnIndex, i).isBurnt()) {
+                return false;
+
+            }
+        }
+
+        return true;
+
+    }
+
+    // generates a partition of a board, given an original board and coordinates to start/end at
+    private Board newBoard(Board board, int startX, int startY, int endX, int endY){
+
+        // creating new board, with new size
+        int newColumnSize = endX - startX + 1;
+        int newRowSize = endY - startY + 1;
+
+        Board newBoard = new Board(newColumnSize, newRowSize);
+        newBoard.setupBoard();
+
+        int newX = 0;
+        int newY = 0;
+
+        for(int x = startX; x <= endX; x++){
+
+            if(x == startX){
+                newX = 0;
+            } else {
+                newX++;
+            }
+
+            for(int y = startY; y <= endY; y++){
+
+                if(y == startY){
+                    newY = 0;
+                } else {
+                    newY++;
+                }
+
+                Square oldSquare = board.getSquare(x, y);
+
+                // if any square on old board is burnt or contains a piece, replicate on new board
+                if(oldSquare.isBurnt()){
+
+                    newBoard.burnSquare(newX, newY);
+
+                } else if(oldSquare.getAmazon() != null){
+
+                    if (oldSquare.getAmazon().isWhite()){
+                        newBoard.setSquarePiece(newX, newY, new Piece(true));
+                    } else {
+                        newBoard.setSquarePiece(newX, newY, new Piece(false));
+                    }
+
+                }
+
+            }
+        }
+
+        return newBoard;
+
+    }
+
+    private Board simplify(Board board){
+
+        // checking if first column is burnt
+        if(isColumnBurnt(board, 0)){
+
+            // if burnt, create a new board, with the first column removed and all other squares shifted left
+            board = newBoard(board, 1, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1);
+            board.printBoard();
+
+            // recursively call in case more reductions possible
+            return simplify(board);
+        }
+
+        // checking last column
+        if(isColumnBurnt(board, board.getColumnBoardSize() - 1)){
+
+            // if burnt, create a new board, with the last column removed and all other squares shifted right
+            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 2, board.getRowBoardSize() - 1);
+            board.printBoard();
+
+            return simplify(board);
+        }
+
+        return board;
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        // self check
+        if (this == o) {
+            return true;
+        }
+
+        // first, we must simplify both boards fully
+        Board board1 = simplify(this);
+        Board board2 = simplify((Board) o);
+
+        // check that both simplified boards are the same size
+        if(board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
+        board1.getRowBoardSize() != board2.getRowBoardSize()){
+
+            return false;
+        }
+
+        for(int x = 0; x < board1.getColumnBoardSize(); x++){
+            for(int y = 0; y < board1.getRowBoardSize(); y++){
+
+                if(board1.getSquare(x, y).isBurnt() != board2.getSquare(x, y).isBurnt()){
+                    return false;
+                }
+
+                if(board1.getSquare(x, y).getAmazon() != null){
+
+                    if(board1.getSquare(x, y).getAmazon().isWhite() != board2.getSquare(x, y).getAmazon().isWhite()){
+                        return false;
+                    }
+
+                }
+            }
+        }
+
+        return true;
+    }
+
     public int getColumnBoardSize(){
         return this.columnBoardSize;
     }

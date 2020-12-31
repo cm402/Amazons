@@ -344,10 +344,9 @@ public class PartitionTests {
     }
 
     // generates coordinates that haven't been used already
-    // checks
     public void generateCoordinates(BoardPartitionSetup setup, ArrayList<Integer> oldX, ArrayList<Integer> oldY, ArrayList<Integer> newX, ArrayList<Integer> newY){
 
-        while (true) { // looping until we get a square that hasn't already been burnt
+        while (true) { // looping until we get a square that isn't already being used
 
             // generating a random number, from 1 to the number of squares in the partition
             int squareValue = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
@@ -366,6 +365,7 @@ public class PartitionTests {
             newY.add(y);
             break;
         }
+
     }
 
     // The final board partition example, a random partition generator
@@ -394,7 +394,6 @@ public class PartitionTests {
         for(int i = 0; i < noOfBurntSquares; i++){
 
             generateCoordinates(setup, xBurntCoordinates, yBurntCoordinates, xBurntCoordinates, yBurntCoordinates);
-
         }
 
         setup.setXBurntSquareCoordinates(xBurntCoordinates);
