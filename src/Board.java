@@ -85,9 +85,9 @@ public class Board {
                 } else if(oldSquare.getAmazon() != null){
 
                     if (oldSquare.getAmazon().isWhite()){
-                        newBoard.setSquarePiece(newX, newY, new Piece(true));
+                        newBoard.addPiece(newX, newY, new Piece(true));
                     } else {
-                        newBoard.setSquarePiece(newX, newY, new Piece(false));
+                        newBoard.addPiece(newX, newY, new Piece(false));
                     }
 
                 }
@@ -170,8 +170,16 @@ public class Board {
                     return false;
                 }
 
+                // if the first board has an amazon on the current square
                 if(board1.getSquare(x, y).getAmazon() != null){
 
+                    // checking that there is an also an amazon on the same square on the 2nd board
+                    // to prevent a seg fault error
+                    if(board2.getSquare(x, y).getAmazon() == null){
+                        return false;
+                    }
+
+                    // now, checking that the piece is the correct colour
                     if(board1.getSquare(x, y).getAmazon().isWhite() != board2.getSquare(x, y).getAmazon().isWhite()){
                         return false;
                     }
