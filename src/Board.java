@@ -16,11 +16,27 @@ public class Board {
 
     private boolean isColumnBurnt(Board board, int columnIndex) {
 
-        // looping through each row, to check if a column
+        // looping through each row
         for (int i = 0; i < board.getRowBoardSize(); i++) {
 
             // if square isn't burnt, then we stop checking
             if (!board.getSquare(columnIndex, i).isBurnt()) {
+                return false;
+
+            }
+        }
+
+        return true;
+
+    }
+
+    private boolean isRowBurnt(Board board, int rowIndex){
+
+        // looping through each column
+        for (int i = 0; i < board.getColumnBoardSize(); i++) {
+
+            // if square isn't burnt, then we stop checking
+            if (!board.getSquare(i, rowIndex).isBurnt()) {
                 return false;
 
             }
@@ -85,23 +101,41 @@ public class Board {
 
     private Board simplify(Board board){
 
-        // checking if first column is burnt
+        // first column
         if(isColumnBurnt(board, 0)){
 
             // if burnt, create a new board, with the first column removed and all other squares shifted left
             board = newBoard(board, 1, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1);
-            board.printBoard();
+            //board.printBoard();
 
             // recursively call in case more reductions possible
             return simplify(board);
         }
 
-        // checking last column
+        // last column
         if(isColumnBurnt(board, board.getColumnBoardSize() - 1)){
 
             // if burnt, create a new board, with the last column removed and all other squares shifted right
             board = newBoard(board, 0, 0, board.getColumnBoardSize() - 2, board.getRowBoardSize() - 1);
-            board.printBoard();
+            //board.printBoard();
+
+            return simplify(board);
+        }
+
+        // first row
+        if (isRowBurnt(board, 0)) {
+
+            board = newBoard(board, 0, 1, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1);
+            //board.printBoard();
+
+            return simplify(board);
+        }
+
+        // last row
+        if (isRowBurnt(board, board.getRowBoardSize() - 1)) {
+
+            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 2);
+            //board.printBoard();
 
             return simplify(board);
         }
