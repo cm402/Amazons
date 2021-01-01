@@ -89,7 +89,7 @@ public class BoardTests {
 
     }
 
-    public void testRotate(){
+    public void testRotate90(){
 
         Board board1 = new Board(4, 3);
         board1.setupBoard();
@@ -109,10 +109,80 @@ public class BoardTests {
         board2.burnSquare(2, 2);
 
         board2.getSquare(1, 1).setAmazon(new Piece(true));
+
+        board2.printBoard();
+
+        System.out.println(board1.equals(board2)); // returns false, as the boards are not equal yet
+
         board2.getSquare(0, 3).setAmazon(new Piece(false));
 
         board2.printBoard();
 
         System.out.println(board1.equals(board2)); // returns true, as the boards are now equal
     }
+
+    public void testRotate180(){
+
+        Board board1 = new Board(4, 3);
+        board1.setupBoard();
+
+        board1.burnSquare(0, 2);
+        board1.burnSquare(2, 0);
+
+        board1.getSquare(1, 1).setAmazon(new Piece(true));
+        board1.getSquare(3, 2).setAmazon(new Piece(false));
+
+        board1.printBoard();
+
+        Board board2 = new Board(4, 3);
+        board2.setupBoard();
+
+        board2.burnSquare(1, 2);
+        board2.burnSquare(3, 0);
+
+        board2.getSquare(2, 1).setAmazon(new Piece(true));
+
+        board2.printBoard();
+
+        System.out.println(board1.equals(board2)); // returns false, as the boards not equal
+
+        board2.getSquare(0, 0).setAmazon(new Piece(false));
+
+        board2.printBoard();
+
+        System.out.println(board1.equals(board2)); // returns true, as the boards now equal
+    }
+
+    public void testRotate270(){
+
+        Board board1 = new Board(4, 3);
+        board1.setupBoard();
+
+        board1.burnSquare(0, 2);
+        board1.burnSquare(2, 0);
+
+        board1.getSquare(1, 1).setAmazon(new Piece(true));
+        board1.getSquare(3, 2).setAmazon(new Piece(false));
+
+        board1.printBoard();
+
+        Board board2 = new Board(3, 4);
+        board2.setupBoard();
+
+        board2.burnSquare(0, 1);
+        board2.burnSquare(2, 3);
+
+        board2.getSquare(1, 2).setAmazon(new Piece(true));
+
+        board2.printBoard();
+
+        System.out.println(board1.equals(board2)); // returns false, as the boards are not equal yet
+
+        board2.getSquare(2, 0).setAmazon(new Piece(false));
+
+        board2.printBoard();
+
+        System.out.println(board1.equals(board2)); // returns true, as the boards are now equal
+    }
+
 }

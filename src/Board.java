@@ -175,6 +175,7 @@ public class Board {
         return true;
     }
 
+    // rotates a board 90 degrees clockwise, using a transposition
     private Board rotateBoard(Board board){
 
         Board newBoard = new Board(board.getRowBoardSize(), board.getColumnBoardSize());
@@ -219,13 +220,9 @@ public class Board {
                     }
                 }
             }
-
         }
 
         return newBoard;
-
-
-
     }
 
     @Override
@@ -244,24 +241,29 @@ public class Board {
         if(board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
         board1.getRowBoardSize() != board2.getRowBoardSize()){
 
-            // meaning a rotation can show an equality of both boards
+
+            // meaning a rotation of 90 or 270 can show an equality of both boards
             if(board1.getColumnBoardSize() == board2.getRowBoardSize() &&
             board1.getRowBoardSize() == board2.getColumnBoardSize()){
 
-                Board rotatedBoard = rotateBoard(board1);
-                //rotatedBoard.printBoard();
+                Board rotatedBoard90 = rotateBoard(board1);
+                Board rotatedBoard270 = rotateBoard(rotateBoard(rotatedBoard90));
 
-                if(boardsEqual(rotatedBoard, board2)){
+                /*
+                if(boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)){
                     return true;
                 }
-
+                */
+                return boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2);
 
             }
 
-            return false;
+            return false; // case where the sizes don't match, even after rotating, so 2 board cant be equal
         }
 
-        return boardsEqual(board1, board2);
+        Board rotatedBoard180 = rotateBoard(rotateBoard(board1));
+
+        return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2);
     }
 
     public int getColumnBoardSize(){
