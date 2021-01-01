@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class BoardTests {
 
     GameEngine engine = new GameEngine();
@@ -183,6 +185,31 @@ public class BoardTests {
         board2.printBoard();
 
         System.out.println(board1.equals(board2)); // returns true, as the boards are now equal
+    }
+
+    public void testSplit(){
+
+        Board board1 = new Board(5, 4);
+        board1.setupBoard();
+
+        board1.burnSquare(0, 1);
+        board1.burnSquare(1, 0);
+        board1.burnSquare(1, 1);
+        board1.burnSquare(1, 2);
+        board1.burnSquare(1, 3);
+        board1.burnSquare(2, 1);
+        board1.burnSquare(3, 1);
+        board1.burnSquare(4, 1);
+
+        board1.printBoard();
+
+        ArrayList<Board> partitions = board1.split();
+
+        for(Board partition: partitions){
+            partition.printBoard();
+        }
+
+
     }
 
 }

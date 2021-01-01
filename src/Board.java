@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Board {
@@ -225,6 +226,52 @@ public class Board {
         return newBoard;
     }
 
+    public ArrayList<Board> split(){
+
+        ArrayList<Board> partitions = new ArrayList<Board>();
+
+        // check if any columns can be split
+        for(int x = 1; x < this.getColumnBoardSize() - 2; x++){
+
+            if(isColumnBurnt(this, x)){
+
+                Board board1 = newBoard(this, 0, 0, x - 1, this.getRowBoardSize() - 1);
+                Board board2 = newBoard(this, x + 1, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1);
+
+                ArrayList<Board> boards1 = board1.split();
+                ArrayList<Board> boards2 = board2.split();
+
+                boards1.addAll(boards2);
+
+                return boards1;
+
+            }
+        }
+
+        // check if any rows can be split
+        for(int y = 1; y < this.getRowBoardSize() - 2; y++){
+
+            if(isRowBurnt(this, y)){
+
+                Board board1 = newBoard(this, 0, 0, this.getColumnBoardSize() - 1, y - 1);
+                Board board2 = newBoard(this, 0, y + 1, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1);
+
+                ArrayList<Board> boards1 = board1.split();
+                ArrayList<Board> boards2 = board2.split();
+
+                boards1.addAll(boards2);
+
+                return boards1;
+
+            }
+        }
+
+        partitions.add(this); // base case, where board can't be split further, add to partitions
+
+        return partitions;
+
+    }
+
     @Override
     public boolean equals(Object o) {
 
@@ -249,11 +296,6 @@ public class Board {
                 Board rotatedBoard90 = rotateBoard(board1);
                 Board rotatedBoard270 = rotateBoard(rotateBoard(rotatedBoard90));
 
-                /*
-                if(boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)){
-                    return true;
-                }
-                */
                 return boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2);
 
             }
