@@ -144,25 +144,9 @@ public class Board {
 
     }
 
-    @Override
-    public boolean equals(Object o) {
+    private boolean boardsEqual(Board board1, Board board2){
 
-        // self check
-        if (this == o) {
-            return true;
-        }
-
-        // first, we must simplify both boards fully
-        Board board1 = simplify(this);
-        Board board2 = simplify((Board) o);
-
-        // check that both simplified boards are the same size
-        if(board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
-        board1.getRowBoardSize() != board2.getRowBoardSize()){
-
-            return false;
-        }
-
+        // now, we check if the 2 boards are equal, by checking each square is the same on both
         for(int x = 0; x < board1.getColumnBoardSize(); x++){
             for(int y = 0; y < board1.getRowBoardSize(); y++){
 
@@ -189,6 +173,95 @@ public class Board {
         }
 
         return true;
+    }
+
+    private Board rotateBoard(Board board){
+
+        Board newBoard = new Board(board.getRowBoardSize(), board.getColumnBoardSize());
+        newBoard.setupBoard();
+
+        int newX = 0;
+        int newY = 0;
+
+        for(int x = 0; x < board.getColumnBoardSize(); x++) {
+
+            if (x == 0) {
+                newY = 0;
+            } else {
+                newY++;
+            }
+
+            for (int y = board.getRowBoardSize() - 1; y >= 0; y--) {
+
+                if (y == board.getRowBoardSize() - 1) {
+                    newX = 0;
+                } else {
+                    newX++;
+                }
+
+                Square oldSquare = board.getSquare(x, y);
+
+                //System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
+
+                // if any square on old board is burnt or contains a piece, replicate on new board
+                if (oldSquare.isBurnt()) {
+
+                    newBoard.burnSquare(newX, newY);
+
+                } else if (oldSquare.getAmazon() != null) {
+
+                    if (oldSquare.getAmazon().isWhite()) {
+
+                        newBoard.addPiece(newX, newY, new Piece(true));
+                    } else {
+
+                        newBoard.addPiece(newX, newY, new Piece(false));
+                    }
+                }
+            }
+
+        }
+
+        return newBoard;
+
+
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        // self check
+        if (this == o) {
+            return true;
+        }
+
+        // first, we must simplify both boards fully
+        Board board1 = simplify(this);
+        Board board2 = simplify((Board) o);
+
+        // check that both simplified boards are the same size
+        if(board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
+        board1.getRowBoardSize() != board2.getRowBoardSize()){
+
+            // meaning a rotation can show an equality of both boards
+            if(board1.getColumnBoardSize() == board2.getRowBoardSize() &&
+            board1.getRowBoardSize() == board2.getColumnBoardSize()){
+
+                Board rotatedBoard = rotateBoard(board1);
+                //rotatedBoard.printBoard();
+
+                if(boardsEqual(rotatedBoard, board2)){
+                    return true;
+                }
+
+
+            }
+
+            return false;
+        }
+
+        return boardsEqual(board1, board2);
     }
 
     public int getColumnBoardSize(){
