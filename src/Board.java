@@ -275,13 +275,17 @@ public class Board {
 
             // bottom row
             if(board.getSquare(x, 0).isBurnt()){
-                //System.out.println(x + " ," + 0);
+
+
                 //need to see if there is a path of burnt squares from this edge square to another edge square
+
+                ArrayList<Square> burntLine = findBurntLine(board, board.getSquare(x, 0));
             }
 
             // top row
             if(board.getSquare(x, board.getRowBoardSize() - 1).isBurnt()){
-                //System.out.println(x + "," + Integer.toString(board.getRowBoardSize() - 1));
+
+                ArrayList<Square> burntLine = findBurntLine(board, board.getSquare(x, 0));
             }
 
         }
@@ -292,10 +296,100 @@ public class Board {
 
     }
 
-    // finds a path from a burnt edge square to another burnt edge square, via burnt squares
-    public boolean isBurntLine(Board board){
+    public ArrayList<Square> getAdjacentBurntSquares(Board board, Square originalSquare){
 
-        return false;
+        ArrayList<Square> burntSquares = new ArrayList<Square>();
+
+        int x = originalSquare.getX();
+        int y = originalSquare.getY();
+
+        ArrayList<Square> squares = new ArrayList<Square>();
+
+        squares.add(board.getSquare(x + 1, y));
+        squares.add(board.getSquare(x - 1, y));
+        squares.add(board.getSquare(x, y + 1));
+        squares.add(board.getSquare(x, y - 1));
+
+        for(Square square: squares){
+
+            if(square != null && square.isBurnt()){
+                burntSquares.add(square);
+            }
+        }
+
+        return burntSquares;
+        /*
+        // left edge
+        if(square.getX() == 0){
+
+            // top left corner
+            if(square.getY() == board.getColumnBoardSize() - 1){
+
+                // check right and down squares
+
+
+
+            // bottom left corner
+            } else if(square.getY() == 0){
+
+                    // check up and right squares
+
+            } else {
+
+                // check up, right and down squares
+            }
+
+        // right edge
+        } else if(square.getX() == board.getRowBoardSize() - 1){
+
+
+            // top right corner
+            if(square.getY() == board.getColumnBoardSize() - 1){
+
+                // check left and down squares
+
+
+            // bottom right corner
+            } else if(square.getY() == 0){
+
+                // check left and up squares
+
+            } else {
+
+                // check left, up and down squares
+
+            }
+
+        // bottom edge (no need to check corners cases here, done above)
+        } else if(square.getY() == 0){
+
+            // check up, left and right squares
+
+
+        // top edge
+        } else if(square.getY() == board.getColumnBoardSize() - 1){
+
+            // check down, left and right squares
+
+            // checking down square
+            if(board.getSquare(square.getX(), square.getY() - 1).isBurnt()){
+
+            }
+
+        }
+        */
+
+    }
+
+    // finds a path from a burnt edge square to another burnt edge square, via burnt squares
+    public ArrayList<Square> findBurntLine(Board board, Square square){
+
+        ArrayList<Square> burntLine = new ArrayList<>();
+
+
+        ArrayList<Square> burntAdjacentSquares = getAdjacentBurntSquares(board, square);
+
+        return burntLine;
     }
 
     @Override
@@ -345,7 +439,7 @@ public class Board {
     public Square getSquare(int x, int y){
         
         if (x >= columnBoardSize || y >= rowBoardSize || x < 0 || y < 0){
-            System.out.println("Square out of range");
+            //System.out.println("Square out of range");
             return null;
         }
 
