@@ -187,7 +187,7 @@ public class BoardTests {
         System.out.println(board1.equals(board2)); // returns true, as the boards are now equal
     }
 
-    public void testSplit(){
+    public void testSplit1(){
 
         Board board1 = new Board(5, 4);
         board1.setupBoard();
@@ -201,7 +201,18 @@ public class BoardTests {
         board1.burnSquare(3, 1);
         board1.burnSquare(4, 1);
 
+        board1.getSquare(3, 2).setAmazon(new Piece(true));
+        board1.getSquare(0, 0).setAmazon(new Piece(false));
+
         board1.printBoard();
+
+        Board partition1 = new Board(1, 1);
+        partition1.setupBoard();
+        partition1.getSquare(0, 0).setAmazon(new Piece(false));
+
+        Board partition2 = new Board(3, 2);
+        partition2.setupBoard();
+        partition2.getSquare(1, 0).setAmazon(new Piece(true));
 
         ArrayList<Board> partitions = board1.split();
 
@@ -209,6 +220,57 @@ public class BoardTests {
             partition.printBoard();
         }
 
+        System.out.println(partition1.equals(partitions.get(0)));
+        System.out.println(partition2.equals(partitions.get(3)));
+
+    }
+
+    public void testSplit2(){
+
+        Board board1 = new Board(5, 4);
+        board1.setupBoard();
+
+        board1.burnSquare(1, 1);
+        board1.burnSquare(1, 2);
+        board1.burnSquare(1, 3);
+        board1.burnSquare(2, 1);
+        board1.burnSquare(3, 1);
+        board1.burnSquare(3, 2);
+        board1.burnSquare(3, 3);
+
+        board1.getSquare(2, 0).setAmazon(new Piece(true));
+        board1.getSquare(2, 2).setAmazon(new Piece(false));
+
+        board1.printBoard();
+
+        Board partition1 = new Board(1, 2);
+        partition1.setupBoard();
+        partition1.getSquare(0, 0).setAmazon(new Piece(false));
+
+        Board partition2 = new Board(5, 4);
+        partition2.setupBoard();
+        partition2.getSquare(2, 0).setAmazon(new Piece(true));
+
+        partition2.burnSquare(1, 1);
+        partition2.burnSquare(1, 2);
+        partition2.burnSquare(1, 3);
+        partition2.burnSquare(2, 1);
+        partition2.burnSquare(2, 2);
+        partition2.burnSquare(2, 3);
+        partition2.burnSquare(3, 1);
+        partition2.burnSquare(3, 2);
+        partition2.burnSquare(3, 3);
+
+        partition1.printBoard();
+        partition2.printBoard();
+
+        ArrayList<Board> partitions = board1.split();
+
+        /*
+        for(Board partition: partitions){
+            partition.printBoard();
+        }
+        */
 
     }
 

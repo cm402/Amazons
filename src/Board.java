@@ -226,12 +226,16 @@ public class Board {
         return newBoard;
     }
 
+    // if size() of returned array is 1, the board can't be split
     public ArrayList<Board> split(){
 
         ArrayList<Board> partitions = new ArrayList<Board>();
 
+        // check if can simplify, by removing outermost burnt rows/columns
+        Board board = simplify(this);
+
         // check if any columns can be split
-        for(int x = 1; x < this.getColumnBoardSize() - 2; x++){
+        for(int x = 1; x < board.getColumnBoardSize() - 2; x++){
 
             if(isColumnBurnt(this, x)){
 
@@ -249,7 +253,7 @@ public class Board {
         }
 
         // check if any rows can be split
-        for(int y = 1; y < this.getRowBoardSize() - 2; y++){
+        for(int y = 1; y < board.getRowBoardSize() - 2; y++){
 
             if(isRowBurnt(this, y)){
 
@@ -266,10 +270,32 @@ public class Board {
             }
         }
 
+        // checking bottom and top row for burnt squares
+        for(int x = 0; x < board.getColumnBoardSize() - 1; x++){
+
+            // bottom row
+            if(board.getSquare(x, 0).isBurnt()){
+                //System.out.println(x + " ," + 0);
+                //need to see if there is a path of burnt squares from this edge square to another edge square
+            }
+
+            // top row
+            if(board.getSquare(x, board.getRowBoardSize() - 1).isBurnt()){
+                //System.out.println(x + "," + Integer.toString(board.getRowBoardSize() - 1));
+            }
+
+        }
+
         partitions.add(this); // base case, where board can't be split further, add to partitions
 
         return partitions;
 
+    }
+
+    // finds a path from a burnt edge square to another burnt edge square, via burnt squares
+    public boolean isBurntLine(Board board){
+
+        return false;
     }
 
     @Override
