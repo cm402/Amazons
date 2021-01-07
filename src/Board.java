@@ -394,7 +394,43 @@ public class Board {
 
                 Square oldSquare = this.getSquare(x, y);
 
-                System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
+                //System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
+
+                copySquare(newBoard, oldSquare, newX, newY);
+            }
+        }
+
+        return newBoard;
+    }
+
+    // Flips a board on a vertical axis
+    private Board flipVertical(){
+
+        Board newBoard = new Board(this.getColumnBoardSize(), this.getRowBoardSize());
+        newBoard.setupBoard();
+
+        int newX = 0;
+        int newY = 0;
+
+        for(int x = 0; x < this.getColumnBoardSize(); x++) {
+
+            if (x == 0) {
+                newX = 0;
+            } else {
+                newX++;
+            }
+
+            for (int y = this.getRowBoardSize() - 1; y >= 0; y--) {
+
+                if (y == this.getRowBoardSize() - 1) {
+                    newY = 0;
+                } else {
+                    newY++;
+                }
+
+                Square oldSquare = this.getSquare(x, y);
+
+                //System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
 
                 copySquare(newBoard, oldSquare, newX, newY);
             }
@@ -447,8 +483,11 @@ public class Board {
 
                 Board rotatedBoard90 = board1.rotate();
                 Board rotatedBoard270 = rotatedBoard90.rotate().rotate();
+                Board diagonalFlipBoard1 = rotatedBoard90.flipHorizontal();
+                Board diagonalFlipBoard2 = rotatedBoard270.flipHorizontal();
 
-                return boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2);
+                return boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)
+                        || boardsEqual(diagonalFlipBoard1, board2) || boardsEqual(diagonalFlipBoard2, board2);
 
             }
 
@@ -457,14 +496,31 @@ public class Board {
         //  both boards are the same dimensions
         } else {
 
-            Board horizontalFlipBoard = board1.flipHorizontal();
+            Board horizontalFlippedBoard = board1.flipHorizontal();
+            Board verticalFlippedBoard = board1.flipVertical();
             Board rotatedBoard180 = board1.rotate().rotate();
 
-            System.out.println("Horizontal flip board");
-            horizontalFlipBoard.printBoard();
+            // board is a square, so check all 8 cases
+            if(board1.getColumnBoardSize() == board1.getRowBoardSize()){
 
 
-            return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2) || boardsEqual(horizontalFlipBoard, board2);
+                Board rotatedBoard90 = board1.rotate();
+                Board rotatedBoard270 = rotatedBoard90.rotate().rotate();
+                Board diagonalFlipBoard1 = rotatedBoard90.flipHorizontal();
+                Board diagonalFlipBoard2 = rotatedBoard270.flipHorizontal();
+
+                return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2)
+                        || boardsEqual(horizontalFlippedBoard, board2) || boardsEqual(verticalFlippedBoard, board2)
+                        || boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)
+                        || boardsEqual(diagonalFlipBoard1, board2) || boardsEqual(diagonalFlipBoard2, board2);
+
+            // board is a rectangle, so only check first 4 cases
+            } else {
+
+                return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2)
+                        || boardsEqual(horizontalFlippedBoard, board2) || boardsEqual(verticalFlippedBoard, board2);
+            }
+
 
         }
     }
