@@ -266,11 +266,13 @@ public class BoardTests {
 
         ArrayList<Board> partitions = board1.split();
 
-        /*
+
         for(Board partition: partitions){
             partition.printBoard();
         }
-        */
+
+        System.out.println(partition1.equals(partitions.get(1)));
+        System.out.println(partition2.equals(partitions.get(0)));
 
     }
 

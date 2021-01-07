@@ -226,171 +226,219 @@ public class Board {
         return newBoard;
     }
 
-    // if size() of returned array is 1, the board can't be split
-    public ArrayList<Board> split(){
+    public ArrayList<Board> split() {
 
         ArrayList<Board> partitions = new ArrayList<Board>();
 
-        // check if can simplify, by removing outermost burnt rows/columns
-        Board board = simplify(this);
+        // making a copy of the board that we can manipulate
+        // simplify board first, to remove any edge rows or columns that aren't needed
+        Board boardCopy = simplify(newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1));
 
-        // check if any columns can be split
-        for(int x = 1; x < board.getColumnBoardSize() - 2; x++){
+        int componentCounter = 0;
 
-            if(isColumnBurnt(this, x)){
-
-                Board board1 = newBoard(this, 0, 0, x - 1, this.getRowBoardSize() - 1);
-                Board board2 = newBoard(this, x + 1, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1);
-
-                ArrayList<Board> boards1 = board1.split();
-                ArrayList<Board> boards2 = board2.split();
-
-                boards1.addAll(boards2);
-
-                return boards1;
-
+        // 1. Set all squares x-coordinate to -1 initially
+        for(int x = 0; x < boardCopy.getColumnBoardSize(); x++){
+            for(int y = 0; y < boardCopy.getRowBoardSize(); y++){
+                boardCopy.getSquare(x, y).setX(-1);
             }
         }
 
-        // check if any rows can be split
-        for(int y = 1; y < board.getRowBoardSize() - 2; y++){
+        // 2. Group all unburnt squares into their connected components
+        for(int x = 0; x < boardCopy.getColumnBoardSize(); x++){
+            for(int y = 0; y < boardCopy.getRowBoardSize(); y++){
 
-            if(isRowBurnt(this, y)){
+                Square square = boardCopy.getSquare(x, y);
 
-                Board board1 = newBoard(this, 0, 0, this.getColumnBoardSize() - 1, y - 1);
-                Board board2 = newBoard(this, 0, y + 1, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1);
+                // find a square that hasn't been visited yet, and isn't burnt
+                if(square.getX() == -1 && !square.isBurnt()){
 
-                ArrayList<Board> boards1 = board1.split();
-                ArrayList<Board> boards2 = board2.split();
-
-                boards1.addAll(boards2);
-
-                return boards1;
-
+                    DFS(boardCopy, square, componentCounter);
+                    componentCounter++;
+                }
             }
         }
 
-        // checking bottom and top row for burnt squares
-        for(int x = 0; x < board.getColumnBoardSize() - 1; x++){
 
-            // bottom row
-            if(board.getSquare(x, 0).isBurnt()){
+        // 3. Create a partition board for each component
+        for(int i = 0; i < componentCounter; i++){
 
+            // 3.1. Extract dimensions information for each component
+            boolean firstSquare = true;
+            int minX, minY, maxX, maxY;
+            minX = 0;
+            maxX = 0;
+            minY = 0;
+            maxY = 0;
 
-                //need to see if there is a path of burnt squares from this edge square to another edge square
+            for(int x = 0; x < boardCopy.getColumnBoardSize(); x++) {
+                for (int y = 0; y < boardCopy.getRowBoardSize(); y++) {
 
-                ArrayList<Square> burntLine = findBurntLine(board, board.getSquare(x, 0));
+                    Square square = boardCopy.getSquare(x, y);
+
+                    // found a square in the current component
+                    if(square.getX() == i){
+
+                        if(firstSquare){
+                            minX = x;
+                            maxX = x;
+                            minY = y;
+                            maxY = y;
+                            firstSquare = false;
+                        }
+
+                        if(x < minX){
+                            minX = x;
+                        }
+                        if(x > maxX){
+                            maxX = x;
+                        }
+                        if(y < minY){
+                            minY = y;
+                        }
+                        if(y > maxY){
+                            maxY = y;
+                        }
+
+                    }
+
+                }
             }
 
-            // top row
-            if(board.getSquare(x, board.getRowBoardSize() - 1).isBurnt()){
-
-                ArrayList<Square> burntLine = findBurntLine(board, board.getSquare(x, 0));
-            }
+            // 3.2. Use dimensions to create a new board partition
+            partitions.add(newComponentBoard(boardCopy, minX, minY, maxX, maxY, i));
 
         }
-
-        partitions.add(this); // base case, where board can't be split further, add to partitions
 
         return partitions;
 
     }
 
-    public ArrayList<Square> getAdjacentBurntSquares(Board board, Square originalSquare){
+    // https://www.baeldung.com/cs/graph-connected-components
+    private void DFS(Board board, Square square, int componentCounter){
 
-        ArrayList<Square> burntSquares = new ArrayList<Square>();
+        for(int x = 0; x < board.getColumnBoardSize(); x++){
+            for(int y = 0; y < board.getRowBoardSize(); y++){
 
-        int x = originalSquare.getX();
-        int y = originalSquare.getY();
+                // We have located the correct square
+                if(board.getSquare(x, y).equals(square)){
 
-        ArrayList<Square> squares = new ArrayList<Square>();
+                    // add square to current component
+                    board.getSquare(x, y).setX(componentCounter);
 
-        squares.add(board.getSquare(x + 1, y));
-        squares.add(board.getSquare(x - 1, y));
-        squares.add(board.getSquare(x, y + 1));
-        squares.add(board.getSquare(x, y - 1));
+                    // get list of adjacent squares that are also unburnt
+                    ArrayList<Square> unburntAdjacentSquares = getAdjacentUnburntSquares(board, square);
 
-        for(Square square: squares){
+                    for(Square adjacentSquare: unburntAdjacentSquares){
 
-            if(square != null && square.isBurnt()){
-                burntSquares.add(square);
+                        // if adjacent unburnt square is also unvisited, visit that square recursively
+                        if(adjacentSquare.getX() == -1){
+                            DFS(board, adjacentSquare, componentCounter);
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+
+    // returns an ArrayList of the squares that are surrounding the current square, and aren't burnt
+    public ArrayList<Square> getAdjacentUnburntSquares(Board board, Square originalSquare){
+
+        ArrayList<Square> unburntSquares = new ArrayList<Square>();
+
+        for(int x = 0; x < board.getColumnBoardSize(); x++) {
+            for (int y = 0; y < board.getRowBoardSize(); y++) {
+
+                // We have located the correct square
+                if (board.getSquare(x, y).equals(originalSquare)) {
+
+                    ArrayList<Square> squares = new ArrayList<Square>();
+
+                    squares.add(board.getSquare(x + 1, y));
+                    squares.add(board.getSquare(x - 1, y));
+                    squares.add(board.getSquare(x, y + 1));
+                    squares.add(board.getSquare(x, y - 1));
+
+                    for(Square square: squares){
+
+                        if(square != null && !square.isBurnt()){
+                            unburntSquares.add(square);
+                        }
+                    }
+
+                }
             }
         }
 
-        return burntSquares;
-        /*
-        // left edge
-        if(square.getX() == 0){
+        return unburntSquares;
 
-            // top left corner
-            if(square.getY() == board.getColumnBoardSize() - 1){
+    }
 
-                // check right and down squares
+    // generates a partition of a board, given an original board and coordinates to start/end at, as well as a component counter to look for
+    private Board newComponentBoard(Board board, int startX, int startY, int endX, int endY, int componentCounter){
 
+        // creating new board, with new size
+        int newColumnSize = endX - startX + 1;
+        int newRowSize = endY - startY + 1;
 
+        Board newBoard = new Board(newColumnSize, newRowSize);
+        newBoard.setupBoard();
 
-            // bottom left corner
-            } else if(square.getY() == 0){
+        int newX = 0;
+        int newY = 0;
 
-                    // check up and right squares
+        for(int x = startX; x <= endX; x++){
 
+            if(x == startX){
+                newX = 0;
             } else {
-
-                // check up, right and down squares
+                newX++;
             }
 
-        // right edge
-        } else if(square.getX() == board.getRowBoardSize() - 1){
+            for(int y = startY; y <= endY; y++){
 
+                if(y == startY){
+                    newY = 0;
+                } else {
+                    newY++;
+                }
 
-            // top right corner
-            if(square.getY() == board.getColumnBoardSize() - 1){
+                Square oldSquare = board.getSquare(x, y);
 
-                // check left and down squares
+                // if not part of current component, then we just burn the square
+                if(oldSquare.getX() != componentCounter){
+                    newBoard.burnSquare(newX, newY);
 
+                // if part of current component
+                } else {
 
-            // bottom right corner
-            } else if(square.getY() == 0){
+                    // if any square on old board is burnt or contains a piece, replicate on new board
+                    if(oldSquare.isBurnt()){
 
-                // check left and up squares
+                        newBoard.burnSquare(newX, newY);
 
-            } else {
+                    }
 
-                // check left, up and down squares
+                    if(oldSquare.getAmazon() != null) {
+
+                        if (oldSquare.getAmazon().isWhite()) {
+                            newBoard.addPiece(newX, newY, new Piece(true));
+                        } else {
+                            newBoard.addPiece(newX, newY, new Piece(false));
+                        }
+
+                    }
+                }
+
 
             }
-
-        // bottom edge (no need to check corners cases here, done above)
-        } else if(square.getY() == 0){
-
-            // check up, left and right squares
-
-
-        // top edge
-        } else if(square.getY() == board.getColumnBoardSize() - 1){
-
-            // check down, left and right squares
-
-            // checking down square
-            if(board.getSquare(square.getX(), square.getY() - 1).isBurnt()){
-
-            }
-
         }
-        */
+
+        return newBoard;
 
     }
 
-    // finds a path from a burnt edge square to another burnt edge square, via burnt squares
-    public ArrayList<Square> findBurntLine(Board board, Square square){
-
-        ArrayList<Square> burntLine = new ArrayList<>();
-
-
-        ArrayList<Square> burntAdjacentSquares = getAdjacentBurntSquares(board, square);
-
-        return burntLine;
-    }
 
     @Override
     public boolean equals(Object o) {
