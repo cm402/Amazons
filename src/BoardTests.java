@@ -7,14 +7,16 @@ public class BoardTests {
     // testing that a board is simplified correctly, with columns on left and right side
     public void testSimplifyColumns(){
 
-        Board board1 = new Board(4, 2);
+        Board board1 = new Board(5, 2);
         board1.setupBoard();
 
         board1.burnSquare(0, 0);
         board1.burnSquare(0, 1);
-        board1.burnSquare(2, 1);
-        board1.burnSquare(3, 0);
+        board1.burnSquare(1, 0);
+        board1.burnSquare(1, 1);
         board1.burnSquare(3, 1);
+        board1.burnSquare(4, 0);
+        board1.burnSquare(4, 1);
 
         board1.printBoard();
 

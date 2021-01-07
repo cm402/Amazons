@@ -106,48 +106,34 @@ public class Board {
 
     }
 
-    private Board simplify(Board board){
+    // removes outermost burnt rows from the board
+    private Board simplify(){
 
         // first column
-        if(isColumnBurnt(board, 0)){
+        if(isColumnBurnt(this, 0)){
 
-            // if burnt, create a new board, with the first column removed and all other squares shifted left
-            board = newBoard(board, 1, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
-            //board.printBoard();
-
-            // recursively call in case more reductions possible
-            return simplify(board);
+            return newBoard(this, 1, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // last column
-        if(isColumnBurnt(board, board.getColumnBoardSize() - 1)){
+        if(isColumnBurnt(this, this.getColumnBoardSize() - 1)){
 
-            // if burnt, create a new board, with the last column removed and all other squares shifted right
-            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 2, board.getRowBoardSize() - 1, -1);
-            //board.printBoard();
-
-            return simplify(board);
+            return newBoard(this, 0, 0, this.getColumnBoardSize() - 2, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // first row
-        if (isRowBurnt(board, 0)) {
+        if (isRowBurnt(this, 0)) {
 
-            board = newBoard(board, 0, 1, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
-            //board.printBoard();
-
-            return simplify(board);
+            return newBoard(this, 0, 1, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // last row
-        if (isRowBurnt(board, board.getRowBoardSize() - 1)) {
+        if (isRowBurnt(this, this.getRowBoardSize() - 1)) {
 
-            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 2, -1);
-            //board.printBoard();
-
-            return simplify(board);
+            return newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 2, -1).simplify();
         }
 
-        return board;
+        return this;
 
     }
 
@@ -224,7 +210,7 @@ public class Board {
 
         // making a copy of the board that we can manipulate
         // simplify board first, to remove any edge rows or columns that aren't needed
-        Board boardCopy = simplify(newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1));
+        Board boardCopy = newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
 
         int componentCounter = 0;
 
@@ -469,8 +455,8 @@ public class Board {
         }
 
         // first, we must simplify both boards fully
-        Board board1 = simplify(this);
-        Board board2 = simplify((Board) o);
+        Board board1 = this.simplify();
+        Board board2 = ((Board) o).simplify();
 
         // both simplified boards are the not same dimensions
         if(board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
