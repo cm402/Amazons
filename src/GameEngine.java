@@ -216,7 +216,7 @@ public class GameEngine {
         */
 
        BoardTests boardTests = new BoardTests();
-       boardTests.testSimplifyWithPieces();
+       boardTests.testFlipHorizontal();
 
 
     }

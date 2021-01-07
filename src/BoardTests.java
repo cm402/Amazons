@@ -187,6 +187,37 @@ public class BoardTests {
         System.out.println(board1.equals(board2)); // returns true, as the boards are now equal
     }
 
+    public void testFlipHorizontal(){
+
+        Board board1 = new Board(4, 3);
+        board1.setupBoard();
+
+        board1.burnSquare(0, 2);
+        board1.burnSquare(2, 0);
+
+        board1.getSquare(1, 1).setAmazon(new Piece(true));
+        board1.getSquare(3, 2).setAmazon(new Piece(false));
+
+        board1.printBoard();
+
+        Board board2 = new Board(4, 3);
+        board2.setupBoard();
+
+        board2.burnSquare(1, 0);
+        board2.burnSquare(3, 2);
+
+        board2.getSquare(2, 1).setAmazon(new Piece(true));
+
+        //board2.printBoard();
+        //System.out.println(board1.equals(board2)); // returns false, as the boards are not equal yet
+
+        board2.getSquare(0, 2).setAmazon(new Piece(false));
+
+        board2.printBoard();
+
+        System.out.println(board1.equals(board2)); // returns true, as the boards are now equal
+    }
+
     public void testSplit1(){
 
         Board board1 = new Board(5, 4);

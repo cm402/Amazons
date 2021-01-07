@@ -83,20 +83,7 @@ public class Board {
                 // We aren't dealing with components
                 if(componentCounter == -1){
 
-                    // if any square on old board is burnt or contains a piece, replicate on new board
-                    if(oldSquare.isBurnt()){
-
-                        newBoard.burnSquare(newX, newY);
-
-                    } else if(oldSquare.getAmazon() != null){
-
-                        if (oldSquare.getAmazon().isWhite()){
-                            newBoard.addPiece(newX, newY, new Piece(true));
-                        } else {
-                            newBoard.addPiece(newX, newY, new Piece(false));
-                        }
-
-                    }
+                    copySquare(newBoard, oldSquare, newX, newY);
 
                 // We are dealing with components
                 } else {
@@ -108,22 +95,7 @@ public class Board {
                     // part of current component
                     } else {
 
-                        // if any square on old board is burnt or contains a piece, replicate on new board
-                        if(oldSquare.isBurnt()){
-
-                            newBoard.burnSquare(newX, newY);
-
-                        }
-
-                        if(oldSquare.getAmazon() != null) {
-
-                            if (oldSquare.getAmazon().isWhite()) {
-                                newBoard.addPiece(newX, newY, new Piece(true));
-                            } else {
-                                newBoard.addPiece(newX, newY, new Piece(false));
-                            }
-
-                        }
+                        copySquare(newBoard, oldSquare, newX, newY);
                     }
 
                 }
@@ -211,15 +183,15 @@ public class Board {
     }
 
     // rotates a board 90 degrees clockwise, using a transposition
-    private Board rotateBoard(Board board){
+    private Board rotate(){
 
-        Board newBoard = new Board(board.getRowBoardSize(), board.getColumnBoardSize());
+        Board newBoard = new Board(this.getRowBoardSize(), this.getColumnBoardSize());
         newBoard.setupBoard();
 
         int newX = 0;
         int newY = 0;
 
-        for(int x = 0; x < board.getColumnBoardSize(); x++) {
+        for(int x = 0; x < this.getColumnBoardSize(); x++) {
 
             if (x == 0) {
                 newY = 0;
@@ -227,33 +199,19 @@ public class Board {
                 newY++;
             }
 
-            for (int y = board.getRowBoardSize() - 1; y >= 0; y--) {
+            for (int y = this.getRowBoardSize() - 1; y >= 0; y--) {
 
-                if (y == board.getRowBoardSize() - 1) {
+                if (y == this.getRowBoardSize() - 1) {
                     newX = 0;
                 } else {
                     newX++;
                 }
 
-                Square oldSquare = board.getSquare(x, y);
+                Square oldSquare = this.getSquare(x, y);
 
                 //System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
 
-                // if any square on old board is burnt or contains a piece, replicate on new board
-                if (oldSquare.isBurnt()) {
-
-                    newBoard.burnSquare(newX, newY);
-
-                } else if (oldSquare.getAmazon() != null) {
-
-                    if (oldSquare.getAmazon().isWhite()) {
-
-                        newBoard.addPiece(newX, newY, new Piece(true));
-                    } else {
-
-                        newBoard.addPiece(newX, newY, new Piece(false));
-                    }
-                }
+                copySquare(newBoard, oldSquare, newX, newY);
             }
         }
 
@@ -377,7 +335,7 @@ public class Board {
     }
 
     // returns an ArrayList of the squares that are surrounding the current square, and aren't burnt
-    public ArrayList<Square> getAdjacentUnburntSquares(Board board, Square originalSquare){
+    private ArrayList<Square> getAdjacentUnburntSquares(Board board, Square originalSquare){
 
         ArrayList<Square> unburntSquares = new ArrayList<Square>();
 
@@ -409,6 +367,62 @@ public class Board {
 
     }
 
+    // Flips a board on a horizontal axis
+    private Board flipHorizontal(){
+
+        Board newBoard = new Board(this.getColumnBoardSize(), this.getRowBoardSize());
+        newBoard.setupBoard();
+
+        int newX = 0;
+        int newY = 0;
+
+        for(int x = this.getColumnBoardSize() - 1; x >= 0; x--) {
+
+            if (x == this.getColumnBoardSize() - 1) {
+                newX = 0;
+            } else {
+                newX++;
+            }
+
+            for (int y = 0; y < this.getRowBoardSize(); y++) {
+
+                if (y == 0) {
+                    newY = 0;
+                } else {
+                    newY++;
+                }
+
+                Square oldSquare = this.getSquare(x, y);
+
+                System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
+
+                copySquare(newBoard, oldSquare, newX, newY);
+            }
+        }
+
+        return newBoard;
+    }
+
+    // copies a square to a new board, given the old square and the coordinates to place it on new board
+    private void copySquare(Board board, Square oldSquare, int x, int y){
+
+        // if any square on old board is burnt or contains a piece, replicate on new board
+        if (oldSquare.isBurnt()) {
+
+            board.burnSquare(x, y);
+
+        } else if (oldSquare.getAmazon() != null) {
+
+            if (oldSquare.getAmazon().isWhite()) {
+
+                board.addPiece(x, y, new Piece(true));
+            } else {
+
+                board.addPiece(x, y, new Piece(false));
+            }
+        }
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -422,7 +436,7 @@ public class Board {
         Board board1 = simplify(this);
         Board board2 = simplify((Board) o);
 
-        // check that both simplified boards are the same size
+        // both simplified boards are the not same dimensions
         if(board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
         board1.getRowBoardSize() != board2.getRowBoardSize()){
 
@@ -431,19 +445,28 @@ public class Board {
             if(board1.getColumnBoardSize() == board2.getRowBoardSize() &&
             board1.getRowBoardSize() == board2.getColumnBoardSize()){
 
-                Board rotatedBoard90 = rotateBoard(board1);
-                Board rotatedBoard270 = rotateBoard(rotateBoard(rotatedBoard90));
+                Board rotatedBoard90 = board1.rotate();
+                Board rotatedBoard270 = rotatedBoard90.rotate().rotate();
 
                 return boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2);
 
             }
 
             return false; // case where the sizes don't match, even after rotating, so 2 board cant be equal
+
+        //  both boards are the same dimensions
+        } else {
+
+            Board horizontalFlipBoard = board1.flipHorizontal();
+            Board rotatedBoard180 = board1.rotate().rotate();
+
+            System.out.println("Horizontal flip board");
+            horizontalFlipBoard.printBoard();
+
+
+            return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2) || boardsEqual(horizontalFlipBoard, board2);
+
         }
-
-        Board rotatedBoard180 = rotateBoard(rotateBoard(board1));
-
-        return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2);
     }
 
     public int getColumnBoardSize(){
