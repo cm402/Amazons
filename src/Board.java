@@ -48,7 +48,9 @@ public class Board {
     }
 
     // generates a partition of a board, given an original board and coordinates to start/end at
-    private Board newBoard(Board board, int startX, int startY, int endX, int endY){
+    // if component Counter = -1, then we don't consider components
+    // any other value for a component counter, we only return squares that are part of component
+    private Board newBoard(Board board, int startX, int startY, int endX, int endY, int componentCounter){
 
         // creating new board, with new size
         int newColumnSize = endX - startX + 1;
@@ -78,21 +80,53 @@ public class Board {
 
                 Square oldSquare = board.getSquare(x, y);
 
-                // if any square on old board is burnt or contains a piece, replicate on new board
-                if(oldSquare.isBurnt()){
+                // We aren't dealing with components
+                if(componentCounter == -1){
 
-                    newBoard.burnSquare(newX, newY);
+                    // if any square on old board is burnt or contains a piece, replicate on new board
+                    if(oldSquare.isBurnt()){
 
-                } else if(oldSquare.getAmazon() != null){
+                        newBoard.burnSquare(newX, newY);
 
-                    if (oldSquare.getAmazon().isWhite()){
-                        newBoard.addPiece(newX, newY, new Piece(true));
+                    } else if(oldSquare.getAmazon() != null){
+
+                        if (oldSquare.getAmazon().isWhite()){
+                            newBoard.addPiece(newX, newY, new Piece(true));
+                        } else {
+                            newBoard.addPiece(newX, newY, new Piece(false));
+                        }
+
+                    }
+
+                // We are dealing with components
+                } else {
+
+                    // not part of current component, then we just burn the square
+                    if(oldSquare.getX() != componentCounter){
+                        newBoard.burnSquare(newX, newY);
+
+                    // part of current component
                     } else {
-                        newBoard.addPiece(newX, newY, new Piece(false));
+
+                        // if any square on old board is burnt or contains a piece, replicate on new board
+                        if(oldSquare.isBurnt()){
+
+                            newBoard.burnSquare(newX, newY);
+
+                        }
+
+                        if(oldSquare.getAmazon() != null) {
+
+                            if (oldSquare.getAmazon().isWhite()) {
+                                newBoard.addPiece(newX, newY, new Piece(true));
+                            } else {
+                                newBoard.addPiece(newX, newY, new Piece(false));
+                            }
+
+                        }
                     }
 
                 }
-
             }
         }
 
@@ -106,7 +140,7 @@ public class Board {
         if(isColumnBurnt(board, 0)){
 
             // if burnt, create a new board, with the first column removed and all other squares shifted left
-            board = newBoard(board, 1, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1);
+            board = newBoard(board, 1, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
             //board.printBoard();
 
             // recursively call in case more reductions possible
@@ -117,7 +151,7 @@ public class Board {
         if(isColumnBurnt(board, board.getColumnBoardSize() - 1)){
 
             // if burnt, create a new board, with the last column removed and all other squares shifted right
-            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 2, board.getRowBoardSize() - 1);
+            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 2, board.getRowBoardSize() - 1, -1);
             //board.printBoard();
 
             return simplify(board);
@@ -126,7 +160,7 @@ public class Board {
         // first row
         if (isRowBurnt(board, 0)) {
 
-            board = newBoard(board, 0, 1, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1);
+            board = newBoard(board, 0, 1, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
             //board.printBoard();
 
             return simplify(board);
@@ -135,7 +169,7 @@ public class Board {
         // last row
         if (isRowBurnt(board, board.getRowBoardSize() - 1)) {
 
-            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 2);
+            board = newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 2, -1);
             //board.printBoard();
 
             return simplify(board);
@@ -232,7 +266,7 @@ public class Board {
 
         // making a copy of the board that we can manipulate
         // simplify board first, to remove any edge rows or columns that aren't needed
-        Board boardCopy = simplify(newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1));
+        Board boardCopy = simplify(newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1));
 
         int componentCounter = 0;
 
@@ -305,7 +339,7 @@ public class Board {
             }
 
             // 3.2. Use dimensions to create a new board partition
-            partitions.add(newComponentBoard(boardCopy, minX, minY, maxX, maxY, i));
+            partitions.add(newBoard(boardCopy, minX, minY, maxX, maxY, i));
 
         }
 
@@ -372,70 +406,6 @@ public class Board {
         }
 
         return unburntSquares;
-
-    }
-
-    // generates a partition of a board, given an original board and coordinates to start/end at, as well as a component counter to look for
-    private Board newComponentBoard(Board board, int startX, int startY, int endX, int endY, int componentCounter){
-
-        // creating new board, with new size
-        int newColumnSize = endX - startX + 1;
-        int newRowSize = endY - startY + 1;
-
-        Board newBoard = new Board(newColumnSize, newRowSize);
-        newBoard.setupBoard();
-
-        int newX = 0;
-        int newY = 0;
-
-        for(int x = startX; x <= endX; x++){
-
-            if(x == startX){
-                newX = 0;
-            } else {
-                newX++;
-            }
-
-            for(int y = startY; y <= endY; y++){
-
-                if(y == startY){
-                    newY = 0;
-                } else {
-                    newY++;
-                }
-
-                Square oldSquare = board.getSquare(x, y);
-
-                // if not part of current component, then we just burn the square
-                if(oldSquare.getX() != componentCounter){
-                    newBoard.burnSquare(newX, newY);
-
-                // if part of current component
-                } else {
-
-                    // if any square on old board is burnt or contains a piece, replicate on new board
-                    if(oldSquare.isBurnt()){
-
-                        newBoard.burnSquare(newX, newY);
-
-                    }
-
-                    if(oldSquare.getAmazon() != null) {
-
-                        if (oldSquare.getAmazon().isWhite()) {
-                            newBoard.addPiece(newX, newY, new Piece(true));
-                        } else {
-                            newBoard.addPiece(newX, newY, new Piece(false));
-                        }
-
-                    }
-                }
-
-
-            }
-        }
-
-        return newBoard;
 
     }
 
