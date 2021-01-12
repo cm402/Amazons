@@ -365,6 +365,24 @@ public class BoardTests {
         player.addPieces(blackPieces);
 
         for(Move move: player.getValidMoves(board)){
+
+            Board newBoard = board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
+
+            Piece piece = move.getPiece();
+            int x = move.getEndPosition().getX();
+            int y = move.getEndPosition().getY();
+
+            // moving piece to new square and burning square that is shot at
+            newBoard.setSquarePiece(x, y, piece);
+            newBoard.burnSquare(move.getBurnedSquare().getX(), move.getBurnedSquare().getY());
+
+            // removing amazon from original square
+            if(newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).getAmazon() != null){
+                newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
+            }
+
+            newBoard.printBoard();
+
             System.out.println(move.toString());
         }
 

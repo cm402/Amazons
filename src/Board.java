@@ -50,7 +50,7 @@ public class Board {
     // generates a partition of a board, given an original board and coordinates to start/end at
     // if component Counter = -1, then we don't consider components
     // any other value for a component counter, we only return squares that are part of component
-    private Board newBoard(Board board, int startX, int startY, int endX, int endY, int componentCounter){
+    public Board newBoard(Board board, int startX, int startY, int endX, int endY, int componentCounter){
 
         // creating new board, with new size
         int newColumnSize = endX - startX + 1;
