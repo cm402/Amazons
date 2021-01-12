@@ -26,21 +26,4 @@ public class AIPlayer extends Player implements Serializable {
         }
     }
 
-    // heuristics
-    
-    // D1 in upper left corner
-    // D2 in lower right corner
-
-    // D1 is min number of queen moves, from one of players amazons to square
-    // D2 is min number of king moves, from one of players amazons to square
-
-    // if a player has D1 better than their opponents D1, they have better access
-
-
-
-
-
-
-
-
 }

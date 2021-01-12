@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class BoardTests {
@@ -339,5 +340,38 @@ public class BoardTests {
         System.out.println(partition2.equals(partitions.get(0)));
 
     }
+
+    public void testEvalutate(){
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        // adding the piece to the board correctly so that we can look at valid moves
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        // create an AI player who uses black pieces, to see blacks valid moves
+        AIPlayer player = new AIPlayer(false);
+        player.addPieces(blackPieces);
+
+        for(Move move: player.getValidMoves(board)){
+            System.out.println(move.toString());
+        }
+
+
+
+    }
+
+
 
 }

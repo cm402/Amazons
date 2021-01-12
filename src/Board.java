@@ -445,6 +445,26 @@ public class Board {
         }
     }
 
+    public void evaluate(){
+
+        ArrayList<Board> partitions = this.split();
+
+        // game isn't split into subgames
+        if(partitions.size() == 1){
+
+
+        } else {
+
+
+            for(Board partition: partitions){
+
+                // evaluate sub games
+
+            }
+
+        }
+    }
+
 
     @Override
     public boolean equals(Object o) {
