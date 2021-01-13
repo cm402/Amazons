@@ -12,7 +12,17 @@ public class GameValue {
     }
 
     public String toString(){
-        return "{" + this.left.toString() + " | " + this.right.toString() + "}";
+
+        if(left.isEmpty() && right.isEmpty()){
+            return "0";
+        } else if(left.isEmpty()){
+            return "-1";
+        } else if(right.isEmpty()){
+            return "1";
+        } else {
+            return "{" + this.left.toString() + " | " + this.right.toString() + "}";
+        }
+
     }
 
     public boolean lessThan(GameValue x, GameValue y){
