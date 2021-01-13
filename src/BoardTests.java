@@ -343,6 +343,59 @@ public class BoardTests {
 
     public void testEvalutate(){
 
+        Board board = new Board(4, 1);
+        board.setupBoard();
+
+        // adding the piece to the board correctly so that we can look at valid moves
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(2,0));
+        board.addPiece(2, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        GameValue gameValue = board.evaluate();
+
+        /*
+        // create an AI player who uses black pieces, to see blacks valid moves
+        AIPlayer player = new AIPlayer(true);
+        player.addPieces(whitePieces);
+
+        for(Move move: player.getValidMoves(board)){
+
+            Board newBoard = board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
+
+            Piece piece = move.getPiece();
+            int x = move.getEndPosition().getX();
+            int y = move.getEndPosition().getY();
+
+            // moving piece to new square and burning square that is shot at
+            newBoard.setSquarePiece(x, y, piece);
+            newBoard.burnSquare(move.getBurnedSquare().getX(), move.getBurnedSquare().getY());
+
+            // removing amazon from original square
+            if(newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).getAmazon() != null){
+                newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
+            }
+
+            newBoard.printBoard();
+
+            System.out.println(move.toString());
+        }
+        */
+
+
+
+    }
+
+    public void testEvalutate2(){
+
         Board board = new Board(3, 2);
         board.setupBoard();
 

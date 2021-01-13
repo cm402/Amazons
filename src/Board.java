@@ -445,13 +445,73 @@ public class Board {
         }
     }
 
-    public void evaluate(){
+    // Returns all the pieces of one colour on the current board
+    // true = white pieces
+    // false = black pieces
+    public ArrayList<Piece> getPieces(boolean white){
 
+        ArrayList<Piece> pieces = new ArrayList<>();
+
+        for(int x = 0; x < this.getColumnBoardSize(); x++){
+            for(int y = 0; y < this.getRowBoardSize(); y++){
+
+                Piece piece = this.getSquare(x, y).getAmazon();
+
+                // if there is an amazon on the current square, and it matches the colour we are looking for
+                if(piece != null && piece.isWhite() == white){
+
+                    pieces.add(piece);
+                }
+            }
+        }
+
+        return pieces;
+
+    }
+
+    public GameValue evaluate(){
+
+        // 1. Get the pieces information from the board and assign them to Player objects
+        // 2. Find all possible moves for both black and white players
+        // 3. Create a GameValue object for the board, where the left value is all blacks possible moves
+        // and the right value is all whites possible moves
+
+        GameValue gameValue = new GameValue();
+
+        // create an AI player who uses black pieces, to see blacks valid moves
+        AIPlayer player = new AIPlayer(true);
+        player.addPieces(this.getPieces(true));
+
+        for(Move move: player.getValidMoves(this)){
+
+            Board newBoard = this.newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1);
+
+            Piece piece = move.getPiece();
+            int x = move.getEndPosition().getX();
+            int y = move.getEndPosition().getY();
+
+            // moving piece to new square and burning square that is shot at
+            newBoard.setSquarePiece(x, y, piece);
+            newBoard.burnSquare(move.getBurnedSquare().getX(), move.getBurnedSquare().getY());
+
+            // removing amazon from original square
+            if(newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).getAmazon() != null){
+                newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
+            }
+
+            newBoard.printBoard();
+
+            System.out.println(move.toString());
+        }
+
+        return gameValue;
+
+        // TODO -Deal with case where board can be split into partitions after
+        /*
         ArrayList<Board> partitions = this.split();
 
         // game isn't split into subgames
         if(partitions.size() == 1){
-
 
         } else {
 
@@ -463,6 +523,7 @@ public class Board {
             }
 
         }
+        */
     }
 
 
@@ -582,6 +643,8 @@ public class Board {
         }
     }
 
+    // Gets all valid squares that can be shot at from the startSquare
+    // If passed a non-null oldSquare, we also add this square even if its not empty
     public ArrayList<Square> getValidSquares(Square startSquare){
 
         ArrayList<Square> validSquares = new ArrayList<Square>();
