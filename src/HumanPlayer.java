@@ -44,12 +44,12 @@ public class HumanPlayer extends Player implements Serializable {
             return false;
         }
 
-        if(!board.getValidSquares(move.getStartPosition(), null).contains(move.getEndPosition())){
+        if(!board.getValidSquares(move.getStartPosition(), -1, -1).contains(move.getEndPosition())){
             System.out.println("Amazon end location co-ordinates are invalid");
             return false;
         }
 
-        if(!board.getValidSquares(move.getEndPosition(), move.getPiece()).contains(move.getBurnedSquare())){
+        if(!board.getValidSquares(move.getEndPosition(), move.getPiece().getPosition().getX(), move.getPiece().getPosition().getY()).contains(move.getBurnedSquare())){
             System.out.println("Amazons arrow location co-ordinates are invalid");
             return false;
         }

@@ -439,8 +439,6 @@ public class BoardTests {
             System.out.println(move.toString());
         }
 
-
-
     }
 
 

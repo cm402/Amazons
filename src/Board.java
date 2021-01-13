@@ -484,8 +484,10 @@ public class Board {
 
             Board newBoard = this.newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1);
 
+            // storing the piece we will move, on the new board
             Piece oldPiece = move.getPiece();
             Piece newPiece = newBoard.getSquare(oldPiece.getPosition().getX(), oldPiece.getPosition().getY()).getAmazon();
+
             int x = move.getEndPosition().getX();
             int y = move.getEndPosition().getY();
 
@@ -499,15 +501,41 @@ public class Board {
             }
 
             boards.add(newBoard);
-
-            //newBoard.printBoard();
-            //System.out.println(move.toString());
         }
 
         return boards;
 
     }
 
+    public GameValue recursion(Board board){
+
+        ArrayList<Board> blackMoves = board.getAllPossibleBoards(false);
+        ArrayList<Board> whiteMoves = board.getAllPossibleBoards(true);
+
+        ArrayList<GameValue> left = new ArrayList<>();
+        ArrayList<GameValue> right = new ArrayList<>();
+
+        for(Board move: blackMoves){
+
+            GameValue leftGame = recursion(move);
+            left.add(leftGame);
+        }
+
+        for(Board move: whiteMoves){
+
+            GameValue rightGame = recursion(move);
+            right.add(rightGame);
+        }
+
+        GameValue gameValue = new GameValue();
+        gameValue.left = left;
+        gameValue.right = right;
+
+        return gameValue;
+
+    }
+
+    // Returns a GameValue for the current Board
     public GameValue evaluate(){
 
         // 1. Get the pieces information from the board and assign them to Player objects- Done
@@ -515,24 +543,11 @@ public class Board {
         // 3. Create a GameValue object for the board, where the left value is all blacks possible moves
         // and the right value is all whites possible moves
 
-        GameValue gameValue = new GameValue();
-
-        ArrayList<Board> blackMoves = this.getAllPossibleBoards(false);
-        ArrayList<Board> whiteMoves = this.getAllPossibleBoards(true);
-
-        for(Board board: blackMoves){
-
-            board.printBoard();
-        }
-
-        for(Board board: whiteMoves){
-
-            board.printBoard();
-        }
+        GameValue gameValue = recursion(this);
 
         return gameValue;
 
-        // TODO -Deal with case where board can be split into partitions after
+        // TODO - Deal with case where board can be split into partitions after
         /*
         ArrayList<Board> partitions = this.split();
 
@@ -671,7 +686,7 @@ public class Board {
 
     // Gets all valid squares that can be shot at from the startSquare
     // If passed a non-null oldSquare, we also add this square even if its not empty
-    public ArrayList<Square> getValidSquares(Square startSquare, Piece skipSquare){
+    public ArrayList<Square> getValidSquares(Square startSquare, int skipX, int skipY){
 
         ArrayList<Square> validSquares = new ArrayList<Square>();
 
@@ -682,7 +697,7 @@ public class Board {
         for(int x = startX - 1; x >= 0; x--) {
 
             // checking left
-            if (isSquareEmpty(squares[x][startY]) || squares[x][startY].getAmazon().equals(skipSquare)) {
+            if (isSquareEmpty(squares[x][startY]) || x == skipX && startY == skipY) {
                 validSquares.add(squares[x][startY]);
             } else {
                 break;
@@ -692,7 +707,7 @@ public class Board {
         for(int x = startX + 1; x < columnBoardSize; x++) {
 
             // checking right
-            if (isSquareEmpty(squares[x][startY]) || squares[x][startY].getAmazon().equals(skipSquare)) {
+            if (isSquareEmpty(squares[x][startY]) || x == skipX && startY == skipY) {
                 validSquares.add(squares[x][startY]);
             } else {
                 break;
@@ -701,7 +716,7 @@ public class Board {
 
         for (int y = startY + 1; y < rowBoardSize; y++) {
             // checking up
-            if(isSquareEmpty(squares[startX][y]) || squares[startX][y].getAmazon().equals(skipSquare)){
+            if(isSquareEmpty(squares[startX][y]) || startX == skipX && y == skipY){
                 validSquares.add(squares[startX][y]);
             } else {
                 break;
@@ -711,7 +726,7 @@ public class Board {
 
         for(int y = startY - 1; y >= 0; y--) {
             // checking down
-            if(isSquareEmpty(squares[startX][y]) || squares[startX][y].getAmazon().equals(skipSquare)){
+            if(isSquareEmpty(squares[startX][y]) || startX == skipX && y == skipY){
                 validSquares.add(squares[startX][y]);
             } else {
                 break;
@@ -725,7 +740,7 @@ public class Board {
 
                 if (Math.abs(startX - x) == Math.abs(startY - y)) {
                     // checking left/up
-                    if (isSquareEmpty(squares[x][y]) || squares[x][y].getAmazon().equals(skipSquare)) {
+                    if (isSquareEmpty(squares[x][y]) || x == skipX && y == skipY) {
                         validSquares.add(squares[x][y]);
                     } else {
                         break outerloop;
@@ -740,7 +755,7 @@ public class Board {
 
                 if (Math.abs(startX - x) == Math.abs(startY - y)) {
                     // checking left/down
-                    if (isSquareEmpty(squares[x][y]) || squares[x][y].getAmazon().equals(skipSquare)) {
+                    if (isSquareEmpty(squares[x][y]) || x == skipX && y == skipY) {
                         validSquares.add(squares[x][y]);
                     } else {
                         break outerloop;
@@ -756,7 +771,7 @@ public class Board {
                 if (Math.abs(startX - x) == Math.abs(startY - y)) {
 
                     // checking right/up
-                    if (isSquareEmpty(squares[x][y]) || squares[x][y].getAmazon().equals(skipSquare)) {
+                    if (isSquareEmpty(squares[x][y]) || x == skipX && y == skipY) {
                         validSquares.add(squares[x][y]);
                     } else {
                         break outerloop;
@@ -772,7 +787,7 @@ public class Board {
 
                 if(Math.abs(startX - x) == Math.abs(startY - y)) {
                     // checking right/down
-                    if (isSquareEmpty(squares[x][y]) || squares[x][y].getAmazon().equals(skipSquare)) {
+                    if (isSquareEmpty(squares[x][y]) || x == skipX && y == skipY) {
                         validSquares.add(squares[x][y]);
                     } else {
                         break outerloop;
