@@ -36,16 +36,12 @@ public class Player implements Serializable {
         // looping through amazon pieces
         for(Piece piece: pieces){
 
-            ArrayList<Square> validSquares = board.getValidSquares(piece.getPosition());
+            ArrayList<Square> validSquares = board.getValidSquares(piece.getPosition(), null);
 
             // looping through the squares they can move to
             for(Square endSquare: validSquares){
 
-                ArrayList<Square> validShotSquares = board.getValidSquares(endSquare);
-
-                // can shoot back to the square where the amazon came from, but saved in
-                // board as having the piece so must add manually
-                validShotSquares.add(piece.getPosition());
+                ArrayList<Square> validShotSquares = board.getValidSquares(endSquare, piece);
 
                 // looping through the squares they can then shoot at
                 for(Square validShotSquare: validShotSquares){
