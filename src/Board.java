@@ -469,29 +469,28 @@ public class Board {
 
     }
 
-    public GameValue evaluate(){
+    // Returns an ArrayList of all possible boards after a move for one colour
+    // true = white pieces
+    // false = black pieces
+    public ArrayList<Board> getAllPossibleBoards(boolean white){
 
-        // 1. Get the pieces information from the board and assign them to Player objects
-        // 2. Find all possible moves for both black and white players
-        // 3. Create a GameValue object for the board, where the left value is all blacks possible moves
-        // and the right value is all whites possible moves
-
-        GameValue gameValue = new GameValue();
+        ArrayList<Board> boards = new ArrayList<>();
 
         // create an AI player who uses black pieces, to see blacks valid moves
-        AIPlayer player = new AIPlayer(true);
-        player.addPieces(this.getPieces(true));
+        AIPlayer player = new AIPlayer(white);
+        player.addPieces(this.getPieces(white));
 
         for(Move move: player.getValidMoves(this)){
 
             Board newBoard = this.newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1);
 
-            Piece piece = move.getPiece();
+            Piece oldPiece = move.getPiece();
+            Piece newPiece = newBoard.getSquare(oldPiece.getPosition().getX(), oldPiece.getPosition().getY()).getAmazon();
             int x = move.getEndPosition().getX();
             int y = move.getEndPosition().getY();
 
             // moving piece to new square and burning square that is shot at
-            newBoard.setSquarePiece(x, y, piece);
+            newBoard.setSquarePiece(x, y, newPiece);
             newBoard.burnSquare(move.getBurnedSquare().getX(), move.getBurnedSquare().getY());
 
             // removing amazon from original square
@@ -499,9 +498,36 @@ public class Board {
                 newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
             }
 
-            newBoard.printBoard();
+            boards.add(newBoard);
 
-            System.out.println(move.toString());
+            //newBoard.printBoard();
+            //System.out.println(move.toString());
+        }
+
+        return boards;
+
+    }
+
+    public GameValue evaluate(){
+
+        // 1. Get the pieces information from the board and assign them to Player objects- Done
+        // 2. Find all possible moves for both black and white players- Done
+        // 3. Create a GameValue object for the board, where the left value is all blacks possible moves
+        // and the right value is all whites possible moves
+
+        GameValue gameValue = new GameValue();
+
+        ArrayList<Board> blackMoves = this.getAllPossibleBoards(false);
+        ArrayList<Board> whiteMoves = this.getAllPossibleBoards(true);
+
+        for(Board board: blackMoves){
+
+            board.printBoard();
+        }
+
+        for(Board board: whiteMoves){
+
+            board.printBoard();
         }
 
         return gameValue;
