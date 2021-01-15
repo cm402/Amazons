@@ -69,11 +69,21 @@ public class GameValue {
 
     }
 
-    public boolean lessThan(GameValue x, GameValue y){
+    // Given 2 GameValue Objects, X & Y, returns true if X <= Y
+    // Definition from winning ways book:
+    // X <= Y unless some Y <= XL or some YR <= X
+    public boolean lessThanOrEqualTo(GameValue x, GameValue y){
 
         for(GameValue xleft: x.left){
 
-            if(lessThan(y, xleft)){
+            if(lessThanOrEqualTo(y, xleft)){
+                return false;
+            }
+        }
+
+        for(GameValue yRight: y.right){
+
+            if(lessThanOrEqualTo(yRight, x)){
                 return false;
             }
         }
@@ -81,12 +91,35 @@ public class GameValue {
         return true;
     }
 
+    // Definition from winning ways book:
+    // X + Y = { XL + Y, X + YL | XR + Y, X + YR }
     public GameValue plus(GameValue x, GameValue y){
 
-        // x.left + y.left
+        GameValue gameValue = new GameValue();
 
-        GameValue newLeft = new GameValue();
+        ArrayList<GameValue> newLeft = new ArrayList<>();
 
-        return x;
+        for(GameValue xl: x.left){
+            newLeft.add(plus(xl, y));
+        }
+
+        for(GameValue yl: y.left){
+            newLeft.add(plus(x, yl));
+        }
+
+        ArrayList<GameValue> newRight = new ArrayList<>();
+
+        for(GameValue xr: x.right){
+            newLeft.add(plus(xr, y));
+        }
+
+        for(GameValue yr: y.right){
+            newLeft.add(plus(x, yr));
+        }
+
+        gameValue.left = newLeft;
+        gameValue.right = newRight;
+
+        return gameValue;
     }
 }

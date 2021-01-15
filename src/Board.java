@@ -543,28 +543,31 @@ public class Board {
         // 3. Create a GameValue object for the board, where the left value is all blacks possible moves
         // and the right value is all whites possible moves
 
-        GameValue gameValue = recursion(this);
-
-        return gameValue;
-
-        // TODO - Deal with case where board can be split into partitions after
-        /*
         ArrayList<Board> partitions = this.split();
 
         // game isn't split into subgames
         if(partitions.size() == 1){
 
+            GameValue gameValue = recursion(this);
+
+            return gameValue;
+
         } else {
 
+            ArrayList<GameValue> gameValues = new ArrayList<>();
 
             for(Board partition: partitions){
 
-                // evaluate sub games
+                gameValues.add(recursion(partition));
 
             }
 
+
+            return gameValues.get(0); // TODO- change this to return the arraylist
+            // now we have an ArrayList of gameValues, one for each partition
+
         }
-        */
+
     }
 
 
