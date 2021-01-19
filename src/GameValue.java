@@ -95,16 +95,16 @@ public class GameValue {
     // Given a GameValue object, describes which player has a winning strategy
     // Can be "Left", "Right", "First" or "Second"
 
-    public String getOutcomeClass(GameValue x){
+    public String getOutcomeClass(){
 
         // 0 = { : }
         GameValue zero = new GameValue();
 
-        if(lessThanOrEqualTo(x, zero)){
+        if(lessThanOrEqualTo(this, zero)){
 
             // x <= 0 and 0 <= 0 only true when x = 0
             // This is a zero position
-            if(lessThanOrEqualTo(zero, x)){
+            if(lessThanOrEqualTo(zero, this)){
 
                 return "Second";
 
@@ -115,11 +115,10 @@ public class GameValue {
             }
         }
 
-
-        if(lessThanOrEqualTo(zero, x)){
+        if(lessThanOrEqualTo(zero, this)){
 
             // meaning x > 0, this is a positive game
-            if (!lessThanOrEqualTo(x, zero)) {
+            if (!lessThanOrEqualTo(this, zero)) { // is this needed?
 
                 return "Left";
             }
@@ -129,6 +128,32 @@ public class GameValue {
         // Meaning we can't specify a clear winner
         // and so the first player can always win
         return "First";
+    }
+
+    // Compares 2 GameValue objects to see which is better for left
+    public String compare(GameValue x, GameValue y){
+
+        if(lessThanOrEqualTo(x, y)){
+
+            // x and y are equally favourable for left
+            if(lessThanOrEqualTo(y, x)){
+                return "Equal";
+
+            // x is worse than y for left
+            } else {
+                return "y";
+            }
+        }
+
+        if(lessThanOrEqualTo(y, x)){
+
+            // x is better than y for left
+            if(!lessThanOrEqualTo(x, y)){ // is this check needed?
+                return "x";
+            }
+        }
+
+        return "Fuzzy";
 
     }
 

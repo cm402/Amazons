@@ -388,6 +388,93 @@ public class BoardTests {
         System.out.println(gameValue.toString());
     }
 
+    public void testOutcomeClassFuzzy(){
 
+        Board board1 = new Board(3, 1);
+        board1.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(0,0));
+        board1.addPiece(0, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(2,0));
+        board1.addPiece(2, 0, whitePieces.get(0));
+
+        board1.printBoard();
+
+        GameValue gameValue = board1.evaluate();
+        System.out.println(gameValue.getOutcomeClass());
+        // The outcome of this should be "First"
+
+    }
+
+    public void testOutcomeClassPositive(){
+
+        Board board1 = new Board(3, 1);
+        board1.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(1,0));
+        board1.addPiece(1, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(2,0));
+        board1.addPiece(2, 0, whitePieces.get(0));
+
+        board1.printBoard();
+
+        GameValue gameValue = board1.evaluate();
+        System.out.println(gameValue.getOutcomeClass());
+        // The outcome of this should be "Left"
+    }
+
+    public void testOutcomeClassNegative(){
+
+        Board board1 = new Board(3, 1);
+        board1.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(0,0));
+        board1.addPiece(0, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(1,0));
+        board1.addPiece(1, 0, whitePieces.get(0));
+
+        board1.printBoard();
+
+        GameValue gameValue = board1.evaluate();
+        System.out.println(gameValue.getOutcomeClass());
+        // The outcome of this should be "Right"
+    }
+
+    public void testOutcomeClassZero(){
+
+        Board board1 = new Board(4, 1);
+        board1.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(1,0));
+        board1.addPiece(1, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(2,0));
+        board1.addPiece(2, 0, whitePieces.get(0));
+
+        board1.printBoard();
+
+        GameValue gameValue = board1.evaluate();
+        System.out.println(gameValue.getOutcomeClass());
+        // The outcome of this should be "Second"
+    }
 
 }
