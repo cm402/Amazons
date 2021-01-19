@@ -71,7 +71,8 @@ public class GameValue {
 
     // Given 2 GameValue Objects, X & Y, returns true if X <= Y
     // Definition from winning ways book:
-    // X <= Y unless some Y <= XL or some YR <= X
+    // G >= H means that G + (-H) >= 0
+    // or X <= Y unless some Y <= XL or some YR <= X
     public boolean lessThanOrEqualTo(GameValue x, GameValue y){
 
         for(GameValue xleft: x.left){
@@ -89,6 +90,46 @@ public class GameValue {
         }
 
         return true;
+    }
+
+    // Given a GameValue object, describes which player has a winning strategy
+    // Can be "Left", "Right", "First" or "Second"
+
+    public String getOutcomeClass(GameValue x){
+
+        // 0 = { : }
+        GameValue zero = new GameValue();
+
+        if(lessThanOrEqualTo(x, zero)){
+
+            // x <= 0 and 0 <= 0 only true when x = 0
+            // This is a zero position
+            if(lessThanOrEqualTo(zero, x)){
+
+                return "Second";
+
+            // meaning x < 0, game is negative
+            } else {
+
+                return "Right";
+            }
+        }
+
+
+        if(lessThanOrEqualTo(zero, x)){
+
+            // meaning x > 0, this is a positive game
+            if (!lessThanOrEqualTo(x, zero)) {
+
+                return "Left";
+            }
+        }
+
+        // x || 0 means the position is fuzzy
+        // Meaning we can't specify a clear winner
+        // and so the first player can always win
+        return "First";
+
     }
 
     // Definition from winning ways book:
