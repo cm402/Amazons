@@ -131,6 +131,7 @@ public class GameValue {
     }
 
     // Compares 2 GameValue objects to see which is better for left
+    // X > Y
     public String compare(GameValue x, GameValue y){
 
         if(lessThanOrEqualTo(x, y)){
@@ -154,6 +155,62 @@ public class GameValue {
         }
 
         return "Fuzzy";
+
+    }
+
+    // Given an ArrayList of GameValues, find the one that dominates the most
+    // of the other GameValue objects
+    public GameValue findMax(ArrayList<GameValue> games, String side){
+
+        GameValue max = games.get(0);
+
+        if(side.equals("left")){
+
+            for(GameValue game: games){
+                if(compare(game, max).equals("x")){
+                    max = game;
+                }
+
+            }
+
+        } else {
+
+            for(GameValue game: games){
+                if(compare(game, max).equals("y")){
+                    max = game;
+                }
+
+            }
+        }
+
+        return max;
+
+    }
+
+    // Removes the GameValue objects that are dominated by others
+    // { A, B, C : D, E, F }
+    // if A > B > C, remove B & C
+    public void simplify(){
+
+        GameValue maxLeft = findMax(this.left, "left");
+
+        // G > H means G is better for left, so remove H
+        for(GameValue leftGame: this.left){
+
+            if(compare(maxLeft, leftGame).equals("x")){
+                this.left.remove(leftGame);
+            }
+        }
+
+        GameValue maxRight = findMax(this.right, "right");
+
+        for(GameValue rightGame: this.right){
+
+            if(compare(maxRight, rightGame).equals("y")){
+                this.right.remove(rightGame);
+            }
+
+        }
 
     }
 

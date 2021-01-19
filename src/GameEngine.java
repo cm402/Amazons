@@ -216,10 +216,7 @@ public class GameEngine {
         */
 
        BoardTests boardTests = new BoardTests();
-       boardTests.testOutcomeClassFuzzy();
-       boardTests.testOutcomeClassPositive();
-       boardTests.testOutcomeClassNegative();
-       boardTests.testOutcomeClassZero();
+       boardTests.testEvalutate2();
 
 
     }
