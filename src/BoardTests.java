@@ -385,7 +385,8 @@ public class BoardTests {
         board.printBoard();
 
         GameValue gameValue = board.evaluate();
-        //gameValue.simplify();
+        System.out.println(gameValue.toString());
+        gameValue.simplify();
         System.out.println(gameValue.toString());
     }
 

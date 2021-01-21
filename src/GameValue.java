@@ -5,11 +5,13 @@ public class GameValue {
 
     ArrayList<GameValue> left;
     ArrayList<GameValue> right;
+    boolean simplified;
 
     public GameValue(){
 
         this.left = new ArrayList<>();
         this.right = new ArrayList<>();
+        simplified = false;
     }
 
     // returns maximum depth of possible moves for a given side
@@ -56,13 +58,13 @@ public class GameValue {
         if(left.isEmpty() && right.isEmpty()){
             return "0";
         } else if(left.isEmpty()){
-
             int max = maxDepth("right", this);
             return "-" + Integer.toString(max);
         } else if(right.isEmpty()){
-
             int max = maxDepth("left", this);
             return Integer.toString(max);
+        } else if(left.toString().equals("[0]") && right.toString().equals("[0]")){
+            return "*";
         } else {
             return "{" + this.left.toString() + " | " + this.right.toString() + "}";
         }
@@ -162,6 +164,10 @@ public class GameValue {
     // of the other GameValue objects
     public GameValue findMax(ArrayList<GameValue> games, String side){
 
+        if(games.isEmpty()){
+            return null;
+        }
+
         GameValue max = games.get(0);
 
         if(side.equals("left")){
@@ -192,25 +198,62 @@ public class GameValue {
     // if A > B > C, remove B & C
     public void simplify(){
 
+        // if "this" already simplified, we just return
+        if(this.simplified){
+            return;
+        }
+
         GameValue maxLeft = findMax(this.left, "left");
+        ArrayList<GameValue> toRemove = new ArrayList<GameValue>();
 
-        // G > H means G is better for left, so remove H
-        for(GameValue leftGame: this.left){
+        if(maxLeft != null){
 
-            if(compare(maxLeft, leftGame).equals("x")){
-                this.left.remove(leftGame);
+            // G > H means G is better for left, so remove H
+            for(GameValue leftGame: this.left){
+
+                if(compare(maxLeft, leftGame).equals("x")){
+                    //this.left.remove(leftGame);
+                    toRemove.add(leftGame);
+                }
+            }
+
+            for(GameValue remove: toRemove){
+                this.left.remove(remove);
             }
         }
+
+        toRemove.clear();
 
         GameValue maxRight = findMax(this.right, "right");
 
-        for(GameValue rightGame: this.right){
+        if(maxRight != null){
 
-            if(compare(maxRight, rightGame).equals("y")){
-                this.right.remove(rightGame);
+            for(GameValue rightGame: this.right){
+
+                if(compare(maxRight, rightGame).equals("y")){
+                    //this.right.remove(rightGame);
+                    toRemove.add(rightGame);
+                }
+
+            }
+
+            for(GameValue remove: toRemove) {
+                this.right.remove(remove);
             }
 
         }
+
+
+        this.simplified = true;
+
+        for(GameValue leftGame: this.left){
+            leftGame.simplify();
+        }
+
+        for(GameValue rightGame: this.right){
+            rightGame.simplify();
+        }
+
 
     }
 
