@@ -304,7 +304,7 @@ public class Board {
                     board.getSquare(x, y).setX(componentCounter);
 
                     // get list of adjacent squares that are also unburnt
-                    ArrayList<Square> unburntAdjacentSquares = getAdjacentUnburntSquares(board, square);
+                    ArrayList<Square> unburntAdjacentSquares = getSurroundingUnBurntSquares(board, square);
 
                     for(Square adjacentSquare: unburntAdjacentSquares){
 
@@ -321,7 +321,7 @@ public class Board {
     }
 
     // returns an ArrayList of the squares that are surrounding the current square, and aren't burnt
-    private ArrayList<Square> getAdjacentUnburntSquares(Board board, Square originalSquare){
+    private ArrayList<Square> getSurroundingUnBurntSquares(Board board, Square originalSquare){
 
         ArrayList<Square> unburntSquares = new ArrayList<Square>();
 
@@ -337,6 +337,14 @@ public class Board {
                     squares.add(board.getSquare(x - 1, y));
                     squares.add(board.getSquare(x, y + 1));
                     squares.add(board.getSquare(x, y - 1));
+
+                    // diagonals also count
+                    squares.add(board.getSquare(x - 1, y - 1));
+                    squares.add(board.getSquare(x - 1, y + 1));
+                    squares.add(board.getSquare(x + 1, y - 1));
+                    squares.add(board.getSquare(x + 1, y + 1));
+
+
 
                     for(Square square: squares){
 
@@ -617,9 +625,8 @@ public class Board {
         ArrayList<Board> partitions = this.split();
 
 
-        return newRecursion(this);
+        //return newRecursion(this);
 
-        /* TODO- Fix issue where split() splits into partitions when it shouldn't
         // game isn't split into subgames
         if(partitions.size() == 1){
 
@@ -637,12 +644,25 @@ public class Board {
 
             }
 
-            return gameValues.get(0); // TODO- change this so that it adds all the GameValues together
+            GameValue gameValueTotal = new GameValue();
+            gameValueTotal = gameValueTotal.plus(gameValues.get(0), gameValues.get(1));
+
+            // if more than 2 partitions to add together
+            if(gameValues.size() > 2){
+
+                for(int i = 2; i < gameValues.size(); i++){
+
+                    gameValueTotal = gameValueTotal.plus(gameValueTotal, gameValues.get(i));
+
+                }
+
+            }
+
+            return gameValueTotal;
+            //return gameValues.get(0);
             // now we have an ArrayList of gameValues, one for each partition
 
         }
-        */
-
 
     }
 
