@@ -95,7 +95,7 @@ public class GameEngine {
         }
     }
 
-    private void startGame(Board board, ArrayList<Move> movesPlayed, Player currentPlayer, ArrayList<Player> players){
+    public void startGame(Board board, ArrayList<Move> movesPlayed, Player currentPlayer, ArrayList<Player> players){
 
         while(true){
 
@@ -216,7 +216,9 @@ public class GameEngine {
         */
 
        BoardTests boardTests = new BoardTests();
-       boardTests.testEvalutate2();
+       boardTests.testBasicAIGameWhiteFirst();
+       //boardTests.testBasicAIGameBlackFirst();
+
 
 
     }

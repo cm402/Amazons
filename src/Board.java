@@ -616,6 +616,10 @@ public class Board {
 
         ArrayList<Board> partitions = this.split();
 
+
+        return newRecursion(this);
+
+        /* TODO- Fix issue where split() splits into partitions when it shouldn't
         // game isn't split into subgames
         if(partitions.size() == 1){
 
@@ -632,11 +636,13 @@ public class Board {
                 gameValues.add(newRecursion(partition));
 
             }
-            
+
             return gameValues.get(0); // TODO- change this so that it adds all the GameValues together
             // now we have an ArrayList of gameValues, one for each partition
 
         }
+        */
+
 
     }
 

@@ -390,6 +390,31 @@ public class BoardTests {
         System.out.println(gameValue.toString());
     }
 
+    public void testEvalutate3(){
+
+        Board board = new Board(3, 3);
+        board.setupBoard();
+
+        // adding the piece to the board correctly so that we can look at valid moves
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        GameValue gameValue = board.evaluate();
+        System.out.println(gameValue.toString());
+        gameValue.simplify();
+        System.out.println(gameValue.toString());
+    }
+
     public void testOutcomeClassFuzzy(){
 
         Board board1 = new Board(3, 1);
@@ -477,6 +502,62 @@ public class BoardTests {
         GameValue gameValue = board1.evaluate();
         System.out.println(gameValue.getOutcomeClass());
         // The outcome of this should be "Second"
+    }
+
+    public void testBasicAIGameWhiteFirst(){
+
+        ArrayList<Player> players = engine.setupPlayers(0);
+        ArrayList<Move> movesPlayed = new ArrayList<>();
+        Player currentPlayer = players.get(0);
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        players.get(0).addPieces(whitePieces);
+        players.get(1).addPieces(blackPieces);
+
+        board.printBoard();
+
+        engine.startGame(board, movesPlayed, currentPlayer, players);
+
+    }
+
+    public void testBasicAIGameBlackFirst(){
+
+        ArrayList<Player> players = engine.setupPlayers(0);
+        ArrayList<Move> movesPlayed = new ArrayList<>();
+        Player currentPlayer = players.get(1);
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        players.get(0).addPieces(whitePieces);
+        players.get(1).addPieces(blackPieces);
+
+        board.printBoard();
+
+        engine.startGame(board, movesPlayed, currentPlayer, players);
+
     }
 
 }
