@@ -5,12 +5,22 @@ public class GameValue {
 
     ArrayList<GameValue> left;
     ArrayList<GameValue> right;
+    Move move;
     boolean simplified;
 
     public GameValue(){
 
         this.left = new ArrayList<>();
         this.right = new ArrayList<>();
+        this.move = null;
+        simplified = false;
+    }
+
+    public GameValue(Move move){
+
+        this.left = new ArrayList<>();
+        this.right = new ArrayList<>();
+        this.move = move;
         simplified = false;
     }
 

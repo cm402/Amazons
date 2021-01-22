@@ -469,6 +469,7 @@ public class Board {
 
     }
 
+    /*
     // Returns an ArrayList of all possible boards after a move for one colour
     // true = white pieces
     // false = black pieces
@@ -534,6 +535,76 @@ public class Board {
         return gameValue;
 
     }
+    */
+
+    // Returns an ArrayList of all possible moves for one colour
+    // true = white pieces
+    // false = black pieces
+    public ArrayList<Move> getAllPossibleMoves(boolean white) {
+
+        // create an AI player who uses one colours pieces
+        AIPlayer player = new AIPlayer(white);
+        player.addPieces(this.getPieces(white));
+
+        return player.getValidMoves(this);
+
+    }
+
+    // Given a board and a move, returns a new board, with the move played
+    public Board playMove(Board board, Move move){
+
+        Board newBoard = this.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
+
+        // storing the piece we will move, on the new board
+        Piece oldPiece = move.getPiece();
+        Piece newPiece = newBoard.getSquare(oldPiece.getPosition().getX(), oldPiece.getPosition().getY()).getAmazon();
+
+        int x = move.getEndPosition().getX();
+        int y = move.getEndPosition().getY();
+
+        // moving piece to new square and burning square that is shot at
+        newBoard.setSquarePiece(x, y, newPiece);
+        newBoard.burnSquare(move.getBurnedSquare().getX(), move.getBurnedSquare().getY());
+
+        // removing amazon from original square
+        if(newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).getAmazon() != null){
+            newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
+        }
+
+        return newBoard;
+    }
+
+    public GameValue newRecursion(Board board){
+
+        ArrayList<Move> blackMoves = board.getAllPossibleMoves(false);
+        ArrayList<Move> whiteMoves = board.getAllPossibleMoves(true);
+
+        ArrayList<GameValue> left = new ArrayList<>();
+        ArrayList<GameValue> right = new ArrayList<>();
+
+        for(Move move: blackMoves){
+
+            Board newBoard = playMove(board, move);
+            GameValue leftGame = newRecursion(newBoard);
+            leftGame.move = move;
+            left.add(leftGame);
+        }
+
+        for(Move move: whiteMoves){
+
+            Board newBoard = playMove(board, move);
+            GameValue rightGame = newRecursion(newBoard);
+            rightGame.move = move;
+            right.add(rightGame);
+        }
+
+        GameValue gameValue = new GameValue();
+        gameValue.left = left;
+        gameValue.right = right;
+
+        return gameValue;
+
+    }
 
     // Returns a GameValue for the current Board
     public GameValue evaluate(){
@@ -548,7 +619,7 @@ public class Board {
         // game isn't split into subgames
         if(partitions.size() == 1){
 
-            GameValue gameValue = recursion(this);
+            GameValue gameValue = newRecursion(this);
 
             return gameValue;
 
@@ -558,12 +629,11 @@ public class Board {
 
             for(Board partition: partitions){
 
-                gameValues.add(recursion(partition));
+                gameValues.add(newRecursion(partition));
 
             }
-
-
-            return gameValues.get(0); // TODO- change this to return the arraylist
+            
+            return gameValues.get(0); // TODO- change this so that it adds all the GameValues together
             // now we have an ArrayList of gameValues, one for each partition
 
         }
