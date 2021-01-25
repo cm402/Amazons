@@ -24,6 +24,19 @@ public class GameValue {
         simplified = false;
     }
 
+    // checking if a GameValue object is already stored in a list of GameValue objects
+    public boolean isIn(ArrayList<GameValue> gameValues){
+
+        for(GameValue gameValue: gameValues){
+
+            if(gameValue.toString().equals(this.toString())){
+                return true;
+            }
+        }
+        return false;
+
+    }
+
     // returns maximum depth of possible moves for a given side
     // side false = left, true = right
     // algorithm adapted from: https://www.educative.io/edpresso/finding-the-maximum-depth-of-a-binary-tree
@@ -66,17 +79,27 @@ public class GameValue {
     public String toString(){
 
         if(left.isEmpty() && right.isEmpty()){
+
             return "0";
+
         } else if(left.isEmpty()){
+
             int max = maxDepth("right", this);
             return "-" + Integer.toString(max);
+
         } else if(right.isEmpty()){
+
             int max = maxDepth("left", this);
             return Integer.toString(max);
+
         } else if(left.toString().equals("[0]") && right.toString().equals("[0]")){
+
             return "*";
+
         } else {
-            return "{" + this.left.toString() + " | " + this.right.toString() + "}";
+
+            return "<" + this.left.toString().replace("[", " ").replace("]", " ")
+                    + " | " + this.right.toString().replace("[", " ").replace("]", " ") + ">";
         }
 
     }

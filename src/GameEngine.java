@@ -216,7 +216,8 @@ public class GameEngine {
         */
 
        BoardTests boardTests = new BoardTests();
-       boardTests.testBasicAIGameWhiteFirst();
+       boardTests.testEvalutate2();
+       //boardTests.testBasicAIGameWhiteFirst();
        //boardTests.testBasicAIGameBlackFirst();
 
 

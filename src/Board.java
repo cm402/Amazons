@@ -594,16 +594,27 @@ public class Board {
 
             Board newBoard = playMove(board, move);
             GameValue leftGame = newRecursion(newBoard);
-            leftGame.move = move;
-            left.add(leftGame);
+
+            // checking this isn't a duplicate
+            if(!leftGame.isIn(left)){
+
+                leftGame.move = move;
+                left.add(leftGame);
+            }
+
+
         }
 
         for(Move move: whiteMoves){
 
             Board newBoard = playMove(board, move);
             GameValue rightGame = newRecursion(newBoard);
-            rightGame.move = move;
-            right.add(rightGame);
+
+            if(!rightGame.isIn(right)){
+
+                rightGame.move = move;
+                right.add(rightGame);
+            }
         }
 
         GameValue gameValue = new GameValue();
@@ -614,20 +625,12 @@ public class Board {
 
     }
 
-    // Returns a GameValue for the current Board
+    // Returns a GameValue object for the current Board
     public GameValue evaluate(){
-
-        // 1. Get the pieces information from the board and assign them to Player objects- Done
-        // 2. Find all possible moves for both black and white players- Done
-        // 3. Create a GameValue object for the board, where the left value is all blacks possible moves
-        // and the right value is all whites possible moves
 
         ArrayList<Board> partitions = this.split();
 
-
-        //return newRecursion(this);
-
-        // game isn't split into subgames
+        // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
             GameValue gameValue = newRecursion(this);
@@ -659,9 +662,6 @@ public class Board {
             }
 
             return gameValueTotal;
-            //return gameValues.get(0);
-            // now we have an ArrayList of gameValues, one for each partition
-
         }
 
     }
