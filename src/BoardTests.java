@@ -560,4 +560,26 @@ public class BoardTests {
 
     }
 
+    public void testHashing(){
+
+        Board board = new Board(3, 4);
+        board.setupBoard();
+
+        // adding the piece to the board correctly so that we can look at valid moves
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        System.out.println(board.hashCode());
+
+
+    }
+
 }

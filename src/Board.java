@@ -1,5 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Board {
 
@@ -14,6 +16,55 @@ public class Board {
         this.columnBoardSize = columnBoardSize;
         this.rowBoardSize = rowBoardSize;
     }
+
+
+    @Override
+    public int hashCode() {
+
+        int result = 0;
+        int previousResult = 0;
+        int counter = 0;
+
+        while(true){
+
+            result = Objects.hash(columnBoardSize, rowBoardSize);
+            result = 31 * result + Arrays.deepHashCode(squares);
+
+            if(previousResult == 0 || result == previousResult){
+                counter++;
+            } else {
+                counter = 0;
+            }
+
+            if(counter == 3){
+
+                return result;
+            }
+        }
+    }
+
+
+    /*
+    // https://stackabuse.com/javas-object-methods-hashcode/
+    // https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html#hash-java.lang.Object...-
+    @Override
+    public int hashCode(){
+
+
+        int result = 1;
+
+        for(int x = 0; x < columnBoardSize; x++) {
+            for(int y = 0; y < rowBoardSize; y++){
+
+                if()
+            }
+
+        }
+
+        return Arrays.deepHashCode(squares);
+    }
+    */
+
 
     private boolean isColumnBurnt(Board board, int columnIndex) {
 
@@ -628,12 +679,18 @@ public class Board {
     // Returns a GameValue object for the current Board
     public GameValue evaluate(){
 
+
+
+        // TODO- before we evaluate a Board partition, we first check if its already stored
+
         ArrayList<Board> partitions = this.split();
 
         // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
             GameValue gameValue = newRecursion(this);
+
+            // TODO- store the GameValue
 
             return gameValue;
 
@@ -660,6 +717,8 @@ public class Board {
                 }
 
             }
+
+            // TODO- store the GameValue
 
             return gameValueTotal;
         }
