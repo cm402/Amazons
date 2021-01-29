@@ -111,11 +111,27 @@ public class GameValue {
                     return String.valueOf((leftValue + rightValue) / 2);
                 }
 
+                // < -1 | -1 > = -1*
+                if(leftValue == rightValue){
+                    return leftSide + "*";
+                }
+
+                // switch games, {x|y}, x & y are numbers and x >= y
+                // chapter 5 of winning ways
+                // both players keen to move first
+                // these are "hot" positions
+                if(leftValue >= rightValue){
+
+                    // < 1 | -1 > = ± 1
+                    if(leftValue == Math.abs(rightValue)){
+                        return "\u00B1" + leftSide;
+                    }
+
+                }
+
             }
 
-            // A special position where both left and right have a move that
-            // leaves an identical position which is a 2nd player win
-            // Due to its identical nature, this position is cold, and is "zero" position
+            // Neither player has a winning move, so its a "zero" position
             if(leftSide.equals("*") && rightSide.equals("*")){
                 return "0";
             }
