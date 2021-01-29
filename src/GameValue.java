@@ -107,8 +107,8 @@ public class GameValue {
                     return "*";
                 }
 
-                if(leftValue == rightValue - 1){
-                    return String.valueOf(leftValue + 0.5);
+                if(isSimpleFraction(leftValue, rightValue)){
+                    return String.valueOf((leftValue + rightValue) / 2);
                 }
 
             }
@@ -136,6 +136,37 @@ public class GameValue {
             return false;
         }
         return true;
+    }
+
+    // < 0 | 1 > = 1/2
+    // < 0 | 1/2 > = 1/4
+    // < -1 3/4 | -1 1/2 > = -1 5/8
+    public static boolean isSimpleFraction(double left, double right){
+
+        // 1. Find the difference between the left and right values
+        // 2. If the difference is less than 1, then get the inverse, otherwise return false
+        // 3. If the inverse is a power of 2, then return true
+        // 4. Otherwise, return false
+
+        // shouldn't need to use the absolute value, in the cases above
+        double difference = Math.abs(right - left);
+
+        if(difference > 1){
+            return false;
+        }
+
+        double meanDifference = difference / 2;
+
+        // get inverse so we can manipulate the denominator more easily
+        double inverse = Math.pow(meanDifference, -1);
+
+        // use ceiling of value so it will always round up
+        int inverseInt = (int) Math.ceil(inverse);
+
+        // https://codereview.stackexchange.com/questions/172849/checking-if-a-number-is-power-of-2-or-not
+        // returns if a value is a positive power of 2
+        return inverseInt > 0 && ((inverseInt & (inverseInt - 1)) == 0);
+
     }
 
     // Given 2 GameValue Objects, X & Y, returns true if X <= Y

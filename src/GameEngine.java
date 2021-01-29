@@ -217,7 +217,7 @@ public class GameEngine {
 
        BoardTests boardTests = new BoardTests();
        boardTests.testEvalutate2();
-       //boardTests.testHashing();
+       //boardTests.testIsSimpleFraction();
 
 
 
