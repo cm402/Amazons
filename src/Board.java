@@ -21,7 +21,7 @@ public class Board {
     @Override
     public int hashCode() {
 
-        int result = 0;
+        int result;
         int previousResult = 0;
         int counter = 0;
 

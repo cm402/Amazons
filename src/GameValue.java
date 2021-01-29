@@ -92,16 +92,50 @@ public class GameValue {
             int max = maxDepth("left", this);
             return Integer.toString(max);
 
-        } else if(left.toString().equals("[0]") && right.toString().equals("[0]")){
-
-            return "*";
-
         } else {
+
+            String leftSide = left.toString().replace("[", "").replace("]", "");
+            String rightSide = right.toString().replace("[", "").replace("]", "");
+
+            // both sides are single, numerical values
+            if(isNumeric(leftSide) && isNumeric(rightSide)) {
+
+                double leftValue = Double.parseDouble(leftSide);
+                double rightValue = Double.parseDouble(rightSide);
+
+                if(leftValue == 0 && rightValue == 0){
+                    return "*";
+                }
+
+                if(leftValue == rightValue - 1){
+                    return String.valueOf(leftValue + 0.5);
+                }
+
+            }
+
+            // A special position where both left and right have a move that
+            // leaves an identical position which is a 2nd player win
+            // Due to its identical nature, this position is cold, and is "zero" position
+            if(leftSide.equals("*") && rightSide.equals("*")){
+                return "0";
+            }
 
             return "<" + this.left.toString().replace("[", " ").replace("]", " ")
                     + " | " + this.right.toString().replace("[", " ").replace("]", " ") + ">";
         }
 
+    }
+
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 
     // Given 2 GameValue Objects, X & Y, returns true if X <= Y

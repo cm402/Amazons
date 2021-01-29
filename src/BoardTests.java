@@ -562,7 +562,7 @@ public class BoardTests {
 
     public void testHashing(){
 
-        Board board = new Board(3, 4);
+        Board board = new Board(3, 2);
         board.setupBoard();
 
         // adding the piece to the board correctly so that we can look at valid moves
