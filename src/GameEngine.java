@@ -216,7 +216,9 @@ public class GameEngine {
         */
 
        BoardTests boardTests = new BoardTests();
-       boardTests.testEvalutate2();
+        boardTests.testSmallestHashValue();
+       //boardTests.testInvertBoard();
+       //boardTests.testEvalutate2();
        //boardTests.testIsSimpleFraction();
 
 

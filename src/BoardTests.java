@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -341,6 +343,7 @@ public class BoardTests {
 
     }
 
+    /*
     public void testEvalutate(){
 
         Board board = new Board(4, 1);
@@ -503,6 +506,7 @@ public class BoardTests {
         System.out.println(gameValue.getOutcomeClass());
         // The outcome of this should be "Second"
     }
+    */
 
     public void testBasicAIGameWhiteFirst(){
 
@@ -605,5 +609,78 @@ public class BoardTests {
 
         // true (-1 1/2)
         System.out.println(gameValue.isSimpleFraction(-2, -1));
+    }
+
+    public void testInvertBoard(){
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        // adding the piece to the board correctly so that we can look at valid moves
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        Board invertedBoard = board.invert();
+
+        invertedBoard.printBoard();
+
+    }
+
+    public void testSmallestHashValue(){
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        // adding the piece to the board correctly so that we can look at valid moves
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+        int hash = board.getSmallestHashValue();
+        System.out.println(hash);
+
+    }
+
+    public void testPartitionsDB(){
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        // adding the piece to the board correctly so that we can look at valid moves
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        //GameValue gameValue = board.evaluate();
+        //System.out.println(gameValue.toString());
+        //gameValue.simplify();
+
     }
 }

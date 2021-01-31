@@ -2,6 +2,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.HashMap;
 
 public class Board {
 
@@ -528,74 +529,6 @@ public class Board {
 
     }
 
-    /*
-    // Returns an ArrayList of all possible boards after a move for one colour
-    // true = white pieces
-    // false = black pieces
-    public ArrayList<Board> getAllPossibleBoards(boolean white){
-
-        ArrayList<Board> boards = new ArrayList<>();
-
-        // create an AI player who uses black pieces, to see blacks valid moves
-        AIPlayer player = new AIPlayer(white);
-        player.addPieces(this.getPieces(white));
-
-        for(Move move: player.getValidMoves(this)){
-
-            Board newBoard = this.newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1);
-
-            // storing the piece we will move, on the new board
-            Piece oldPiece = move.getPiece();
-            Piece newPiece = newBoard.getSquare(oldPiece.getPosition().getX(), oldPiece.getPosition().getY()).getAmazon();
-
-            int x = move.getEndPosition().getX();
-            int y = move.getEndPosition().getY();
-
-            // moving piece to new square and burning square that is shot at
-            newBoard.setSquarePiece(x, y, newPiece);
-            newBoard.burnSquare(move.getBurnedSquare().getX(), move.getBurnedSquare().getY());
-
-            // removing amazon from original square
-            if(newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).getAmazon() != null){
-                newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
-            }
-
-            boards.add(newBoard);
-        }
-
-        return boards;
-
-    }
-
-    public GameValue recursion(Board board){
-
-        ArrayList<Board> blackMoves = board.getAllPossibleBoards(false);
-        ArrayList<Board> whiteMoves = board.getAllPossibleBoards(true);
-
-        ArrayList<GameValue> left = new ArrayList<>();
-        ArrayList<GameValue> right = new ArrayList<>();
-
-        for(Board move: blackMoves){
-
-            GameValue leftGame = recursion(move);
-            left.add(leftGame);
-        }
-
-        for(Board move: whiteMoves){
-
-            GameValue rightGame = recursion(move);
-            right.add(rightGame);
-        }
-
-        GameValue gameValue = new GameValue();
-        gameValue.left = left;
-        gameValue.right = right;
-
-        return gameValue;
-
-    }
-    */
-
     // Returns an ArrayList of all possible moves for one colour
     // true = white pieces
     // false = black pieces
@@ -676,21 +609,107 @@ public class Board {
 
     }
 
+    // Inverts the board, by swapping the players pieces
+    public Board invert(){
+
+        Board invertedBoard = this.newBoard(this, 0, 0,
+                this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1);
+
+        for(int x = 0; x < this.getColumnBoardSize(); x++){
+            for(int y = 0; y < this.getRowBoardSize(); y++){
+
+                Piece piece = this.getSquare(x, y).getAmazon();
+
+                // if there is an amazon on the current square, swap its colour
+                if(piece != null){
+
+                    if(piece.isWhite()){
+                        invertedBoard.getSquare(x, y).setAmazon(new Piece(false));
+                    } else {
+                        invertedBoard.getSquare(x, y).setAmazon(new Piece(true));
+                    }
+
+                }
+            }
+        }
+
+        return invertedBoard;
+    }
+
+    // returns the smallest hash code value from all the variants of the current board
+    public Integer getSmallestHashValue(){
+
+        ArrayList<Board> variants = new ArrayList<>();
+
+        variants.add(this);
+        variants.add(this.flipHorizontal());
+        variants.add(this.flipVertical());
+        variants.add(this.rotate().rotate());
+
+        Board invertedBoard = this.invert();
+
+        variants.add(invertedBoard);
+        variants.add(invertedBoard.flipHorizontal());
+        variants.add(invertedBoard.flipVertical());
+        variants.add(invertedBoard.rotate().rotate());
+
+        // if board is a square, 8 more possible variants
+        if(this.getColumnBoardSize() == this.getRowBoardSize()){
+
+            variants.add(this.rotate());
+            variants.add(this.rotate().rotate().rotate());
+            variants.add(this.rotate().flipHorizontal());
+            variants.add(this.rotate().rotate().rotate().flipHorizontal());
+
+            variants.add(invertedBoard.rotate());
+            variants.add(invertedBoard.rotate().rotate().rotate());
+            variants.add(invertedBoard.rotate().flipHorizontal());
+            variants.add(invertedBoard.rotate().rotate().rotate().flipHorizontal());
+        }
+
+        Integer minValue = this.hashCode();
+
+        for(Board board: variants){
+
+            Integer hashValue = board.hashCode();
+
+            if(hashValue < minValue){
+                minValue = hashValue;
+            }
+        }
+
+        return minValue;
+    }
+
+    // returns the current boards GameValue object if stored in the partitions database, or null otherwise
+    public GameValue getGameValue(HashMap<Integer, GameValue> partitionsDB){
+
+        Integer hashValue = getSmallestHashValue();
+
+        // will either return gameValue object, or null
+        return partitionsDB.get(hashValue);
+
+    }
+
     // Returns a GameValue object for the current Board
-    public GameValue evaluate(){
+    public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
 
+        GameValue gameValue = getGameValue(partitionsDB);
 
-
-        // TODO- before we evaluate a Board partition, we first check if its already stored
+        // 1. Check if GameValue already stored in partitions DB
+        if(gameValue != null){
+            return gameValue;
+        }
 
         ArrayList<Board> partitions = this.split();
 
         // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
-            GameValue gameValue = newRecursion(this);
+            gameValue = newRecursion(this);
 
-            // TODO- store the GameValue
+            // storing the GameValue in the database, to save evaluating it next time
+            partitionsDB.put(this.getSmallestHashValue(), gameValue);
 
             return gameValue;
 
@@ -717,8 +736,7 @@ public class Board {
                 }
 
             }
-
-            // TODO- store the GameValue
+            partitionsDB.put(this.getSmallestHashValue(), gameValueTotal);
 
             return gameValueTotal;
         }

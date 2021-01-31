@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.*;
 
+// https://github.com/stleary/JSON-java
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 public class GameValue {
 
     ArrayList<GameValue> left;
@@ -22,6 +26,18 @@ public class GameValue {
         this.right = new ArrayList<>();
         this.move = move;
         simplified = false;
+    }
+
+    public void storeInDB(){
+
+        /*
+        Map<Integer, GameValue> partitionDB = new HashMap<>();
+        partitionDB.put(1234, this);
+        JSONObject jsonObject = new JSONObject(partitionDB);
+        */
+
+        JSONObject json = new JSONObject();
+        json.put("test", this);
     }
 
     public ArrayList<GameValue> findDuplicates(ArrayList<GameValue> gameValues){
@@ -151,9 +167,6 @@ public class GameValue {
                     if(leftValue == Math.abs(rightValue)){
                         return "\u00B1" + leftSide;
                     }
-
-                    
-
                 }
 
             }

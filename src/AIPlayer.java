@@ -16,7 +16,8 @@ public class AIPlayer extends Player implements Serializable {
 
     public Move getBetterMove(Board board){
 
-        GameValue gameValue = board.evaluate();
+        // TODO- change this so that the AIPlayer has its own partitions database hashmap object
+        GameValue gameValue = board.evaluate(null);
         gameValue.simplify();
 
         if(this.isWhite()){
