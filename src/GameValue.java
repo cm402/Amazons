@@ -24,6 +24,23 @@ public class GameValue {
         simplified = false;
     }
 
+    public ArrayList<GameValue> findDuplicates(ArrayList<GameValue> gameValues){
+
+        ArrayList<GameValue> duplicates = new ArrayList<GameValue>();
+
+        for(int i = 0; i < gameValues.size(); i++){
+            for(int j = i + 1; j < gameValues.size(); j++){
+
+                if(gameValues.get(i).toString().equals(gameValues.get(j).toString())){
+                    duplicates.add(gameValues.get(i));
+                }
+            }
+
+        }
+        return duplicates;
+
+    }
+
     // checking if a GameValue object is already stored in a list of GameValue objects
     public boolean isIn(ArrayList<GameValue> gameValues){
 
@@ -103,6 +120,7 @@ public class GameValue {
                 double leftValue = Double.parseDouble(leftSide);
                 double rightValue = Double.parseDouble(rightSide);
 
+                // < 0 | 0 > = *
                 if(leftValue == 0 && rightValue == 0){
                     return "*";
                 }
@@ -111,9 +129,16 @@ public class GameValue {
                     return String.valueOf((leftValue + rightValue) / 2);
                 }
 
-                // < -1 | -1 > = -1*
+                // < -n | -n > = -n*
                 if(leftValue == rightValue){
                     return leftSide + "*";
+                }
+
+                // < -n | n > = 0
+                // zero position, as both players leave an equal number
+                // of moves for the opposite player
+                if(rightValue == Math.abs(leftValue)){
+                    return "0";
                 }
 
                 // switch games, {x|y}, x & y are numbers and x >= y
@@ -122,10 +147,12 @@ public class GameValue {
                 // these are "hot" positions
                 if(leftValue >= rightValue){
 
-                    // < 1 | -1 > = ± 1
+                    // < n | -n > = ± n (page 123 winning ways)
                     if(leftValue == Math.abs(rightValue)){
                         return "\u00B1" + leftSide;
                     }
+
+                    
 
                 }
 
@@ -320,13 +347,13 @@ public class GameValue {
         GameValue maxLeft = findMax(this.left, "left");
         ArrayList<GameValue> toRemove = new ArrayList<GameValue>();
 
+        // 1. finding dominated GameValue objects to remove
         if(maxLeft != null){
 
             // G > H means G is better for left, so remove H
             for(GameValue leftGame: this.left){
 
                 if(compare(maxLeft, leftGame).equals("x")){
-                    //this.left.remove(leftGame);
                     toRemove.add(leftGame);
                 }
             }
@@ -345,7 +372,6 @@ public class GameValue {
             for(GameValue rightGame: this.right){
 
                 if(compare(maxRight, rightGame).equals("y")){
-                    //this.right.remove(rightGame);
                     toRemove.add(rightGame);
                 }
 
@@ -357,9 +383,7 @@ public class GameValue {
 
         }
 
-
-        this.simplified = true;
-
+        // 2. Recursively simplifying children GameValue objects
         for(GameValue leftGame: this.left){
             leftGame.simplify();
         }
@@ -367,6 +391,22 @@ public class GameValue {
         for(GameValue rightGame: this.right){
             rightGame.simplify();
         }
+
+        // 3. finding duplicated GameValue objects to remove
+        // Must be done last, after all other simplifications
+        toRemove = findDuplicates(this.left);
+
+        for(GameValue remove: toRemove){
+            this.left.remove(remove);
+        }
+
+        toRemove = findDuplicates(this.right);
+
+        for(GameValue remove: toRemove){
+            this.right.remove(remove);
+        }
+
+        this.simplified = true;
 
 
     }
