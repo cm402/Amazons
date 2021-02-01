@@ -1,6 +1,7 @@
-import org.json.JSONObject;
+//import org.json.JSONObject;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
 import java.util.ArrayList;
 
 public class BoardTests {
@@ -657,6 +658,9 @@ public class BoardTests {
         int hash = board.getSmallestHashValue();
         System.out.println(hash);
 
+        int hash2 = board.getSmallestHashValue();
+        System.out.println(hash2);
+
     }
 
     public void testPartitionsDB(){
@@ -678,9 +682,14 @@ public class BoardTests {
 
         board.printBoard();
 
-        //GameValue gameValue = board.evaluate();
-        //System.out.println(gameValue.toString());
-        //gameValue.simplify();
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+
+        GameValue gameValue = board.evaluate(partitionsDB);
+        gameValue.simplify();
+
+        // this should return the un-simplified GameValue object currently,
+        // without having to actually evaluate it
+        GameValue newGameValue = board.evaluate(partitionsDB);
 
     }
 }

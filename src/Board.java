@@ -37,7 +37,7 @@ public class Board {
                 counter = 0;
             }
 
-            if(counter == 3){
+            if(counter == 6){
 
                 return result;
             }
