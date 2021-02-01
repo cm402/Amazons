@@ -198,7 +198,7 @@ public class GameEngine {
         //GameFile gf = engine.inputGameFile();
         //engine.printGameFile(gf);
 
-        /*
+
         IO io = new IO();
 
         ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
@@ -211,9 +211,12 @@ public class GameEngine {
 
         engine.outputGameFile(movesPlayed, board);
 
-        PartitionTests partitionTests = new PartitionTests();
-        partitionTests.testRandom();
-        */
+
+
+
+        //PartitionTests partitionTests = new PartitionTests();
+        //partitionTests.testRandom();
+
 
        BoardTests boardTests = new BoardTests();
        //boardTests.testPartitionsDB();

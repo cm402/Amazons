@@ -38,8 +38,8 @@ public class AIPlayer extends Player implements Serializable {
             return null;
         } else {
 
-            return getBetterMove(board);
-            //return getRandomMove(validMoves);
+            //return getBetterMove(board);
+            return getRandomMove(validMoves);
         }
     }
 
