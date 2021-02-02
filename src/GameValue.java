@@ -42,11 +42,11 @@ public class GameValue {
     }
     */
 
-    public boolean equal(GameValue game1, GameValue game2){
+    public boolean equals(GameValue game){
 
         // 1. check sizes match for both GameValue objects
-        if(game1.left.size() != game2.left.size()
-            || game1.right.size() != game2.right.size()){
+        if(this.left.size() != game.left.size()
+            || this.right.size() != game.right.size()){
 
             return false;
         }
@@ -54,16 +54,16 @@ public class GameValue {
         // 2. if either side is a single GameValue object, check that
         // its toString() notation matches the other game
 
-        if(game1.left.size() == 1) {
+        if(this.left.size() == 1) {
 
-            if (!game1.left.toString().equals(game2.left.toString())) {
+            if (!this.left.toString().equals(game.left.toString())) {
                 return false;
             }
         }
 
-        if(game1.right.size() == 1){
+        if(this.right.size() == 1){
 
-            if(!game1.right.toString().equals(game2.right.toString())){
+            if(!this.right.toString().equals(game.right.toString())){
                 return false;
             }
         }
@@ -71,22 +71,22 @@ public class GameValue {
         // 3. if either side is an list of GameValue objects, check
         // that the lists are equal
 
-        if(game1.left.size() > 1){
+        if(this.left.size() > 1){
 
-            for(GameValue gameValue: game1.left){
+            for(GameValue gameValue: this.left){
 
-                if(!gameValue.isIn(game2.left)){
+                if(!gameValue.isIn(game.left)){
                     return false;
                 }
             }
 
         }
 
-        if(game1.right.size() > 1){
+        if(this.right.size() > 1){
 
-            for(GameValue gameValue: game1.right){
+            for(GameValue gameValue: this.right){
 
-                if(!gameValue.isIn(game2.right)){
+                if(!gameValue.isIn(game.right)){
                     return false;
                 }
             }
@@ -105,7 +105,8 @@ public class GameValue {
 
                 if(gameValues.get(i).toString().equals(gameValues.get(j).toString())){
                     duplicates.add(gameValues.get(i));
-                } else if(equal(gameValues.get(i), gameValues.get(j))){
+
+                } else if(gameValues.get(i).equals(gameValues.get(j))){
                     duplicates.add(gameValues.get(i));
                 }
             }
@@ -141,6 +142,29 @@ public class GameValue {
 
             if(gameValue.toString().equals(this.toString())){
                 return true;
+            }
+
+            // recursively check if either side is an array
+            if(gameValue.left.size() > 1){
+
+                for(GameValue gameValueLeft: gameValue.left){
+
+                    if(!gameValueLeft.isIn(this.left)){
+                        return false;
+                    }
+                }
+
+            }
+
+            if(gameValue.right.size() > 1){
+
+                for(GameValue gameValueRight: gameValue.right){
+
+                    if(!gameValueRight.isIn(this.left)){
+                        return false;
+                    }
+                }
+
             }
         }
         return false;

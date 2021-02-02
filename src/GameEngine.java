@@ -216,12 +216,11 @@ public class GameEngine {
         //partitionTests.testRandom();
 
 
-       BoardTests boardTests = new BoardTests();
-       //boardTests.testPartitionsDB();
-       //boardTests.testSmallestHashValue();
-       //boardTests.testInvertBoard();
-       boardTests.testEvalutate2();
-       //boardTests.testIsSimpleFraction();
+       //BoardTests boardTests = new BoardTests();
+       //boardTests.testEvalutate2();
+
+        GameValueTests gameValueTests = new GameValueTests();
+        gameValueTests.testGameValueEquals();
 
 
 
