@@ -140,32 +140,16 @@ public class GameValue {
 
         for(GameValue gameValue: gameValues){
 
-            if(gameValue.toString().equals(this.toString())){
+            if(gameValue.equals(this)){
                 return true;
             }
 
-            // recursively check if either side is an array
-            if(gameValue.left.size() > 1){
-
-                for(GameValue gameValueLeft: gameValue.left){
-
-                    if(!gameValueLeft.isIn(this.left)){
-                        return false;
-                    }
-                }
-
+            /*
+            if(gameValue.toString().equals(this.toString())){
+                return true;
             }
+            */
 
-            if(gameValue.right.size() > 1){
-
-                for(GameValue gameValueRight: gameValue.right){
-
-                    if(!gameValueRight.isIn(this.left)){
-                        return false;
-                    }
-                }
-
-            }
         }
         return false;
 

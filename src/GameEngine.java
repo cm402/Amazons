@@ -220,7 +220,10 @@ public class GameEngine {
        //boardTests.testEvalutate2();
 
         GameValueTests gameValueTests = new GameValueTests();
-        gameValueTests.testGameValueEquals();
+        //gameValueTests.testSimplify();
+        //gameValueTests.testGameValueEquals1();
+        //gameValueTests.testGameValueEquals2();
+        //gameValueTests.testGameValueEquals3();
 
 
 
