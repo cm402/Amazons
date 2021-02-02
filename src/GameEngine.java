@@ -198,7 +198,7 @@ public class GameEngine {
         //GameFile gf = engine.inputGameFile();
         //engine.printGameFile(gf);
 
-
+        /*
         IO io = new IO();
 
         ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
@@ -210,9 +210,7 @@ public class GameEngine {
         engine.startGame(board, movesPlayed, currentPlayer, players);
 
         engine.outputGameFile(movesPlayed, board);
-
-
-
+        */
 
         //PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
@@ -222,7 +220,7 @@ public class GameEngine {
        //boardTests.testPartitionsDB();
        //boardTests.testSmallestHashValue();
        //boardTests.testInvertBoard();
-       //boardTests.testEvalutate2();
+       boardTests.testEvalutate2();
        //boardTests.testIsSimpleFraction();
 
 

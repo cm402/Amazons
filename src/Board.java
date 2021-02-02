@@ -694,12 +694,19 @@ public class Board {
     // Returns a GameValue object for the current Board
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
 
-        GameValue gameValue = getGameValue(partitionsDB);
+        GameValue gameValue;
 
-        // 1. Check if GameValue already stored in partitions DB
-        if(gameValue != null){
-            return gameValue;
+        // if partitionsDB is null, we don't check it
+        if(partitionsDB != null){
+
+            gameValue = getGameValue(partitionsDB);
+
+            // 1. Check if GameValue already stored in partitions DB
+            if(gameValue != null){
+                return gameValue;
+            }
         }
+
 
         ArrayList<Board> partitions = this.split();
 
@@ -708,8 +715,12 @@ public class Board {
 
             gameValue = newRecursion(this);
 
-            // storing the GameValue in the database, to save evaluating it next time
-            partitionsDB.put(this.getSmallestHashValue(), gameValue);
+            if(partitionsDB != null){
+
+                // storing the GameValue in the database, to save evaluating it next time
+                partitionsDB.put(this.getSmallestHashValue(), gameValue);
+            }
+
 
             return gameValue;
 
@@ -736,7 +747,11 @@ public class Board {
                 }
 
             }
-            partitionsDB.put(this.getSmallestHashValue(), gameValueTotal);
+
+            if(partitionsDB != null){
+
+                partitionsDB.put(this.getSmallestHashValue(), gameValueTotal);
+            }
 
             return gameValueTotal;
         }

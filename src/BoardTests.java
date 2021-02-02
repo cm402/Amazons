@@ -344,7 +344,6 @@ public class BoardTests {
 
     }
 
-    /*
     public void testEvalutate(){
 
         Board board = new Board(4, 1);
@@ -364,7 +363,7 @@ public class BoardTests {
 
         board.printBoard();
 
-        GameValue gameValue = board.evaluate();
+        GameValue gameValue = board.evaluate(null);
         System.out.println(gameValue.toString());
 
     }
@@ -388,7 +387,7 @@ public class BoardTests {
 
         board.printBoard();
 
-        GameValue gameValue = board.evaluate();
+        GameValue gameValue = board.evaluate(null);
         System.out.println(gameValue.toString());
         gameValue.simplify();
         System.out.println(gameValue.toString());
@@ -413,7 +412,7 @@ public class BoardTests {
 
         board.printBoard();
 
-        GameValue gameValue = board.evaluate();
+        GameValue gameValue = board.evaluate(null);
         System.out.println(gameValue.toString());
         gameValue.simplify();
         System.out.println(gameValue.toString());
@@ -436,7 +435,7 @@ public class BoardTests {
 
         board1.printBoard();
 
-        GameValue gameValue = board1.evaluate();
+        GameValue gameValue = board1.evaluate(null);
         System.out.println(gameValue.getOutcomeClass());
         // The outcome of this should be "First"
 
@@ -459,7 +458,7 @@ public class BoardTests {
 
         board1.printBoard();
 
-        GameValue gameValue = board1.evaluate();
+        GameValue gameValue = board1.evaluate(null);
         System.out.println(gameValue.getOutcomeClass());
         // The outcome of this should be "Left"
     }
@@ -481,7 +480,7 @@ public class BoardTests {
 
         board1.printBoard();
 
-        GameValue gameValue = board1.evaluate();
+        GameValue gameValue = board1.evaluate(null);
         System.out.println(gameValue.getOutcomeClass());
         // The outcome of this should be "Right"
     }
@@ -503,11 +502,10 @@ public class BoardTests {
 
         board1.printBoard();
 
-        GameValue gameValue = board1.evaluate();
+        GameValue gameValue = board1.evaluate(null);
         System.out.println(gameValue.getOutcomeClass());
         // The outcome of this should be "Second"
     }
-    */
 
     public void testBasicAIGameWhiteFirst(){
 

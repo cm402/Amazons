@@ -42,6 +42,60 @@ public class GameValue {
     }
     */
 
+    public boolean equal(GameValue game1, GameValue game2){
+
+        // 1. check sizes match for both GameValue objects
+        if(game1.left.size() != game2.left.size()
+            || game1.right.size() != game2.right.size()){
+
+            return false;
+        }
+
+        // 2. if either side is a single GameValue object, check that
+        // its toString() notation matches the other game
+
+        if(game1.left.size() == 1) {
+
+            if (!game1.left.toString().equals(game2.left.toString())) {
+                return false;
+            }
+        }
+
+        if(game1.right.size() == 1){
+
+            if(!game1.right.toString().equals(game2.right.toString())){
+                return false;
+            }
+        }
+
+        // 3. if either side is an list of GameValue objects, check
+        // that the lists are equal
+
+        if(game1.left.size() > 1){
+
+            for(GameValue gameValue: game1.left){
+
+                if(!gameValue.isIn(game2.left)){
+                    return false;
+                }
+            }
+
+        }
+
+        if(game1.right.size() > 1){
+
+            for(GameValue gameValue: game1.right){
+
+                if(!gameValue.isIn(game2.right)){
+                    return false;
+                }
+            }
+
+        }
+
+        return true;
+    }
+
     public ArrayList<GameValue> findDuplicates(ArrayList<GameValue> gameValues){
 
         ArrayList<GameValue> duplicates = new ArrayList<GameValue>();
@@ -51,11 +105,32 @@ public class GameValue {
 
                 if(gameValues.get(i).toString().equals(gameValues.get(j).toString())){
                     duplicates.add(gameValues.get(i));
+                } else if(equal(gameValues.get(i), gameValues.get(j))){
+                    duplicates.add(gameValues.get(i));
                 }
             }
 
         }
         return duplicates;
+
+    }
+
+    // finds the position of a toString() value in a list of GameValue objects
+    // returns -1 if not found in list
+    // note- must be called after duplicates are removed
+    public int findPosition(ArrayList<GameValue> gameValues, String value){
+
+        int counter = 0;
+
+        for(GameValue gameValue: gameValues){
+
+            if(gameValue.toString().equals(value)){
+                return counter;
+            }
+
+            counter++;
+        }
+        return -1;
 
     }
 
@@ -111,18 +186,18 @@ public class GameValue {
 
     }
 
-    public String toString(){
+    public String toString() {
 
-        if(left.isEmpty() && right.isEmpty()){
+        if (left.isEmpty() && right.isEmpty()) {
 
             return "0";
 
-        } else if(left.isEmpty()){
+        } else if (left.isEmpty()) {
 
             int max = maxDepth("right", this);
             return "-" + Integer.toString(max);
 
-        } else if(right.isEmpty()){
+        } else if (right.isEmpty()) {
 
             int max = maxDepth("left", this);
             return Integer.toString(max);
@@ -133,29 +208,28 @@ public class GameValue {
             String rightSide = right.toString().replace("[", "").replace("]", "");
 
             // both sides are single, numerical values
-            if(isNumeric(leftSide) && isNumeric(rightSide)) {
+            if (isNumeric(leftSide) && isNumeric(rightSide)) {
 
                 double leftValue = Double.parseDouble(leftSide);
                 double rightValue = Double.parseDouble(rightSide);
 
                 // < 0 | 0 > = *
-                if(leftValue == 0 && rightValue == 0){
+                if (leftValue == 0 && rightValue == 0) {
                     return "*";
                 }
 
-                if(isSimpleFraction(leftValue, rightValue)){
+                if (isSimpleFraction(leftValue, rightValue)) {
                     return String.valueOf((leftValue + rightValue) / 2);
                 }
 
                 // < -n | -n > = -n*
-                if(leftValue == rightValue){
+                if (leftValue == rightValue) {
                     return leftSide + "*";
                 }
 
-                // < -n | n > = 0
-                // zero position, as both players leave an equal number
-                // of moves for the opposite player
-                if(rightValue == Math.abs(leftValue)){
+                // < a | b > = 0
+                // where a < 0 and b > 0
+                if (leftValue < 0 && rightValue > 0) {
                     return "0";
                 }
 
@@ -163,10 +237,10 @@ public class GameValue {
                 // chapter 5 of winning ways
                 // both players keen to move first
                 // these are "hot" positions
-                if(leftValue >= rightValue){
+                if (leftValue >= rightValue) {
 
                     // < n | -n > = ± n (page 123 winning ways)
-                    if(leftValue == Math.abs(rightValue)){
+                    if (leftValue == Math.abs(rightValue)) {
                         return "\u00B1" + leftSide;
                     }
                 }
@@ -174,9 +248,24 @@ public class GameValue {
             }
 
             // Neither player has a winning move, so its a "zero" position
-            if(leftSide.equals("*") && rightSide.equals("*")){
+            if (leftSide.equals("*") && rightSide.equals("*")) {
                 return "0";
             }
+
+            // If both "*" and "0" positions are options,
+            // remove the "*" as it is fuzzy with "0"
+            if (findPosition(left, "*") != -1 &&
+                    findPosition(left, "0") != -1) {
+
+                left.remove(findPosition(left, "*"));
+            }
+
+            if (findPosition(right, "*") != -1 &&
+                    findPosition(right, "0") != -1) {
+
+                right.remove(findPosition(right, "*"));
+            }
+
 
             return "<" + this.left.toString().replace("[", " ").replace("]", " ")
                     + " | " + this.right.toString().replace("[", " ").replace("]", " ") + ">";
@@ -349,7 +438,7 @@ public class GameValue {
 
     }
 
-    // Removes the GameValue objects that are dominated by others
+    // Removes the GameValue objects that are dominated by others, as well as duplicates
     // { A, B, C : D, E, F }
     // if A > B > C, remove B & C
     public void simplify(){
