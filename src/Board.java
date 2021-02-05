@@ -22,27 +22,33 @@ public class Board {
     @Override
     public int hashCode() {
 
-        int result;
-        int previousResult = 0;
-        int counter = 0;
+        final int prime = 31;
+        int result = 1;
 
-        while(true){
+        for(int x = 0; x < columnBoardSize; x++){
+            for(int y = 0; y < rowBoardSize; y++){
 
-            result = Objects.hash(columnBoardSize, rowBoardSize);
-            result = 31 * result + Arrays.deepHashCode(squares);
+                // Each square has 4 possible states, so using that
+                // information to generate a hash code value
+                if(squares[x][y].isBurnt()){
+                    result = prime * result + 0;
+                } else if(squares[x][y].getAmazon() == null){
+                    result = prime * result + 1;
+                } else if(squares[x][y].getAmazon().isWhite()){
+                    result = prime * result + 2;
+                } else if(squares[x][y].getAmazon().isWhite()){
+                    result = prime * result + 3;
+                }
 
-            if(previousResult == 0 || result == previousResult){
-                counter++;
-            } else {
-                counter = 0;
-            }
-
-            if(counter == 6){
-
-                return result;
             }
         }
+
+        result = prime * result + columnBoardSize;
+        result = prime * result + rowBoardSize;
+
+        return result;
     }
+
 
 
     /*

@@ -563,7 +563,7 @@ public class BoardTests {
 
     }
 
-    public void testHashing(){
+    public void testHashCode(){
 
         Board board = new Board(3, 2);
         board.setupBoard();
@@ -580,8 +580,23 @@ public class BoardTests {
         whitePieces.get(0).setPosition(board.getSquare(1,0));
         board.addPiece(1, 0, whitePieces.get(0));
 
-        System.out.println(board.hashCode());
+        for(int i = 0; i < 5; i++){
+            System.out.println(board.hashCode());
+        }
 
+        System.out.println("Changing board");
+        board.getSquare(0, 1).removeAmazon();
+
+        for(int i = 0; i < 5; i++){
+            System.out.println(board.hashCode());
+        }
+
+        System.out.println("Reverting changes");
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        for(int i = 0; i < 5; i++) {
+            System.out.println(board.hashCode());
+        }
 
     }
 
@@ -657,12 +672,20 @@ public class BoardTests {
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
 
+        // first evaluation, will actually evaluate the board
+        long start = System.currentTimeMillis();
         GameValue gameValue = board.evaluate(partitionsDB);
-        gameValue.simplify();
+        long end = System.currentTimeMillis();
+        long firstEvaluationTime = end - start;
 
-        // this should return the un-simplified GameValue object currently,
-        // without having to actually evaluate it
+        // second evaluation, will retrieve from the partitions DB
+        start = System.currentTimeMillis();
         GameValue newGameValue = board.evaluate(partitionsDB);
+        end = System.currentTimeMillis();
+        long secondEvaluationTime = end - start;
+
+        System.out.println("The first evalutation took " + firstEvaluationTime + " ns");
+        System.out.println("The second evalutation took " + secondEvaluationTime + " ns");
 
     }
 }

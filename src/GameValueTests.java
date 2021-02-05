@@ -124,6 +124,9 @@ public class GameValueTests {
         // false
         System.out.println(quarter.toString() + " = " + half.toString() + ", " + quarter.equals(half));
 
+        // true
+        System.out.println(zero.toString() + " = " + zero.toString() + ", " + zero.equals(zero));
+
     }
 
     public void testIsSimpleFraction(){

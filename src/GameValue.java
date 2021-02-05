@@ -69,7 +69,8 @@ public class GameValue {
         }
 
         // 3. if either side is an list of GameValue objects, check
-        // that the lists are equal
+        // that the lists are equal, via ensuring that each GameValue
+        // object in the first list is found in the second list
 
         if(this.left.size() > 1){
 
@@ -96,6 +97,7 @@ public class GameValue {
         return true;
     }
 
+    // returns a list of all the duplicate GameValue objects in an ArrayList
     public ArrayList<GameValue> findDuplicates(ArrayList<GameValue> gameValues){
 
         ArrayList<GameValue> duplicates = new ArrayList<GameValue>();
@@ -113,7 +115,6 @@ public class GameValue {
 
         }
         return duplicates;
-
     }
 
     // finds the position of a toString() value in a list of GameValue objects
@@ -143,12 +144,6 @@ public class GameValue {
             if(gameValue.equals(this)){
                 return true;
             }
-
-            /*
-            if(gameValue.toString().equals(this.toString())){
-                return true;
-            }
-            */
 
         }
         return false;
