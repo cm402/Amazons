@@ -21,8 +21,8 @@ public class HumanPlayer extends Player implements Serializable {
 
         while(true){
 
-            getUserMove();
-            Move move = askForMove(board);
+            Move move = getUserMove(board);
+            //Move move = askForMove(board);
 
             if(!isMoveValid(move, board)){
                 System.out.println("please retry");
@@ -41,33 +41,67 @@ public class HumanPlayer extends Player implements Serializable {
         return sc.nextLine().trim().toLowerCase();
     }
 
-    private boolean validateCoordinate(String coordinate){
+    // Given a string coordinate, will check that its valid for the current board size
+    private boolean validateCoordinate(String coordinate, int columns, int rows){
 
         if(coordinate.length() != 2){
             return false;
         }
 
         int x = coordinate.charAt(0);
-        x -= 97;
+        int y = coordinate.charAt(1);
 
-        int y = Integer.parseInt(String.valueOf(coordinate.charAt(1)));
+        // 'a' = 97
+        if(x < 97 || x > 97 + columns){
+            return false;
+        }
+
+        // '0' = 48
+        if(y < 48 || y > 48 + rows){
+            return false;
+        }
 
         return true;
 
     }
 
-    private void getUserMove(){
+    private Move getUserMove(Board board){
 
-        String input = askUser("Please enter your move");
+        while(true){
 
-        String[] positions = input.split(",");
+            String input = askUser("Please enter your move");
 
-        for(String position: positions){
-            validateCoordinate(position);
+            boolean valid = true;
+            String[] positions = input.split(",");
+
+            for(int i = 0; i < 3; i++) {
+
+                positions[i] = positions[i].trim();
+                if (!validateCoordinate(positions[i], board.getColumnBoardSize(), board.getRowBoardSize())) {
+                    System.out.println("Error, please enter your move in the correct format");
+                    System.out.println("e.g. a3, b2, d3");
+                    System.out.println("");
+                    valid = false;
+                    break;
+                }
+            }
+
+
+            // meaning coordinates are valid for the current board size
+            if(valid){
+
+                int startX = positions[0].charAt(0) - 97;
+                int startY = positions[0].charAt(1) - 48;
+
+                int endX = positions[1].charAt(0) - 97;
+                int endY = positions[1].charAt(1) - 48;
+
+                int shootX = positions[2].charAt(0) - 97;
+                int shootY = positions[2].charAt(1) - 48;
+
+                return new Move(this, board.getSquare(startX, startY), board.getSquare(endX, endY), board.getSquare(shootX, shootY));
+            }
         }
-
-
-        System.out.println("test");
 
     }
 
@@ -93,26 +127,6 @@ public class HumanPlayer extends Player implements Serializable {
         }
 
         return true;
-    }
-
-    private int getUserInput(String inputPrompt){
-        Scanner sc = new Scanner(System.in);
-        System.out.println(inputPrompt);
-        String in = sc.nextLine().trim().toLowerCase();
-        return Integer.parseInt(in);
-    }
-
-    // TODO: validation doesn't check that coordinates are within range of board size, can lead to crash
-    private Move askForMove(Board board){
-
-        int startX = getUserInput("Please enter the x co-ordinate of the amazon you wish to move");
-        int startY = getUserInput("Please enter the y co-ordinate of the amazon you wish to move");
-        int endX = getUserInput("Please enter the x co-ordinate where you wish to move your amazon to");
-        int endY = getUserInput("Please enter the y co-ordinate where you wish to move your amazon to");
-        int shootX = getUserInput("Please enter the x co-ordinate where you wish to shoot to");
-        int shootY = getUserInput("Please enter the y co-ordinate where you wish to shoot to");
-
-        return new Move(this, board.getSquare(startX, startY), board.getSquare(endX, endY), board.getSquare(shootX, shootY));
     }
 
 }

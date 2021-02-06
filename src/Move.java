@@ -17,10 +17,18 @@ public class Move implements Serializable {
         this.squareBurned = squareBurned;
     }
 
+    private String toAlgebraic(int x, int y){
+
+        x += 97;
+        char letter = (char) x;
+        return letter + "" + y;
+
+    }
+
     public String toString(){
-        return "(" + startPosition.getX() + ", " + startPosition.getY() + ") -> ("
-                + endPosition.getX() + ", " + endPosition.getY() + ")" +
-                " and arrow shot at (" + squareBurned.getX() + ", " + squareBurned.getY() + ")";
+        return toAlgebraic(startPosition.getX(), startPosition.getY()) + " -> "
+                + toAlgebraic(endPosition.getX(), endPosition.getY()) +
+                " and arrow shot at " + toAlgebraic(squareBurned.getX(), squareBurned.getY());
     }
 
     public Player getPlayer(){
