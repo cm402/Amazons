@@ -133,8 +133,6 @@ public class GameValueTests {
 
         GameValue gameValue = new GameValue();
 
-        System.out.println();
-
         // true (1/2)
         System.out.println(gameValue.isSimpleFraction(0, 1));
 
@@ -152,5 +150,63 @@ public class GameValueTests {
 
         // true (-1 1/2)
         System.out.println(gameValue.isSimpleFraction(-2, -1));
+    }
+
+    public GameValue getValue(int value){
+
+        GameValue newGameValue = new GameValue();
+        GameValue oldGameValue = new GameValue();
+
+        while(value != 0){
+
+            newGameValue = new GameValue();
+
+            if(value > 0){
+                newGameValue.left.add(oldGameValue);
+                value--;
+            } else {
+                newGameValue.right.add(oldGameValue);
+                value++;
+            }
+
+            oldGameValue = newGameValue;
+        }
+
+        return newGameValue;
+    }
+
+    public void testGetSimplestForm(){
+
+        GameValue five = getValue(5);
+
+        GameValue two = getValue(2);
+        GameValue three = getValue(3);
+
+        GameValue twoAndHalf = new GameValue();
+        twoAndHalf.left.add(two);
+        twoAndHalf.right.add(three);
+
+        GameValue twoAndQuarter = new GameValue();
+        twoAndQuarter.left.add(two);
+        twoAndQuarter.right.add(twoAndHalf);
+
+        GameValue twoAndThreeEighths = new GameValue();
+        twoAndThreeEighths.left.add(twoAndQuarter);
+        twoAndThreeEighths.right.add(twoAndHalf);
+
+        GameValue test = new GameValue();
+        test.left.add(twoAndThreeEighths);
+        test.right.add(five);
+
+        System.out.println("The simplest form of < 2.375 | 5 > is " + test.toString());
+
+        GameValue test2 = new GameValue();
+        test2.left.add(twoAndHalf);
+        test2.right.add(three);
+
+        System.out.println("The simplest form of < 2.5 | 3 > is " + test.toString());
+
+
+
     }
 }

@@ -215,17 +215,20 @@ public class GameEngine {
         //PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
 
-        BoardTests boardTests = new BoardTests();
+        //BoardTests boardTests = new BoardTests();
         //boardTests.testEvalutate2();
         //boardTests.testHashCode();
         //boardTests.testSmallestHashValue();
-        boardTests.testPartitionsDB();
+        //boardTests.testPartitionsDB();
 
-        //GameValueTests gameValueTests = new GameValueTests();
+        GameValueTests gameValueTests = new GameValueTests();
+        gameValueTests.testGetSimplestForm();
+        //gameValueTests.testIsSimpleFraction();
         //gameValueTests.testSimplify();
         //gameValueTests.testGameValueEquals1();
         //gameValueTests.testGameValueEquals2();
         //gameValueTests.testGameValueEquals3();
+
 
 
 

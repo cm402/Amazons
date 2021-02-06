@@ -221,9 +221,16 @@ public class GameValue {
                     return "*";
                 }
 
-                if (isSimpleFraction(leftValue, rightValue)) {
+
+                if(isSimpleFraction(leftValue, rightValue)) {
                     return String.valueOf((leftValue + rightValue) / 2);
                 }
+
+                // not sure what should come first, if statement above or this
+                if(0 < leftValue && leftValue < rightValue){
+                    return Double.toString(getSimplestForm(leftValue, rightValue));
+                }
+
 
                 // < -n | -n > = -n*
                 if (leftValue == rightValue) {
@@ -272,6 +279,16 @@ public class GameValue {
 
             return "<" + this.left.toString().replace("[", " ").replace("]", " ")
                     + " | " + this.right.toString().replace("[", " ").replace("]", " ") + ">";
+        }
+
+    }
+
+    public double getSimplestForm(double a, double b){
+
+        if(Math.ceil(a) < b){
+            return Math.ceil(a);
+        } else {
+            return 0.5 * getSimplestForm(2*a, 2*b);
         }
 
     }
