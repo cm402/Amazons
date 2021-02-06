@@ -61,6 +61,24 @@ public class IO {
         }
     }
 
+    public void tutorialIntroducion(){
+
+        String tutorialIntro = "\"Game of the Amazons\" is a 2-player strategy game that is played " +
+                "on a 10x10 chessboard traditionally, however this program also allows 6x6 games.\n\n" +
+                "Each player has 4 amazon pieces (or 2 in 6x6), and they move in the same pattern " +
+                "as queens do in chess (horizontally, vertically or diagonally).\n\nEach turn a player " +
+                "chooses one piece to move, and then the same piece shoots an arrow from its new location " +
+                "to any square it can reach in the same pattern (horizontlly, vertically or diagnoally).\n\n" +
+                "The square that the arrow shoots to is now \"burnt\", meaning it can't be travelled on or " +
+                "over by an amazon piece.\n\nThe players take turns moving their amazons and burning squares " +
+                "until one player can't move, as their amazons are all trapped by burnt squares.\n\nThe other " +
+                "player is then declared the winner.\n\nAs in normal chess, white always moves first";
+
+        System.out.println(tutorialIntro);
+
+
+    }
+
     public int getIntroduction(){
 
         System.out.println("Welcome, to \"Game of the Amazons\"");

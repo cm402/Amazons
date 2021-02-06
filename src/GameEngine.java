@@ -301,7 +301,7 @@ public class GameEngine {
 
     public void tutorial(IO io, GameEngine engine){
 
-
+        io.tutorialIntroducion();
 
     }
 
