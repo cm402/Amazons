@@ -572,49 +572,6 @@ public class Board {
         return newBoard;
     }
 
-    public GameValue newRecursion(Board board){
-
-        ArrayList<Move> blackMoves = board.getAllPossibleMoves(false);
-        ArrayList<Move> whiteMoves = board.getAllPossibleMoves(true);
-
-        ArrayList<GameValue> left = new ArrayList<>();
-        ArrayList<GameValue> right = new ArrayList<>();
-
-        for(Move move: blackMoves){
-
-            Board newBoard = playMove(board, move);
-            GameValue leftGame = newRecursion(newBoard);
-
-            // checking this isn't a duplicate
-            if(!leftGame.isIn(left)){
-
-                leftGame.move = move;
-                left.add(leftGame);
-            }
-
-
-        }
-
-        for(Move move: whiteMoves){
-
-            Board newBoard = playMove(board, move);
-            GameValue rightGame = newRecursion(newBoard);
-
-            if(!rightGame.isIn(right)){
-
-                rightGame.move = move;
-                right.add(rightGame);
-            }
-        }
-
-        GameValue gameValue = new GameValue();
-        gameValue.left = left;
-        gameValue.right = right;
-
-        return gameValue;
-
-    }
-
     // Inverts the board, by swapping the players pieces
     public Board invert(){
 
@@ -697,6 +654,49 @@ public class Board {
 
     }
 
+    private GameValue evaluate(Board board){
+
+        ArrayList<Move> blackMoves = board.getAllPossibleMoves(false);
+        ArrayList<Move> whiteMoves = board.getAllPossibleMoves(true);
+
+        ArrayList<GameValue> left = new ArrayList<>();
+        ArrayList<GameValue> right = new ArrayList<>();
+
+        for(Move move: blackMoves){
+
+            Board newBoard = playMove(board, move);
+            GameValue leftGame = evaluate(newBoard);
+
+            // checking this isn't a duplicate
+            if(!leftGame.isIn(left)){
+
+                leftGame.move = move;
+                left.add(leftGame);
+            }
+
+
+        }
+
+        for(Move move: whiteMoves){
+
+            Board newBoard = playMove(board, move);
+            GameValue rightGame = evaluate(newBoard);
+
+            if(!rightGame.isIn(right)){
+
+                rightGame.move = move;
+                right.add(rightGame);
+            }
+        }
+
+        GameValue gameValue = new GameValue();
+        gameValue.left = left;
+        gameValue.right = right;
+
+        return gameValue;
+
+    }
+
     // Returns a GameValue object for the current Board
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
 
@@ -719,7 +719,7 @@ public class Board {
         // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
-            gameValue = newRecursion(this);
+            gameValue = evaluate(this);
 
             if(partitionsDB != null){
 
@@ -736,7 +736,7 @@ public class Board {
 
             for(Board partition: partitions){
 
-                gameValues.add(newRecursion(partition));
+                gameValues.add(evaluate(partition));
 
             }
 
