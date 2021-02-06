@@ -110,7 +110,6 @@ public class GameEngine {
             outputMove(nextMove, currentPlayer, players);
             currentPlayer = swapPlayers(players, currentPlayer);
         }
-
     }
 
     public static ArrayList<Player> setupPlayers(int noOfHumanPlayers){
@@ -207,8 +206,97 @@ public class GameEngine {
     public void reviewGame(IO io, GameEngine engine){
 
         GameFile gf = engine.inputGameFile();
-        engine.printGameFile(gf);
 
+        ArrayList<Move> moves = gf.getMovesPlayed();
+        int boardSize = gf.getBoardSize();
+
+        io.reviewIntroduction(boardSize);
+
+        Board board = new Board(boardSize, boardSize);
+        board.resetBoard(new Player(true, false), new Player(false, false));
+
+        ArrayList<Board> boards = new ArrayList<Board>();
+
+        boards.add(board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
+
+        // Issue with updateBoard not removing pieces from old position after move
+
+        for(Move move: moves){
+
+            if(move != null){
+                updateBoard(move, board, false);
+                // removing amazon from old square
+                board.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
+                boards.add(board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
+            }
+        }
+
+        int moveCounter = 0;
+
+        while(true) {
+
+            String userInput = io.getReviewInput(moves.size());
+
+            if (userInput.equals("m")) {
+
+                int moveNumber = 1;
+
+                for (Move move : moves) {
+                    System.out.println(moveNumber + ". " + move);
+                    moveNumber++;
+                }
+
+            } else if (userInput.equals("n")) {
+
+                if (moveCounter == moves.size() - 1) {
+                    System.out.println("Error- can't go forward any more, game is finished");
+                    continue;
+                }
+
+                moveCounter++;
+                boards.get(moveCounter).printBoard();
+                System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
+
+            } else if (userInput.equals("b")) {
+
+                if (moveCounter == 0) {
+                    System.out.println("Error- can't go back any more, this is the starting board");
+                    continue;
+                }
+
+                moveCounter--;
+                boards.get(moveCounter).printBoard();
+
+                if(moveCounter == 0){
+                    System.out.println("Starting board (move 0)");
+                } else {
+                    System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
+                }
+
+
+            } else if (userInput.equals("help")) {
+
+                io.reviewIntroduction(boardSize);
+
+            } else {
+
+                int moveValue = Integer.parseInt(userInput);
+
+                if(moveValue < 0 || moveValue >= moves.size()){
+                    System.out.println("Error- please enter a valid move number");
+                    continue;
+                }
+
+                moveCounter = moveValue;
+                boards.get(moveCounter).printBoard();
+
+                if(moveCounter == 0){
+                    System.out.println("Starting board (move 0)");
+                } else {
+                    System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
+                }
+            }
+        }
     }
 
     public void tutorial(IO io, GameEngine engine){

@@ -56,7 +56,7 @@ public class FileInputOutput {
 
         try {
 
-            FileOutputStream fileOutputStream = new FileOutputStream(new File("savedGames/game1.txt"));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File("savedGames/previousGame.txt"));
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(gameFile);
@@ -75,7 +75,7 @@ public class FileInputOutput {
     public GameFile getGameFile(){
 
         try{
-            FileInputStream fileInputStream = new FileInputStream(new File("savedGames/game1.txt"));
+            FileInputStream fileInputStream = new FileInputStream(new File("savedGames/previousGame.txt"));
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
             GameFile gameFile = (GameFile) objectInputStream.readObject();

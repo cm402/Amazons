@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class IO {
 
-    private static int getUserInput(String inputPrompt){
+    private int getUserInput(String inputPrompt){
 
         Scanner sc = new Scanner(System.in);
         System.out.println(inputPrompt);
@@ -11,12 +11,62 @@ public class IO {
         return Integer.parseInt(in);
     }
 
+    private String getUserInputString(){
+
+        Scanner sc = new Scanner(System.in);
+        String in = sc.nextLine().trim().toLowerCase();
+        return in;
+    }
+
+    public void reviewIntroduction(int boardSize){
+
+        System.out.println("The previous game was played on a " + boardSize + " by " + boardSize + " board.");
+        System.out.println("To see a list of all the moves played, enter \'m\'.");
+        System.out.println("To move onto the next move, enter \'n\'.");
+        System.out.println("To go back a move, enter \'b\'.");
+        System.out.println("To jump to a specific move, enter the move number (e.g. 12)");
+        System.out.println("Finally, to see this list of options again, enter \'help\'");
+    }
+
+    public String getReviewInput(int noOfMoves){
+
+        String reviewInput = "";
+
+        while(true){
+
+            reviewInput = getUserInputString();
+
+            // options- "m", "n", "b", "help", number between 1 & noOfMoves
+
+            if(!reviewInput.equals("m") && !reviewInput.equals("n") &&
+                    !reviewInput.equals("b") && !reviewInput.equals("help")){
+
+                try {
+
+                    int moveNumber = Integer.parseInt(reviewInput);
+
+                    if(moveNumber < 0 | moveNumber > noOfMoves){
+
+                        System.out.println("Error, please enter a valid move number (0 to " + noOfMoves + ")");
+                        continue;
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Error, please enter a valid command");
+                    continue;
+                }
+            }
+
+            return reviewInput;
+        }
+    }
+
     public int getIntroduction(){
 
         System.out.println("Welcome, to \"Game of the Amazons\"");
         System.out.println("Would you like to play a game? (press 1)");
         System.out.println("Or review the previous game? (press 2)");
-        System.out.println("Or have a quick tutorial how to play? (press 3)");
+        System.out.println("Or have a quick tutorial on how to play? (press 3)");
 
         int introValue = -1;
 
