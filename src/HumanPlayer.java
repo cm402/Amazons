@@ -21,6 +21,7 @@ public class HumanPlayer extends Player implements Serializable {
 
         while(true){
 
+            getUserMove();
             Move move = askForMove(board);
 
             if(!isMoveValid(move, board)){
@@ -30,6 +31,43 @@ public class HumanPlayer extends Player implements Serializable {
             }
 
         }
+
+    }
+
+    private String askUser(String userPrompt){
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println(userPrompt);
+        return sc.nextLine().trim().toLowerCase();
+    }
+
+    private boolean validateCoordinate(String coordinate){
+
+        if(coordinate.length() != 2){
+            return false;
+        }
+
+        int x = coordinate.charAt(0);
+        x -= 97;
+
+        int y = Integer.parseInt(String.valueOf(coordinate.charAt(1)));
+
+        return true;
+
+    }
+
+    private void getUserMove(){
+
+        String input = askUser("Please enter your move");
+
+        String[] positions = input.split(",");
+
+        for(String position: positions){
+            validateCoordinate(position);
+        }
+
+
+        System.out.println("test");
 
     }
 
@@ -57,7 +95,7 @@ public class HumanPlayer extends Player implements Serializable {
         return true;
     }
 
-    private static int getUserInput(String inputPrompt){
+    private int getUserInput(String inputPrompt){
         Scanner sc = new Scanner(System.in);
         System.out.println(inputPrompt);
         String in = sc.nextLine().trim().toLowerCase();

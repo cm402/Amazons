@@ -1169,15 +1169,14 @@ public class Board {
             rowLine.append("-");
         }
 
-        char max = 'A';
-        max += rowBoardSize - 1;
+        int maxNumber = rowBoardSize - 1;
 
         for(int row = rowBoardSize - 1; row >= 0; row--){
             System.out.println("");
             System.out.println(rowLine);
 
-            System.out.print(max + " ");
-            max--;
+            System.out.print(maxNumber + " ");
+            maxNumber--;
 
             for(int column = 0; column < columnBoardSize; column++){
                 printSquare(column, row);
@@ -1191,8 +1190,11 @@ public class Board {
         StringBuilder numbersLine = new StringBuilder();
         numbersLine.append("   ");
 
+        char letter = 'A';
+
         for(int i = 0; i < columnBoardSize; i++){
-            numbersLine.append(" " + i + "  ");
+            numbersLine.append(" " + letter + "  ");
+            letter++;
         }
 
         System.out.println(numbersLine);

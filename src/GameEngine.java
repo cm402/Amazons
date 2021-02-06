@@ -198,7 +198,7 @@ public class GameEngine {
         //GameFile gf = engine.inputGameFile();
         //engine.printGameFile(gf);
 
-        
+
         IO io = new IO();
 
         ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
