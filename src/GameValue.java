@@ -221,7 +221,6 @@ public class GameValue {
                     return "*";
                 }
 
-
                 if(isSimpleFraction(leftValue, rightValue)) {
                     return String.valueOf((leftValue + rightValue) / 2);
                 }

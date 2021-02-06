@@ -1163,22 +1163,43 @@ public class Board {
     public void printBoard(){
 
         StringBuilder rowLine = new StringBuilder();
+        rowLine.append("  ");
 
         for(int i = 0; i < (columnBoardSize * 4) + 1; i++){
             rowLine.append("-");
         }
 
+        char max = 'A';
+        max += rowBoardSize - 1;
+
         for(int row = rowBoardSize - 1; row >= 0; row--){
             System.out.println("");
             System.out.println(rowLine);
 
-            for (int column = 0; column < columnBoardSize; column++){
+            System.out.print(max + " ");
+            max--;
+
+            for(int column = 0; column < columnBoardSize; column++){
                 printSquare(column, row);
             }
             System.out.print("|");
         }
+
         System.out.println("");
         System.out.println(rowLine);
+
+        StringBuilder numbersLine = new StringBuilder();
+        numbersLine.append("   ");
+
+        for(int i = 0; i < columnBoardSize; i++){
+            numbersLine.append(" " + i + "  ");
+        }
+
+        System.out.println(numbersLine);
+        System.out.println("");
+
+
+
     }
 
 }
