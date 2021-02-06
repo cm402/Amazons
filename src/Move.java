@@ -17,12 +17,12 @@ public class Move implements Serializable {
         this.squareBurned = squareBurned;
     }
 
+    // takes in coordinates in 2-D array and returns their algebraic notation version
     private String toAlgebraic(int x, int y){
 
         x += 97;
         char letter = (char) x;
         return letter + "" + y;
-
     }
 
     public String toString(){

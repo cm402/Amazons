@@ -49,30 +49,6 @@ public class Board {
         return result;
     }
 
-
-
-    /*
-    // https://stackabuse.com/javas-object-methods-hashcode/
-    // https://docs.oracle.com/javase/8/docs/api/java/util/Objects.html#hash-java.lang.Object...-
-    @Override
-    public int hashCode(){
-
-
-        int result = 1;
-
-        for(int x = 0; x < columnBoardSize; x++) {
-            for(int y = 0; y < rowBoardSize; y++){
-
-                if()
-            }
-
-        }
-
-        return Arrays.deepHashCode(squares);
-    }
-    */
-
-
     private boolean isColumnBurnt(Board board, int columnIndex) {
 
         // looping through each row
@@ -724,6 +700,8 @@ public class Board {
             if(partitionsDB != null){
 
                 // storing the GameValue in the database, to save evaluating it next time
+
+                gameValue.simplify();
                 partitionsDB.put(this.getSmallestHashValue(), gameValue);
             }
 
@@ -759,6 +737,7 @@ public class Board {
                 partitionsDB.put(this.getSmallestHashValue(), gameValueTotal);
             }
 
+            gameValueTotal.simplify();
             return gameValueTotal;
         }
 

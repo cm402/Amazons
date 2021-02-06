@@ -11,6 +11,28 @@ public class IO {
         return Integer.parseInt(in);
     }
 
+    public int getIntroduction(){
+
+        System.out.println("Welcome, to \"Game of the Amazons\"");
+        System.out.println("Would you like to play a game? (press 1)");
+        System.out.println("Or review the previous game? (press 2)");
+        System.out.println("Or have a quick tutorial how to play? (press 3)");
+
+        int introValue = -1;
+
+        while(introValue < 1 || introValue > 3){
+
+            introValue = getUserInput("");
+
+            if(introValue < 1 || introValue > 3){
+                System.out.println("Error, please retry");
+            }
+        }
+
+        return introValue;
+
+    }
+
     public int getNoOfPlayers(){
 
         int noOfHumanPlayers = - 1;

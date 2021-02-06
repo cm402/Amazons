@@ -1,11 +1,8 @@
 import java.util.ArrayList;
 import java.util.*;
+import java.io.Serializable;
 
-// https://github.com/stleary/JSON-java
-//import org.json.JSONObject;
-//import org.json.JSONArray;
-
-public class GameValue {
+public class GameValue implements Serializable{
 
     ArrayList<GameValue> left;
     ArrayList<GameValue> right;
@@ -27,20 +24,6 @@ public class GameValue {
         this.move = move;
         simplified = false;
     }
-
-    /*
-    public void storeInDB(){
-
-
-        Map<Integer, GameValue> partitionDB = new HashMap<>();
-        partitionDB.put(1234, this);
-        JSONObject jsonObject = new JSONObject(partitionDB);
-
-
-        JSONObject json = new JSONObject();
-        json.put("test", this);
-    }
-    */
 
     public boolean equals(GameValue game){
 

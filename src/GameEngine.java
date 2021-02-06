@@ -71,15 +71,15 @@ public class GameEngine {
 
         GameFile gameFile = new GameFile(movesPlayed, board.getRowBoardSize());
 
-        GameFileWriterReader gfrw = new GameFileWriterReader();
+        FileInputOutput fio = new FileInputOutput();
 
-        gfrw.outputGameFile(gameFile);
+        fio.outputGameFile(gameFile);
     }
 
     public GameFile inputGameFile(){
 
-        GameFileWriterReader gfrw = new GameFileWriterReader();
-        GameFile gameFile = gfrw.getGameFile();
+        FileInputOutput fio = new FileInputOutput();
+        GameFile gameFile = fio.getGameFile();
         return gameFile;
 
     }
@@ -186,20 +186,11 @@ public class GameEngine {
 
     }
 
-
-    public static void main(String Args[]){
+    public void playGame(IO io, GameEngine engine){
 
         Board board;
         Player currentPlayer;
         ArrayList<Move> movesPlayed = new ArrayList<>();
-
-        GameEngine engine = new GameEngine();
-
-        //GameFile gf = engine.inputGameFile();
-        //engine.printGameFile(gf);
-
-
-        IO io = new IO();
 
         ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
 
@@ -211,6 +202,42 @@ public class GameEngine {
 
         engine.outputGameFile(movesPlayed, board);
 
+    }
+
+    public void reviewGame(IO io, GameEngine engine){
+
+        GameFile gf = engine.inputGameFile();
+        engine.printGameFile(gf);
+
+    }
+
+    public void tutorial(IO io, GameEngine engine){
+
+
+
+    }
+
+
+    public static void main(String Args[]){
+
+        GameEngine engine = new GameEngine();
+
+        IO io = new IO();
+
+        int introValue = io.getIntroduction();
+
+        if(introValue == 1){
+
+            engine.playGame(io, engine);
+
+        } else if(introValue == 2){
+
+            engine.reviewGame(io, engine);
+
+        } else {
+
+            engine.tutorial(io, engine);
+        }
 
 
         //PartitionTests partitionTests = new PartitionTests();
@@ -220,7 +247,8 @@ public class GameEngine {
         //boardTests.testEvalutate2();
         //boardTests.testHashCode();
         //boardTests.testSmallestHashValue();
-        //boardTests.testPartitionsDB();
+        //boardTests.testPartitionsDBSpeed();
+        //boardTests.testPartitionsDBSaved();
 
         //GameValueTests gameValueTests = new GameValueTests();
         //gameValueTests.testGetSimplestForm();

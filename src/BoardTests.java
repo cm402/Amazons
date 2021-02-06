@@ -651,12 +651,10 @@ public class BoardTests {
 
     }
 
-    public void testPartitionsDB(){
+    public void testPartitionsDBSpeed(){
 
         Board board = new Board(3, 2);
         board.setupBoard();
-
-        // adding the piece to the board correctly so that we can look at valid moves
 
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
         blackPieces.add(new Piece(false));
@@ -686,6 +684,40 @@ public class BoardTests {
 
         System.out.println("The first evalutation took " + firstEvaluationTime + " ns");
         System.out.println("The second evalutation took " + secondEvaluationTime + " ns");
+    }
 
+    public void testPartitionsDBSaved(){
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+
+        GameValue gameValue1 = board.evaluate(partitionsDB);
+
+        board.burnSquare(0, 0);
+        board.burnSquare(1, 1);
+
+        GameValue gameValue2 = board.evaluate(partitionsDB);
+        board.printBoard();
+
+        FileInputOutput fio = new FileInputOutput();
+        fio.outputDB(partitionsDB);
+
+        HashMap<Integer, GameValue> newPartitionsDB = fio.getPartitionsDB();
+
+        System.out.println(newPartitionsDB);
     }
 }
