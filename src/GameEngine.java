@@ -301,8 +301,39 @@ public class GameEngine {
 
     public void tutorial(IO io, GameEngine engine){
 
-        io.tutorialIntroducion();
+        System.out.println("Welcome to the tutorial, enter \"n\" for the next part, or \"back\" to return to the first menu");
 
+        String tutorialInput = io.getTutorialInput();
+
+        // part 1 = background & rules explanation
+
+        if(tutorialInput.equals("n")){
+            io.tutorialIntroducion();
+        } else {
+            main(null);
+        }
+
+        tutorialInput = io.getTutorialInput();
+
+        // part 2 = algebraic notation & board shown
+
+        if(tutorialInput.equals("n")){
+            io.tutorialNotation();
+        } else {
+            main(null);
+        }
+
+        tutorialInput = io.getTutorialInput();
+
+        // part 3 = how to enter a move & move shown on board
+
+        if(tutorialInput.equals("n")){
+            io.tutorialExample();
+        } else {
+            main(null);
+        }
+
+        main(null);
     }
 
 

@@ -65,7 +65,7 @@ public class HumanPlayer extends Player implements Serializable {
 
     }
 
-    private Move getUserMove(Board board){
+    public Move getUserMove(Board board){
 
         while(true){
 
