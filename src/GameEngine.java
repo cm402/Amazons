@@ -343,6 +343,8 @@ public class GameEngine {
 
         IO io = new IO();
 
+
+        /*
         int introValue = io.getIntroduction();
 
         if(introValue == 1){
@@ -357,13 +359,14 @@ public class GameEngine {
 
             engine.tutorial(io, engine);
         }
+        */
 
 
         //PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
 
-        //BoardTests boardTests = new BoardTests();
-        //boardTests.testEvalutate2();
+        BoardTests boardTests = new BoardTests();
+        boardTests.testEvalutate2();
         //boardTests.testHashCode();
         //boardTests.testSmallestHashValue();
         //boardTests.testPartitionsDBSpeed();

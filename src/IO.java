@@ -147,7 +147,7 @@ public class IO {
             }
 
             // can be (1, 1), (2, 3), (1, 4), (3, 1), or (4, 3)
-            if(move.getEndPosition().getX() != 1 || move.getEndPosition().getY() != 1 &&
+            if((move.getEndPosition().getX() != 1 || move.getEndPosition().getY() != 1) &&
                     (move.getEndPosition().getX() != 2 || move.getEndPosition().getY() != 3) &&
                     (move.getEndPosition().getX() != 1 || move.getEndPosition().getY() != 4) &&
                     (move.getEndPosition().getX() != 3 || move.getEndPosition().getY() != 1) &&
