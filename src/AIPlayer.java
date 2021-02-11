@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class AIPlayer extends Player implements Serializable {
@@ -8,6 +9,7 @@ public class AIPlayer extends Player implements Serializable {
     public AIPlayer(boolean white){
         super(white, false);
     }
+
 
     public Move getRandomMove(ArrayList<Move> moves){
         Random rand = new Random();
@@ -38,8 +40,8 @@ public class AIPlayer extends Player implements Serializable {
             return null;
         } else {
 
-            //return getBetterMove(board);
-            return getRandomMove(validMoves);
+            return getBetterMove(board);
+            //return getRandomMove(validMoves);
         }
     }
 

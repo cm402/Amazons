@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 // didn't use interface as it can't extend serializable
 public class Player implements Serializable {

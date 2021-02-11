@@ -649,7 +649,7 @@ public class Board {
             Board newBoard = playMove(board, move);
 
             if(depth == 0){
-                System.out.println("At top evaluate() call, black move number " + blackMoveCounter++);
+                //System.out.println("At top evaluate() call, black move number " + blackMoveCounter++);
             }
 
             GameValue leftGame = evaluate(newBoard, depth + 1);
@@ -673,7 +673,7 @@ public class Board {
             Board newBoard = playMove(board, move);
 
             if(depth == 0){
-                System.out.println("At top evaluate() call, white move number " + whiteMoveCounter++);
+                //System.out.println("At top evaluate() call, white move number " + whiteMoveCounter++);
             }
 
             GameValue rightGame = evaluate(newBoard, depth + 1);
