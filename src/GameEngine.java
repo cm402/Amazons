@@ -362,11 +362,12 @@ public class GameEngine {
         */
 
 
-        //PartitionTests partitionTests = new PartitionTests();
+        PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
+        partitionTests.fillPartitionsDatabase();
 
         BoardTests boardTests = new BoardTests();
-        boardTests.testBiggerAIGame2();
+        //boardTests.testBiggerAIGame2();
         //boardTests.testPartitionsDBLarge();
         //boardTests.testEvalutate3();
         //boardTests.testEvalutate2();

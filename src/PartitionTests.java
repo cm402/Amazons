@@ -1,5 +1,6 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class PartitionTests {
@@ -426,6 +427,101 @@ public class PartitionTests {
         int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
+
+    }
+
+    // Given a range of values (0 to maxValue), returns all possible combinations
+    // of a list of values of size n
+    // Size = (maxValue + 1)^n
+    public ArrayList<int[]> generateCombinations(int n, int maxValue){
+
+        ArrayList<int[]> combinations = new ArrayList<>();
+
+        int[] combination = new int[n];
+
+        for(int i = 0; i <= maxValue; i++){
+            generatorHelper(n, 0, i, maxValue, combination, combinations);
+        }
+
+        return combinations;
+    }
+
+    // helper method for the generateCombinations() method, recursively generating the combinations
+    public void generatorHelper(int n, int position, int value, int maxValue, int[] combination, ArrayList<int[]> combinations){
+
+        combination[position] = value;
+
+        if(position == n - 1){
+            combinations.add(combination.clone());
+
+        } else {
+
+            for(int i = 0; i <= maxValue; i++){
+                generatorHelper(n, position + 1, i, maxValue, combination, combinations);
+            }
+        }
+
+    }
+
+
+    public ArrayList<Board> generateAllBoardCombinations(int maxSize){
+
+        ArrayList<Board> boards = new ArrayList<Board>();
+
+        // looping through all board size combinations, up to 3 by 3
+        for(int rows = 1; rows <= maxSize; rows++){
+            for(int columns = 1; columns <= maxSize; columns++){
+
+                // 1. Generate all the combinations of values 0-3 for the number of squares
+                int numberOfSquares = rows * columns;
+                ArrayList<int[]> combinations = generateCombinations(numberOfSquares, 3);
+
+                // 2. Use these values to set squares for boards
+
+                // looping through each of the square state combinations possible
+                for(int[] combination: combinations){
+
+                    Board board = new Board(columns, rows);
+                    board.setupBoard();
+
+                    // looping through each of the squares individual state valus
+                    for(int i = 0; i < combination.length; i++) {
+
+                        // using the array index, generating associated x & y co-ordinate values
+                        int x = getXCoordinate(i + 1, columns);
+                        int y = getYCoordinate(i + 1, columns);
+
+                        int squareState = combination[i];
+
+                        // using square state value to set squares
+                        if (squareState == 1) {
+                            board.getSquare(x, y).burnSquare();
+                        } else if (squareState == 2) {
+                            board.getSquare(x, y).setAmazon(new Piece(true));
+                        } else if (squareState == 3) {
+                            board.getSquare(x, y).setAmazon(new Piece(false));
+
+                        }
+
+                    }
+                    boards.add(board);
+                }
+            }
+
+        }
+
+        return boards;
+    }
+
+
+    public void fillPartitionsDatabase(){
+
+        ArrayList<Board> boards = generateAllBoardCombinations(3);
+
+        for(Board board: boards){
+
+            board.printBoard();
+        }
 
     }
 
