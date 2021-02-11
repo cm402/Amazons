@@ -366,7 +366,9 @@ public class GameEngine {
         //partitionTests.testRandom();
 
         BoardTests boardTests = new BoardTests();
-        boardTests.testEvalutate2();
+        boardTests.testPartitionsDBLarge();
+        //boardTests.testEvalutate3();
+        //boardTests.testEvalutate2();
         //boardTests.testHashCode();
         //boardTests.testSmallestHashValue();
         //boardTests.testPartitionsDBSpeed();

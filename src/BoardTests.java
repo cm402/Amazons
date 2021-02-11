@@ -344,6 +344,7 @@ public class BoardTests {
 
     }
 
+    // testing evaluating of a long line board partition, with one of each piece
     public void testEvalutate(){
 
         Board board = new Board(4, 1);
@@ -368,6 +369,7 @@ public class BoardTests {
 
     }
 
+    // testing evaluating of a standard board partition, shape, 3 by 2 box with 1 of each piece
     public void testEvalutate2(){
 
         Board board = new Board(3, 2);
@@ -393,6 +395,8 @@ public class BoardTests {
         System.out.println(gameValue.toString());
     }
 
+    // testing evaluating of a bigger board size, 3 by 3
+    // Seems to now work, but will need to also test storing this in partitions DB
     public void testEvalutate3(){
 
         Board board = new Board(3, 3);
@@ -415,6 +419,31 @@ public class BoardTests {
         GameValue gameValue = board.evaluate(null);
         System.out.println(gameValue.toString());
         gameValue.simplify();
+        System.out.println(gameValue.toString());
+
+    }
+
+    // tests that a board with 1 players Amazon, or no amazons return correct value
+    public void testEvalutate4(){
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        board.printBoard();
+
+        // testing empty board, should return "0"
+        GameValue gameValue = board.evaluate(null);
+        System.out.println(gameValue.toString());
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        board.printBoard();
+
+        // testing board with 5 squares left and a black piece, should return "5"
+        gameValue = board.evaluate(null);
         System.out.println(gameValue.toString());
     }
 
@@ -719,5 +748,49 @@ public class BoardTests {
         HashMap<Integer, GameValue> newPartitionsDB = fio.getPartitionsDB();
 
         System.out.println(newPartitionsDB);
+    }
+
+    public void testPartitionsDBLarge(){
+
+        Board board = new Board(3, 3);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        // getting partitions Database from file
+        FileInputOutput fio = new FileInputOutput();
+        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+
+        GameValue gameValue = board.evaluate(partitionsDB);
+
+        // storing GameValue object to file
+        fio.outputDB(partitionsDB);
+    }
+
+    public void testGame(){
+
+        Board board = new Board(3, 3);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
     }
 }

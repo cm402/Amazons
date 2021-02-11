@@ -630,7 +630,7 @@ public class Board {
 
     }
 
-    private GameValue evaluate(Board board){
+    private GameValue evaluate(Board board, int depth){
 
         ArrayList<Move> blackMoves = board.getAllPossibleMoves(false);
         ArrayList<Move> whiteMoves = board.getAllPossibleMoves(true);
@@ -638,29 +638,51 @@ public class Board {
         ArrayList<GameValue> left = new ArrayList<>();
         ArrayList<GameValue> right = new ArrayList<>();
 
+        //System.out.println("Depth = " + depth);
+        //System.out.println("Black now has " + blackMoves.size() + " moves");
+        //System.out.println("White now has " + whiteMoves.size() + " moves");
+
+        int blackMoveCounter = 0;
+
         for(Move move: blackMoves){
 
             Board newBoard = playMove(board, move);
-            GameValue leftGame = evaluate(newBoard);
+
+            if(depth == 0){
+                System.out.println("At top evaluate() call, black move number " + blackMoveCounter++);
+            }
+
+            GameValue leftGame = evaluate(newBoard, depth + 1);
 
             // checking this isn't a duplicate
             if(!leftGame.isIn(left)){
 
                 leftGame.move = move;
+                // TODO- maybe simplify GameValue before adding it to list
+                leftGame.simplify();
                 left.add(leftGame);
             }
 
 
         }
 
+        int whiteMoveCounter = 0;
+
         for(Move move: whiteMoves){
 
             Board newBoard = playMove(board, move);
-            GameValue rightGame = evaluate(newBoard);
 
+            if(depth == 0){
+                System.out.println("At top evaluate() call, white move number " + whiteMoveCounter++);
+            }
+
+            GameValue rightGame = evaluate(newBoard, depth + 1);
+
+            // checking this isn't a duplicate
             if(!rightGame.isIn(right)){
 
                 rightGame.move = move;
+                rightGame.simplify();
                 right.add(rightGame);
             }
         }
@@ -675,6 +697,8 @@ public class Board {
 
     // Returns a GameValue object for the current Board
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
+
+        // TODO- Can quickly evaluate much bigger boards with either 1 players pieces, or no pieces, by counting squares
 
         GameValue gameValue;
 
@@ -695,7 +719,7 @@ public class Board {
         // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
-            gameValue = evaluate(this);
+            gameValue = evaluate(this, 0);
 
             if(partitionsDB != null){
 
@@ -714,7 +738,7 @@ public class Board {
 
             for(Board partition: partitions){
 
-                gameValues.add(evaluate(partition));
+                gameValues.add(evaluate(partition, 0));
 
             }
 
