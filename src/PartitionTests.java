@@ -1,6 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 public class PartitionTests {
@@ -497,12 +498,31 @@ public class PartitionTests {
                         if (squareState == 1) {
                             board.getSquare(x, y).burnSquare();
                         } else if (squareState == 2) {
-                            board.getSquare(x, y).setAmazon(new Piece(true));
+                            Piece whitePiece = new Piece(true);
+                            whitePiece.setPosition(board.getSquare(x, y));
+                            board.getSquare(x, y).setAmazon(whitePiece);
                         } else if (squareState == 3) {
-                            board.getSquare(x, y).setAmazon(new Piece(false));
+                            Piece blackPiece = new Piece(false);
+                            blackPiece.setPosition(board.getSquare(x, y));
+                            board.getSquare(x, y).setAmazon(blackPiece);
+
 
                         }
 
+                    }
+
+                    ArrayList<Piece> whitePieces = board.getPieces(true);
+                    ArrayList<Piece> blackPieces = board.getPieces(false);
+
+                    // not storing partitions with
+                    // - over 2 pieces of either colour
+                    // - only 1 square
+                    // - no pieces of any colour
+                    // - all squares burnt
+                    if(whitePieces.size() > 2 || blackPieces.size() > 2
+                        || board.getRowBoardSize() == 1 && board.getColumnBoardSize() == 1
+                        || board.getNumberOfBurntSquares() == numberOfSquares){
+                        continue;
                     }
                     boards.add(board);
                 }
@@ -513,17 +533,25 @@ public class PartitionTests {
         return boards;
     }
 
-
+    // fills the partition database with GameValue objects for each of the possible
+    // Board variations, up to a specified max size
     public void fillPartitionsDatabase(){
 
-        ArrayList<Board> boards = generateAllBoardCombinations(3);
+        ArrayList<Board> boards = generateAllBoardCombinations(2);
+        // getting partitions Database from file
+        FileInputOutput fio = new FileInputOutput();
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
 
         for(Board board: boards){
 
             board.printBoard();
+            GameValue gameValue = board.evaluate(partitionsDB);
+
+            fio.outputDB(partitionsDB);
         }
 
-    }
+        partitionsDB.size();
 
+    }
 
 }

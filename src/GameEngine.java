@@ -365,6 +365,7 @@ public class GameEngine {
         PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
         partitionTests.fillPartitionsDatabase();
+        //partitionTests.testingPartitonDatabase();
 
         BoardTests boardTests = new BoardTests();
         //boardTests.testBiggerAIGame2();

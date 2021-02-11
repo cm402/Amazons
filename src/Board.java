@@ -487,6 +487,24 @@ public class Board {
         }
     }
 
+    // Returns number of squares that are burnt
+    public int getNumberOfBurntSquares(){
+
+        int burntSquares = 0;
+
+        for(int x = 0; x < this.getColumnBoardSize(); x++){
+            for(int y = 0; y < this.getRowBoardSize(); y++){
+
+                if(this.getSquare(x, y).isBurnt()){
+
+                    burntSquares++;
+                }
+            }
+        }
+
+        return burntSquares;
+    }
+
     // Returns all the pieces of one colour on the current board
     // true = white pieces
     // false = black pieces
@@ -697,8 +715,6 @@ public class Board {
 
     // Returns a GameValue object for the current Board
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
-
-        // TODO- Can quickly evaluate much bigger boards with either 1 players pieces, or no pieces, by counting squares
 
         GameValue gameValue;
 
