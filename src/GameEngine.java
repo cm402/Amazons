@@ -343,7 +343,6 @@ public class GameEngine {
 
         IO io = new IO();
 
-
         /*
         int introValue = io.getIntroduction();
 
@@ -361,11 +360,9 @@ public class GameEngine {
         }
         */
 
-
         PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
-        partitionTests.fillPartitionsDatabase();
-        //partitionTests.testingPartitonDatabase();
+        //partitionTests.fillPartitionsDatabase();
 
         BoardTests boardTests = new BoardTests();
         //boardTests.testBiggerAIGame2();
@@ -376,6 +373,7 @@ public class GameEngine {
         //boardTests.testSmallestHashValue();
         //boardTests.testPartitionsDBSpeed();
         //boardTests.testPartitionsDBSaved();
+        boardTests.testEvaluateSplit();
 
         //GameValueTests gameValueTests = new GameValueTests();
         //gameValueTests.testGetSimplestForm();
@@ -384,9 +382,6 @@ public class GameEngine {
         //gameValueTests.testGameValueEquals1();
         //gameValueTests.testGameValueEquals2();
         //gameValueTests.testGameValueEquals3();
-
-
-
 
     }
 

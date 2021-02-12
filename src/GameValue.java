@@ -536,11 +536,11 @@ public class GameValue implements Serializable{
         ArrayList<GameValue> newRight = new ArrayList<>();
 
         for(GameValue xr: x.right){
-            newLeft.add(plus(xr, y));
+            newRight.add(plus(xr, y));
         }
 
         for(GameValue yr: y.right){
-            newLeft.add(plus(x, yr));
+            newRight.add(plus(x, yr));
         }
 
         gameValue.left = newLeft;
