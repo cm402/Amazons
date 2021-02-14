@@ -3,6 +3,8 @@ import java.util.*;
 
 public class MCTS {
 
+    boolean opponent;
+
     //https://www.baeldung.com/java-monte-carlo-tree-search
 
     public Move getNextMove(Board board, boolean nextPlayer, int moveTime){
@@ -11,6 +13,9 @@ public class MCTS {
         Node root = tree.root;
         root.state.board = board;
         root.state.nextPlayer = nextPlayer;
+
+        // storing the opponents colour
+        opponent = !nextPlayer;
 
         // setting a maximum time to search for a good move
         long startTime = System.currentTimeMillis();
@@ -24,32 +29,31 @@ public class MCTS {
             // 4. Propagate the result back up the tree
 
             Node promisingNode = selectPromisingNode(root);
+            Board promisingNodeBoard = promisingNode.state.board;
 
             Player player = new Player(nextPlayer, true);
-
-            ArrayList<Piece> pieces = board.getPieces(nextPlayer);
+            ArrayList<Piece> pieces = promisingNodeBoard.getPieces(nextPlayer);
             player.addPieces(pieces);
 
-            ArrayList<Move> validMoves = player.getValidMoves(board);
+            ArrayList<Move> validMoves = player.getValidMoves(promisingNodeBoard);
 
-            // if game isn't finished, we aren't at a leaf node, so expand
+            // if "promising" nodes game isn't finished, we aren't at a leaf node, so expand
             if(validMoves.size() != 0){
 
                 expandNode(promisingNode);
             }
 
-            Node nodeToExplore = promisingNode;
-
+            // if "promising" node has children nodes, randomly choose one to play-out
             if(promisingNode.children.size() > 0){
 
                 Random random = new Random();
                 int randomIndex = random.nextInt(promisingNode.children.size());
 
-                nodeToExplore = promisingNode.children.get(randomIndex);
+                promisingNode = promisingNode.children.get(randomIndex);
             }
 
-            boolean playoutResult = simulateRandomPlayout(nodeToExplore);
-            backPropogation(nodeToExplore, playoutResult);
+            boolean playoutResult = simulateRandomPlayout(promisingNode);
+            backPropogation(promisingNode, playoutResult);
         }
 
         Node winnerNode = root.getChildWithMaxScore();
@@ -58,65 +62,7 @@ public class MCTS {
         return winnerNode.state.move;
     }
 
-    private void backPropogation(Node nodeToExplore, boolean player){
-
-        Node tempNode = nodeToExplore;
-
-        while(tempNode != null){
-
-            tempNode.state.visitCount++;
-
-            if(tempNode.state.nextPlayer == player){
-
-                tempNode.state.winScore += 1;
-            }
-            tempNode = tempNode.parent;
-        }
-    }
-
-    // simulates the current node,
-    private boolean simulateRandomPlayout(Node node){
-
-        GameEngine gameEngine = new GameEngine();
-        Board board = node.state.board;
-        boolean nextPlayer = node.state.nextPlayer;
-
-        // if board status indicates opponent has won, set parents
-        // winscore to min integer and return, otherwise...
-
-        // creating player objects and passing them their pieces
-        ArrayList<Player> players = new ArrayList<Player>();
-
-        players.add(new AIPlayer(nextPlayer));
-        players.add(new AIPlayer(!nextPlayer));
-        ArrayList<Piece> player1Pieces = board.getPieces(nextPlayer);
-        ArrayList<Piece> player2Pieces = board.getPieces(!nextPlayer);
-        players.get(0).addPieces(player1Pieces);
-        players.get(1).addPieces(player2Pieces);
-
-        Player currentPlayer = players.get(0);
-
-        boolean result;
-
-        while(true){
-
-            ArrayList<Move> validMoves = currentPlayer.getValidMoves(board);
-            Random rand = new Random();
-
-            if(validMoves.size() == 0){
-                result = currentPlayer.isWhite();
-                break;
-            }
-
-            Move nextMove = validMoves.get(rand.nextInt(validMoves.size()));
-
-            gameEngine.updateBoard(nextMove, board, false);
-            currentPlayer = gameEngine.swapPlayers(players, currentPlayer);
-        }
-
-        return result;
-    }
-
+    // Step 1- Selection
     private Node selectPromisingNode(Node rootNode){
 
         Node node = rootNode;
@@ -131,6 +77,7 @@ public class MCTS {
     // Returns a UCT (Upper Confidence Bound), using the formula
     public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
 
+        // used to ensure that nodes that haven't been visited yet get priority
         if (nodeVisit == 0) {
             return Integer.MAX_VALUE;
         }
@@ -148,8 +95,10 @@ public class MCTS {
                 Comparator.comparing(c -> uctValue(parentVisit, c.state.winScore, c.state.visitCount)));
     }
 
+    // Step 2- Expansion
     // expanding out a non-leaf node, adding each of its children nodes to the tree
     private void expandNode(Node node) {
+
         ArrayList<State> possibleStates = node.state.getAllPossibleStates();
 
         for(State state: possibleStates) {
@@ -159,6 +108,69 @@ public class MCTS {
             newNode.parent = node;
             newNode.state.nextPlayer = !node.state.nextPlayer;
             node.children.add(newNode);
+        }
+    }
+
+    // Step 3- Simulation
+    // returns boolean value for whoever won
+    private boolean simulateRandomPlayout(Node node){
+
+        GameEngine gameEngine = new GameEngine();
+        Board board = node.state.board;
+        boolean nextPlayer = node.state.nextPlayer;
+
+        // creating player objects and passing them their pieces
+        ArrayList<Player> players = new ArrayList<Player>();
+        players.add(new AIPlayer(nextPlayer));
+        players.add(new AIPlayer(!nextPlayer));
+        ArrayList<Piece> player1Pieces = board.getPieces(nextPlayer);
+        ArrayList<Piece> player2Pieces = board.getPieces(!nextPlayer);
+        players.get(0).addPieces(player1Pieces);
+        players.get(1).addPieces(player2Pieces);
+        Player currentPlayer = players.get(0);
+
+        // if game is over (current player has no valid moves)
+        // and the opponent has won
+        if(players.get(0).getValidMoves(board).size() == 0
+            && nextPlayer != opponent){
+
+            node.parent.state.winScore = Integer.MIN_VALUE;
+            return !nextPlayer;
+        }
+
+        // simulate the game till it finishes, playing random moves
+        while(true){
+
+            ArrayList<Move> validMoves = currentPlayer.getValidMoves(board);
+            Random rand = new Random();
+
+            if(validMoves.size() == 0){
+
+                return currentPlayer.isWhite();
+            }
+
+            Move nextMove = validMoves.get(rand.nextInt(validMoves.size()));
+
+            gameEngine.updateBoard(nextMove, board, false);
+            currentPlayer = gameEngine.swapPlayers(players, currentPlayer);
+        }
+
+    }
+
+    // Step 4- Back-Propagation
+    private void backPropogation(Node node, boolean player){
+
+        while(node != null){
+
+            node.state.visitCount++;
+
+            if(node.state.nextPlayer == player){
+
+                // tempNode.getState().addScore(WIN_SCORE);
+                // Need to change this bit
+                node.state.winScore += 1;
+            }
+            node = node.parent;
         }
     }
 
@@ -172,7 +184,7 @@ public class MCTS {
 
             state = new State();
             parent = null;
-            children = new ArrayList<Node>();
+            children = new ArrayList<>();
         }
 
         public Node getChildWithMaxScore(){
@@ -235,14 +247,6 @@ public class MCTS {
             }
 
             return states;
-
-
-        }
-
-        // gets a list of all possible positions on the board and plays random move
-        public void randomPlay(){
-
-
         }
 
     }
