@@ -536,123 +536,6 @@ public class BoardTests {
         // The outcome of this should be "Second"
     }
 
-    public void testBasicAIGameWhiteFirst(){
-
-        ArrayList<Player> players = engine.setupPlayers(0);
-        ArrayList<Move> movesPlayed = new ArrayList<>();
-        Player currentPlayer = players.get(0);
-
-        Board board = new Board(3, 2);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        players.get(0).addPieces(whitePieces);
-        players.get(1).addPieces(blackPieces);
-
-        board.printBoard();
-
-        engine.startGame(board, movesPlayed, currentPlayer, players);
-
-    }
-
-    public void testBasicAIGameBlackFirst(){
-
-        ArrayList<Player> players = engine.setupPlayers(0);
-        ArrayList<Move> movesPlayed = new ArrayList<>();
-        Player currentPlayer = players.get(1);
-
-        Board board = new Board(3, 2);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        players.get(0).addPieces(whitePieces);
-        players.get(1).addPieces(blackPieces);
-
-        board.printBoard();
-
-        engine.startGame(board, movesPlayed, currentPlayer, players);
-
-    }
-
-    // testing AI play with 3 by 3 board
-    public void testBiggerAIGame(){
-
-        ArrayList<Player> players = engine.setupPlayers(0);
-        ArrayList<Move> movesPlayed = new ArrayList<>();
-        Player currentPlayer = players.get(0);
-
-        Board board = new Board(3, 3);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        players.get(0).addPieces(whitePieces);
-        players.get(1).addPieces(blackPieces);
-
-        board.printBoard();
-
-        engine.startGame(board, movesPlayed, currentPlayer, players);
-    }
-
-    // testing AI play with 3 by 3 board
-    public void testBiggerAIGame2(){
-
-        ArrayList<Player> players = engine.setupPlayers(0);
-        ArrayList<Move> movesPlayed = new ArrayList<>();
-        Player currentPlayer = players.get(0);
-
-        Board board = new Board(3, 4);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        board.burnSquare(2, 2);
-        board.burnSquare(0, 0);
-        board.burnSquare(0, 3);
-
-
-        players.get(0).addPieces(whitePieces);
-        players.get(1).addPieces(blackPieces);
-
-        board.printBoard();
-
-        engine.startGame(board, movesPlayed, currentPlayer, players);
-    }
-
     public void testHashCode(){
 
         Board board = new Board(3, 2);
@@ -856,6 +739,37 @@ public class BoardTests {
         board.burnSquare(1, 0);
         board.burnSquare(1, 1);
         board.burnSquare(1, 2);
+
+        board.printBoard();
+
+        GameValue gameValue = board.evaluate(null);
+        System.out.println(gameValue);
+    }
+    public void testEvaluateSplit2(){
+
+        Board board = new Board(3, 4);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,2));
+        board.addPiece(0, 2, blackPieces.get(0));
+        blackPieces.add(new Piece(false));
+        blackPieces.get(1).setPosition(board.getSquare(2,2));
+        board.addPiece(2, 2, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, whitePieces.get(0));
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(2,1));
+        board.addPiece(2, 1, whitePieces.get(0));
+
+        board.burnSquare(1, 0);
+        board.burnSquare(1, 1);
+        board.burnSquare(1, 2);
+        board.burnSquare(1, 3);
 
         board.printBoard();
 

@@ -758,6 +758,8 @@ public class Board {
 
             }
 
+            
+
             GameValue gameValueTotal = new GameValue();
             gameValueTotal = gameValueTotal.plus(gameValues.get(0), gameValues.get(1));
 

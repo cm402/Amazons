@@ -16,7 +16,34 @@ public class AIPlayer extends Player implements Serializable {
         return moves.get(rand.nextInt(moves.size()));
     }
 
-    public Move getBetterMove(Board board){
+    // Returns a move chosen using the strategy of giving the opponent the least move options
+    public Move getHeurisitcMove(Board board){
+
+        ArrayList<Move> validMoves = super.getValidMoves(board);
+
+        int counter = 1;
+        int minOpponentMoves = 0;
+        Move bestMove = null;
+
+        for(Move move: validMoves){
+
+            Board newBoard = board.playMove(board, move);
+
+            int opponentMoves = newBoard.getAllPossibleMoves(!this.isWhite()).size();
+
+            if(counter == 1 || opponentMoves < minOpponentMoves){
+
+                minOpponentMoves = opponentMoves;
+                bestMove = move;
+            }
+            counter++;
+        }
+
+        return bestMove;
+    }
+
+    // Returns a move that is chosen using the endgame database of partitions
+    public Move getEndgameMove(Board board){
 
         // TODO- change this so that the AIPlayer has its own partitions database hashmap object
         GameValue gameValue = board.evaluate(null);
@@ -40,7 +67,7 @@ public class AIPlayer extends Player implements Serializable {
             return null;
         } else {
 
-            return getBetterMove(board);
+            return getEndgameMove(board);
             //return getRandomMove(validMoves);
         }
     }

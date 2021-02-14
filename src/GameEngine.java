@@ -360,6 +360,9 @@ public class GameEngine {
         }
         */
 
+        AITests aiTests = new AITests();
+        aiTests.testHeuristicMove();
+
         PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
         //partitionTests.fillPartitionsDatabase();
@@ -373,9 +376,10 @@ public class GameEngine {
         //boardTests.testSmallestHashValue();
         //boardTests.testPartitionsDBSpeed();
         //boardTests.testPartitionsDBSaved();
-        boardTests.testEvaluateSplit();
+        //boardTests.testEvaluateSplit();
+        //boardTests.testEvaluateSplit2();
 
-        //GameValueTests gameValueTests = new GameValueTests();
+        GameValueTests gameValueTests = new GameValueTests();
         //gameValueTests.testGetSimplestForm();
         //gameValueTests.testIsSimpleFraction();
         //gameValueTests.testSimplify();
