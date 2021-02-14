@@ -26,7 +26,7 @@ public class GameEngine {
     }
 
 
-    private void updateBoard(Move nextMove, Board board, boolean printBoard){
+    public void updateBoard(Move nextMove, Board board, boolean printBoard){
 
         board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
         board.burnSquare(nextMove.getBurnedSquare().getX(), nextMove.getBurnedSquare().getY());
@@ -36,7 +36,7 @@ public class GameEngine {
         }
     }
 
-    private Player swapPlayers(ArrayList<Player> players, Player currentPlayer){
+    public Player swapPlayers(ArrayList<Player> players, Player currentPlayer){
 
         if(players.indexOf(currentPlayer) == 0){
             return players.get(1);
@@ -133,7 +133,7 @@ public class GameEngine {
 
     // simulates the game board that is passed in
     // returns true if white wins, false if black wins
-    private Boolean simulateGame(Board board, Player currentPlayer, ArrayList<Player> players){
+    public Boolean simulateGame(Board board, Player currentPlayer, ArrayList<Player> players){
 
         while(true){
 
@@ -361,7 +361,8 @@ public class GameEngine {
         */
 
         AITests aiTests = new AITests();
-        aiTests.testHeuristicMove();
+        //aiTests.testHeuristicMove();
+        aiTests.testMonteCarloMove();
 
         PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();

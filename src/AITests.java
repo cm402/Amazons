@@ -121,7 +121,8 @@ public class AITests {
         engine.startGame(board, movesPlayed, currentPlayer, players);
     }
 
-    // testing
+    // testing that the new move heuristic of playing a move that limits the
+    // other players moves
     public void testHeuristicMove(){
 
         Board board = new Board(3, 3);
@@ -137,11 +138,37 @@ public class AITests {
         whitePieces.get(0).setPosition(board.getSquare(0,0));
         board.addPiece(0, 0, whitePieces.get(0));
 
-        //board.burnSquare(1, 0);
+        AIPlayer player = new AIPlayer(false);
+        player.addPieces(blackPieces);
+        Move move = player.getHeuristicMove(board);
+
+        board.printBoard();
+
+        Board newBoard = board.playMove(board, move);
+        newBoard.printBoard();
+
+    }
+
+    // testing that the new move heuristic of playing a move that limits the
+    // other players moves
+    public void testMonteCarloMove(){
+
+        Board board = new Board(3, 3);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(2,2));
+        board.addPiece(2, 2, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, whitePieces.get(0));
 
         AIPlayer player = new AIPlayer(false);
         player.addPieces(blackPieces);
-        Move move = player.getHeurisitcMove(board);
+        Move move = player.getMonteCarloMove(board);
 
         board.printBoard();
 

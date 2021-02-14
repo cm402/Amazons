@@ -16,8 +16,16 @@ public class AIPlayer extends Player implements Serializable {
         return moves.get(rand.nextInt(moves.size()));
     }
 
+    // Returns a move chosen using a monte-carlo tree search strategy
+    public Move getMonteCarloMove(Board board){
+
+        MCTS mcts = new MCTS();
+
+        return mcts.getNextMove(board, this.isWhite(), 5);
+    }
+
     // Returns a move chosen using the strategy of giving the opponent the least move options
-    public Move getHeurisitcMove(Board board){
+    public Move getHeuristicMove(Board board){
 
         ArrayList<Move> validMoves = super.getValidMoves(board);
 
