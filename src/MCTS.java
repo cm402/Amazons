@@ -9,8 +9,7 @@ public class MCTS {
 
     public Move getNextMove(Board board, boolean nextPlayer, int moveTime){
 
-        Tree tree = new Tree();
-        Node root = tree.root;
+        Node root = new Node();
         root.state.board = board;
         root.state.nextPlayer = nextPlayer;
 
@@ -57,7 +56,6 @@ public class MCTS {
         }
 
         Node winnerNode = root.getChildWithMaxScore();
-        tree.root = winnerNode;
 
         return winnerNode.state.move;
     }
@@ -66,6 +64,7 @@ public class MCTS {
     private Node selectPromisingNode(Node rootNode){
 
         Node node = rootNode;
+
         while(node.children.size() != 0){
 
             node = findBestNodeWithUCT(node);
@@ -123,10 +122,8 @@ public class MCTS {
         ArrayList<Player> players = new ArrayList<Player>();
         players.add(new AIPlayer(nextPlayer));
         players.add(new AIPlayer(!nextPlayer));
-        ArrayList<Piece> player1Pieces = board.getPieces(nextPlayer);
-        ArrayList<Piece> player2Pieces = board.getPieces(!nextPlayer);
-        players.get(0).addPieces(player1Pieces);
-        players.get(1).addPieces(player2Pieces);
+        players.get(0).addPieces(board.getPieces(nextPlayer));
+        players.get(1).addPieces(board.getPieces(!nextPlayer));
         Player currentPlayer = players.get(0);
 
         // if game is over (current player has no valid moves)
@@ -160,17 +157,19 @@ public class MCTS {
     // Step 4- Back-Propagation
     private void backPropogation(Node node, boolean player){
 
-        while(node != null){
+        Node tempNode = node;
 
-            node.state.visitCount++;
+        while(tempNode != null){
 
-            if(node.state.nextPlayer == player){
+            tempNode.state.visitCount++;
 
-                // tempNode.getState().addScore(WIN_SCORE);
-                // Need to change this bit
-                node.state.winScore += 1;
+            // if the current nodes player is whoever won the game at the
+            // bottom of the tree, add 1 to their score at the current node
+            if(tempNode.state.nextPlayer == player){
+
+                tempNode.state.winScore += 1;
             }
-            node = node.parent;
+            tempNode = tempNode.parent;
         }
     }
 
@@ -184,7 +183,7 @@ public class MCTS {
 
             state = new State();
             parent = null;
-            children = new ArrayList<>();
+            children = new ArrayList<Node>();
         }
 
         public Node getChildWithMaxScore(){
@@ -202,17 +201,6 @@ public class MCTS {
 
             return maxChild;
         }
-
-    }
-
-    private class Tree{
-        Node root;
-
-        public Tree(){
-
-            root = new Node();
-        }
-
     }
 
     private class State {
