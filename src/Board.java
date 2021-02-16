@@ -28,15 +28,17 @@ public class Board {
         for(int x = 0; x < columnBoardSize; x++){
             for(int y = 0; y < rowBoardSize; y++){
 
+                Piece piece = squares[x][y].getAmazon();
+
                 // Each square has 4 possible states, so using that
                 // information to generate a hash code value
                 if(squares[x][y].isBurnt()){
                     result = prime * result + 0;
-                } else if(squares[x][y].getAmazon() == null){
+                } else if(piece == null){
                     result = prime * result + 1;
-                } else if(squares[x][y].getAmazon().isWhite()){
+                } else if(piece.isWhite()){
                     result = prime * result + 2;
-                } else if(squares[x][y].getAmazon().isWhite()){
+                } else {
                     result = prime * result + 3;
                 }
 

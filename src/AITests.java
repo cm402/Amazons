@@ -88,7 +88,7 @@ public class AITests {
         engine.startGame(board, movesPlayed, currentPlayer, players);
     }
 
-    // testing AI play with 3 by 3 board
+    // testing AI play with 3 by 4 board
     public void testBiggerAIGame2(){
 
         ArrayList<Player> players = engine.setupPlayers(0);
