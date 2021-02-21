@@ -5,11 +5,19 @@ import java.util.Random;
 
 public class AIPlayer extends Player implements Serializable {
 
-    // constructor
+    private static final long serialVersionUID = 4L;
+
+    HashMap<Integer, GameValue> partitionsDB;
+
     public AIPlayer(boolean white){
         super(white, false);
     }
 
+    public AIPlayer(boolean white, HashMap<Integer, GameValue> partitionsDB){
+        super(white, false);
+        this.partitionsDB = partitionsDB;
+
+    }
 
     public Move getRandomMove(ArrayList<Move> moves){
         Random rand = new Random();
@@ -53,8 +61,7 @@ public class AIPlayer extends Player implements Serializable {
     // Returns a move that is chosen using the endgame database of partitions
     public Move getEndgameMove(Board board){
 
-        // TODO- change this so that the AIPlayer has its own partitions database hashmap object
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate(partitionsDB);
         gameValue.simplify();
 
         if(this.isWhite()){
@@ -74,6 +81,12 @@ public class AIPlayer extends Player implements Serializable {
         if(validMoves.isEmpty()){
             return null;
         } else {
+
+            // TODO- use experiments to decide when to switch between move strategies
+            // Initial plan
+            // 1. Heuristic for first 5 or 10 moves, depending on board size
+            // 2. Monte Carlo for middle-game
+            // 3. Once board split into partitions that are small enough, use endgame move
 
             return getEndgameMove(board);
             //return getRandomMove(validMoves);

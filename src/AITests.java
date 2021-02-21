@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AITests {
 
@@ -174,6 +175,40 @@ public class AITests {
 
         Board newBoard = board.playMove(board, move);
         newBoard.printBoard();
+
+    }
+
+    // testing that an AIPlayer object that is passed the partitions DB, then uses it to search for a move
+    // NOTE- ensure that partitionTests.fillPartitionsDB has been run first, to fill the partitions DB
+    public void testAIWithPartitionsDB(){
+
+        // 1. Setting up a board that will be stored in partitions database
+        Board board = new Board(2, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        // 2. Reading Partitions DB from file (this will be done in GameEngine)
+        FileInputOutput fio = new FileInputOutput();
+        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+
+        // 3. Passing DB to AI player, using constructor
+        AIPlayer player = new AIPlayer(false, partitionsDB);
+        player.addPieces(blackPieces);
+
+        Move move = player.getEndgameMove(board);
+
+        System.out.println(move.toString());
 
     }
 }

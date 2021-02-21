@@ -360,13 +360,14 @@ public class GameEngine {
         }
         */
 
-        AITests aiTests = new AITests();
-        //aiTests.testHeuristicMove();
-        aiTests.testMonteCarloMove();
-
         PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
         //partitionTests.fillPartitionsDatabase();
+
+        AITests aiTests = new AITests();
+        //aiTests.testHeuristicMove();
+        //aiTests.testMonteCarloMove();
+        aiTests.testAIWithPartitionsDB();
 
         BoardTests boardTests = new BoardTests();
         //boardTests.testBiggerAIGame2();

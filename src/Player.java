@@ -5,6 +5,8 @@ import java.util.HashMap;
 // didn't use interface as it can't extend serializable
 public class Player implements Serializable {
 
+    private static final long serialVersionUID = 4L;
+
     private boolean white;
     private boolean human;
     private ArrayList<Piece> pieces;

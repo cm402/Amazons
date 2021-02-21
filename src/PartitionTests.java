@@ -537,7 +537,7 @@ public class PartitionTests {
     // Board variations, up to a specified max size
     public void fillPartitionsDatabase(){
 
-        ArrayList<Board> boards = generateAllBoardCombinations(3);
+        ArrayList<Board> boards = generateAllBoardCombinations(2);
         // getting partitions Database from file
         FileInputOutput fio = new FileInputOutput();
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
