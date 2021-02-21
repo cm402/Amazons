@@ -74,7 +74,7 @@ public class MCTS {
     }
 
     // Returns a UCT (Upper Confidence Bound), using the formula
-    public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
+    public static double getUCT(int totalVisit, double nodeWinScore, int nodeVisit) {
 
         // used to ensure that nodes that haven't been visited yet get priority
         if (nodeVisit == 0) {
@@ -88,10 +88,22 @@ public class MCTS {
     // Returns the best node to use, using the UCT
     public static Node findBestNodeWithUCT(Node node) {
 
-        int parentVisit = node.state.visitCount;
+        double max = 0;
+        int bestNodeIndex = 0;
 
-        return Collections.max(node.children,
-                Comparator.comparing(c -> uctValue(parentVisit, c.state.winScore, c.state.visitCount)));
+        for(int i = 0; i < node.children.size(); i++){
+
+            State childState = node.children.get(i).state;
+            double currentValue = getUCT(node.state.visitCount, childState.winScore, childState.visitCount);
+
+            if(currentValue > max){
+
+                max = currentValue;
+                bestNodeIndex = i;
+            }
+        }
+
+        return node.children.get(bestNodeIndex);
     }
 
     // Step 2- Expansion
@@ -131,7 +143,8 @@ public class MCTS {
         if(players.get(0).getValidMoves(board).size() == 0
             && nextPlayer != opponent){
 
-            node.parent.state.winScore = Integer.MIN_VALUE;
+            //node.parent.state.winScore -= 1;
+            //node.parent.state.winScore = Integer.MIN_VALUE;
             return !nextPlayer;
         }
 
@@ -175,6 +188,7 @@ public class MCTS {
 
 
     private class Node{
+
         State state;
         Node parent;
         ArrayList<Node> children;
@@ -200,6 +214,26 @@ public class MCTS {
             }
 
             return maxChild;
+        }
+
+        public double getVisitPercentage(){
+
+            return (double) this.state.visitCount / this.parent.state.visitCount;
+
+        }
+
+        public Node getChildWithMostVisits(){
+
+            Node max = children.get(0);
+
+            for(Node child: children){
+
+                if(child.getVisitPercentage() > max.getVisitPercentage()){
+                    max = child;
+                }
+            }
+            return max;
+
         }
     }
 
