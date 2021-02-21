@@ -28,7 +28,9 @@ public class MCTS {
             // 4. Propagate the result back up the tree
 
             Node promisingNode = selectPromisingNode(root);
-            Board promisingNodeBoard = promisingNode.state.board;
+
+            // creating a new copy of the board to use
+            Board promisingNodeBoard = board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
 
             Player player = new Player(nextPlayer, true);
             ArrayList<Piece> pieces = promisingNodeBoard.getPieces(nextPlayer);
@@ -73,18 +75,6 @@ public class MCTS {
         return node;
     }
 
-    // Returns a UCT (Upper Confidence Bound), using the formula
-    public static double getUCT(int totalVisit, double nodeWinScore, int nodeVisit) {
-
-        // used to ensure that nodes that haven't been visited yet get priority
-        if (nodeVisit == 0) {
-            return Integer.MAX_VALUE;
-        }
-
-        return ((double) nodeWinScore / (double) nodeVisit)
-                + 1.41 * Math.sqrt(Math.log(totalVisit) / (double) nodeVisit);
-    }
-
     // Returns the best node to use, using the UCT
     public static Node findBestNodeWithUCT(Node node) {
 
@@ -93,8 +83,7 @@ public class MCTS {
 
         for(int i = 0; i < node.children.size(); i++){
 
-            State childState = node.children.get(i).state;
-            double currentValue = getUCT(node.state.visitCount, childState.winScore, childState.visitCount);
+            double currentValue = node.children.get(i).getUCT();
 
             if(currentValue > max){
 
@@ -234,6 +223,18 @@ public class MCTS {
             }
             return max;
 
+        }
+
+        // Returns a UCT (Upper Confidence Bound), using the formula
+        public double getUCT() {
+
+            // used to ensure that nodes that haven't been visited yet get priority
+            if (this.state.visitCount == 0) {
+                return Integer.MAX_VALUE;
+            }
+
+            return ((double) this.state.winScore / (double) this.state.visitCount)
+                    + 1.41 * Math.sqrt(Math.log(this.parent.state.visitCount) / (double) this.state.winScore);
         }
     }
 
