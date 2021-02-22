@@ -122,9 +122,8 @@ public class MCTS {
         Board nodeBoard = node.state.board;
         Board simulBoard = nodeBoard.newBoard(nodeBoard, 0, 0, nodeBoard.getColumnBoardSize() - 1, nodeBoard.getRowBoardSize() - 1, -1);
 
+        // setup of player objects
         boolean nextPlayer = node.state.nextPlayer;
-
-        // creating player objects and passing them their pieces
         ArrayList<AIPlayer> players = new ArrayList<>();
         players.add(new AIPlayer(nextPlayer));
         players.add(new AIPlayer(!nextPlayer));
@@ -132,22 +131,21 @@ public class MCTS {
         players.get(1).addPieces(simulBoard.getPieces(!nextPlayer));
         Player currentPlayer = players.get(0);
 
-        // if game is over (current player has no valid moves)
-        // and the opponent has won
-        if(players.get(0).getValidMoves(simulBoard).size() == 0
-            && nextPlayer != opponent){
+        // if game is over, return previous player to move
+        if(players.get(0).getValidMoves(simulBoard).size() == 0){
 
             return !nextPlayer;
         }
 
-        // simulate the game till it finishes, playing random moves
+        // simulate the game, returning winner
         while(true){
 
             ArrayList<Move> validMoves = currentPlayer.getValidMoves(simulBoard);
 
             if(validMoves.size() == 0){
 
-                return currentPlayer.isWhite();
+                // if current player can't move, return other player
+                return !currentPlayer.isWhite();
             }
 
             // random move choice
@@ -155,7 +153,7 @@ public class MCTS {
             Move nextMove = validMoves.get(rand.nextInt(validMoves.size()));
 
             // Heuristic move choice
-            //Move nextMove = ((AIPlayer) currentPlayer).getHeuristicMove(simulBoard);
+            // Move nextMove = ((AIPlayer) currentPlayer).getHeuristicMove(simulBoard);
 
             gameEngine.updateBoard(nextMove, simulBoard, false);
 

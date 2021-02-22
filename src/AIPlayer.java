@@ -29,7 +29,7 @@ public class AIPlayer extends Player implements Serializable {
 
         MCTS mcts = new MCTS();
 
-        return mcts.getNextMove(board, this.isWhite(), 5);
+        return mcts.getNextMove(board, this.isWhite(), 10);
     }
 
     // Returns a move chosen using the strategy of giving the opponent the least move options
