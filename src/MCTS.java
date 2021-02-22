@@ -26,35 +26,36 @@ public class MCTS {
         while(System.currentTimeMillis() < endTime){
 
             // 1. select "promising" node using UCT
-            // 2. if board doesn't have a winner, expand it
-            // 3. Either "playout" the current node, or if it has children "playout" one of them
+            // 2. if not visited before, simulate game
+            // 3. else expand the tree and simulate a random child node
             // 4. Propagate the result back up the tree
 
             Node promisingNode = selectPromisingNode(root);
+            boolean playoutResult;
 
-            Player player = new Player(nextPlayer, true);
-            ArrayList<Piece> pieces = promisingNode.state.board.getPieces(nextPlayer);
-            player.addPieces(pieces);
+            if (promisingNode.state.visitCount == 0) {
 
-            ArrayList<Move> validMoves = player.getValidMoves(promisingNode.state.board);
+                playoutResult = simulateRandomPlayout(promisingNode);
 
-            // if "promising" nodes game isn't finished, we aren't at a leaf node, so expand
-            if(validMoves.size() != 0){
+            } else {
 
                 expandNode(promisingNode);
+
+                // if there are children nodes, randomly select one to simulate
+                if(promisingNode.children.size() > 0){
+
+                    Random random = new Random();
+                    int randomIndex = random.nextInt(promisingNode.children.size());
+
+                    promisingNode = promisingNode.children.get(randomIndex);
+
+                }
+
+                playoutResult = simulateRandomPlayout(promisingNode);
             }
 
-            // if "promising" node has children nodes, randomly choose one to play-out
-            if(promisingNode.children.size() > 0){
-
-                Random random = new Random();
-                int randomIndex = random.nextInt(promisingNode.children.size());
-
-                promisingNode = promisingNode.children.get(randomIndex);
-            }
-
-            boolean playoutResult = simulateRandomPlayout(promisingNode);
             backPropogation(promisingNode, playoutResult, nextPlayer);
+
         }
 
         Node winnerNode = root.getChildWithMaxScore();
@@ -244,7 +245,7 @@ public class MCTS {
             }
 
             return ((double) this.state.winScore / (double) this.state.visitCount)
-                    + 1.41 * Math.sqrt(Math.log(this.parent.state.visitCount) / (double) this.state.visitCount);
+                    + 2 * Math.sqrt(Math.log(this.parent.state.visitCount) / (double) this.state.visitCount);
         }
     }
 
