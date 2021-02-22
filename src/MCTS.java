@@ -125,7 +125,7 @@ public class MCTS {
         boolean nextPlayer = node.state.nextPlayer;
 
         // creating player objects and passing them their pieces
-        ArrayList<Player> players = new ArrayList<Player>();
+        ArrayList<AIPlayer> players = new ArrayList<>();
         players.add(new AIPlayer(nextPlayer));
         players.add(new AIPlayer(!nextPlayer));
         players.get(0).addPieces(simulBoard.getPieces(nextPlayer));
@@ -144,17 +144,27 @@ public class MCTS {
         while(true){
 
             ArrayList<Move> validMoves = currentPlayer.getValidMoves(simulBoard);
-            Random rand = new Random();
 
             if(validMoves.size() == 0){
 
                 return currentPlayer.isWhite();
             }
 
+            // random move choice
+            Random rand = new Random();
             Move nextMove = validMoves.get(rand.nextInt(validMoves.size()));
 
+            // Heuristic move choice
+            //Move nextMove = ((AIPlayer) currentPlayer).getHeuristicMove(simulBoard);
+
             gameEngine.updateBoard(nextMove, simulBoard, false);
-            currentPlayer = gameEngine.swapPlayers(players, currentPlayer);
+
+            // swap the players
+            if(players.indexOf(currentPlayer) == 0){
+                currentPlayer = players.get(1);
+            } else {
+                currentPlayer = players.get(0);
+            }
         }
 
     }

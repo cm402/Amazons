@@ -88,9 +88,9 @@ public class AIPlayer extends Player implements Serializable {
             // 2. Monte Carlo for middle-game
             // 3. Once board split into partitions that are small enough, use endgame move
 
-            //return getMonteCarloMove(board);
+            return getMonteCarloMove(board);
             //return getHeuristicMove(board);
-            return getEndgameMove(board);
+            //return getEndgameMove(board);
             //return getRandomMove(validMoves);
         }
     }
