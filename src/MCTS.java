@@ -153,7 +153,7 @@ public class MCTS {
             Move nextMove = validMoves.get(rand.nextInt(validMoves.size()));
 
             // Heuristic move choice
-            // Move nextMove = ((AIPlayer) currentPlayer).getHeuristicMove(simulBoard);
+            //Move nextMove = ((AIPlayer) currentPlayer).getHeuristicMove(simulBoard);
 
             gameEngine.updateBoard(nextMove, simulBoard, false);
 

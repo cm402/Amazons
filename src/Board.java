@@ -595,8 +595,11 @@ public class Board {
         return invertedBoard;
     }
 
-    // returns the smallest hash code value from all the variants of the current board
-    public Integer getSmallestHashValue(){
+    // First element in returned list is the smallest hash value in the boards variants
+    // Second element in the returned list is an integer that indicates what variation was applied
+    public ArrayList<Integer> getSmallestHashValue(){
+
+        // 1. Adding all board variants to a list
 
         ArrayList<Board> variants = new ArrayList<>();
 
@@ -612,7 +615,7 @@ public class Board {
         variants.add(invertedBoard.flipVertical());
         variants.add(invertedBoard.rotate().rotate());
 
-        // if board is a square, 8 more possible variants
+        // Special case- if board is a square, 8 more possible variants
         if(this.getColumnBoardSize() == this.getRowBoardSize()){
 
             variants.add(this.rotate());
@@ -626,27 +629,41 @@ public class Board {
             variants.add(invertedBoard.rotate().rotate().rotate().flipHorizontal());
         }
 
+        // 2. Standard find min algorithm to retrieve the smallest hash value from list
+
         Integer minValue = this.hashCode();
 
-        for(Board board: variants){
+        // Indicates what variation was applied to get the minimum Hash value
+        int boardVariationType = 0;
 
-            Integer hashValue = board.hashCode();
+        for(int i = 0; i < variants.size(); i++){
+
+            Integer hashValue = variants.get(i).hashCode();
 
             if(hashValue < minValue){
                 minValue = hashValue;
+                boardVariationType = i;
             }
+
         }
 
-        return minValue;
+        ArrayList<Integer> returnArray = new ArrayList<>();
+        returnArray.add(minValue);
+        returnArray.add(boardVariationType);
+
+        return returnArray;
     }
 
     // returns the current boards GameValue object if stored in the partitions database, or null otherwise
     public GameValue getGameValue(HashMap<Integer, GameValue> partitionsDB){
 
-        Integer hashValue = getSmallestHashValue();
+        ArrayList<Integer> hashValueAndVaritation = this.getSmallestHashValue();
+
+        Integer smallestHashValue = hashValueAndVaritation.get(0);
+        Integer variation = hashValueAndVaritation.get(0);
 
         // will either return gameValue object, or null
-        return partitionsDB.get(hashValue);
+        return partitionsDB.get(smallestHashValue);
 
     }
 
@@ -744,7 +761,7 @@ public class Board {
                 // storing the GameValue in the database, to save evaluating it next time
 
                 gameValue.simplify();
-                partitionsDB.put(this.getSmallestHashValue(), gameValue);
+                partitionsDB.put(this.getSmallestHashValue().get(0), gameValue);
             }
 
 
@@ -760,7 +777,6 @@ public class Board {
 
             }
 
-            
 
             GameValue gameValueTotal = new GameValue();
             gameValueTotal = gameValueTotal.plus(gameValues.get(0), gameValues.get(1));
@@ -778,7 +794,7 @@ public class Board {
 
             if(partitionsDB != null){
 
-                partitionsDB.put(this.getSmallestHashValue(), gameValueTotal);
+                partitionsDB.put(this.getSmallestHashValue().get(0), gameValueTotal);
             }
 
             gameValueTotal.simplify();

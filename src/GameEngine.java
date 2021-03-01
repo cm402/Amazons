@@ -368,7 +368,7 @@ public class GameEngine {
         //aiTests.testHeuristicMove();
         //aiTests.testMonteCarloMove();
         //aiTests.testAIWithPartitionsDB();
-        aiTests.testBasicAIGameBlackFirst();
+        //aiTests.testBasicAIGameBlackFirst();
         //aiTests.testBasicAIGameWhiteFirst();
 
         BoardTests boardTests = new BoardTests();

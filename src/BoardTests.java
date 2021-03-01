@@ -616,10 +616,10 @@ public class BoardTests {
         board.addPiece(1, 0, whitePieces.get(0));
 
         board.printBoard();
-        int hash = board.getSmallestHashValue();
+        int hash = board.getSmallestHashValue().get(0);
         System.out.println(hash);
 
-        int hash2 = board.getSmallestHashValue();
+        int hash2 = board.getSmallestHashValue().get(0);
         System.out.println(hash2);
 
     }
