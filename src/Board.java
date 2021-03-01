@@ -657,13 +657,12 @@ public class Board {
     // returns the current boards GameValue object if stored in the partitions database, or null otherwise
     public GameValue getGameValue(HashMap<Integer, GameValue> partitionsDB){
 
-        ArrayList<Integer> hashValueAndVaritation = this.getSmallestHashValue();
-
-        Integer smallestHashValue = hashValueAndVaritation.get(0);
-        Integer variation = hashValueAndVaritation.get(0);
+        //ArrayList<Integer> hashValueAndVaritation = this.getSmallestHashValue();
+        //Integer smallestHashValue = hashValueAndVaritation.get(0);
+        //Integer variation = hashValueAndVaritation.get(0);
 
         // will either return gameValue object, or null
-        return partitionsDB.get(smallestHashValue);
+        return partitionsDB.get(this.hashCode());
 
     }
 
@@ -761,7 +760,8 @@ public class Board {
                 // storing the GameValue in the database, to save evaluating it next time
 
                 gameValue.simplify();
-                partitionsDB.put(this.getSmallestHashValue().get(0), gameValue);
+                partitionsDB.put(this.hashCode(), gameValue);
+                //partitionsDB.put(this.getSmallestHashValue().get(0), gameValue);
             }
 
 
@@ -794,7 +794,8 @@ public class Board {
 
             if(partitionsDB != null){
 
-                partitionsDB.put(this.getSmallestHashValue().get(0), gameValueTotal);
+                partitionsDB.put(this.hashCode(), gameValueTotal);
+                //partitionsDB.put(this.getSmallestHashValue().get(0), gameValueTotal);
             }
 
             gameValueTotal.simplify();

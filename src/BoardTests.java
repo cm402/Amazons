@@ -777,4 +777,32 @@ public class BoardTests {
         System.out.println(gameValue);
     }
 
+    public void testGetGameValue(){
+
+        Board board = new Board(2, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,1));
+        board.addPiece(1, 1, whitePieces.get(0));
+
+        board.burnSquare(1, 0);
+
+        // getting partitions Database from file
+        FileInputOutput fio = new FileInputOutput();
+        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+
+        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue1 = board.evaluate(partitionsDB);
+
+        System.out.println("testing");
+
+    }
+
 }

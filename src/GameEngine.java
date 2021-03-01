@@ -372,6 +372,7 @@ public class GameEngine {
         //aiTests.testBasicAIGameWhiteFirst();
 
         BoardTests boardTests = new BoardTests();
+        boardTests.testGetGameValue();
         //boardTests.testBiggerAIGame2();
         //boardTests.testPartitionsDBLarge();
         //boardTests.testEvalutate3();
