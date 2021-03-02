@@ -598,32 +598,6 @@ public class BoardTests {
 
     }
 
-    public void testSmallestHashValue(){
-
-        Board board = new Board(3, 2);
-        board.setupBoard();
-
-        // adding the piece to the board correctly so that we can look at valid moves
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        board.printBoard();
-        int hash = board.getSmallestHashValue().get(0);
-        System.out.println(hash);
-
-        int hash2 = board.getSmallestHashValue().get(0);
-        System.out.println(hash2);
-
-    }
-
     public void testPartitionsDBSpeed(){
 
         Board board = new Board(3, 2);
@@ -826,19 +800,43 @@ public class BoardTests {
 
         Square rotatedSquare = new Square(2, 1, null, true);
 
+
         for(int i = 0; i < 4; i++){
 
             Board board = new Board(3, 3);
             board.setupBoard();
 
             board.burnSquare(rotatedSquare.getX(), rotatedSquare.getY());
-
             board.printBoard();
 
-            rotatedSquare = board.rotatePoint(rotatedSquare.getX(), rotatedSquare.getY());
+            rotatedSquare = board.rotatePoint(rotatedSquare);
 
         }
 
+    }
+
+    // testing that we correctly transform our GameValue objects
+    public void testTransformingGameValues(){
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+        board.printBoard();
+
+        GameValue gameValue = board.evaluate(null);
+        System.out.println(gameValue.toString());
+        gameValue.simplify();
+        System.out.println(gameValue.toString());
     }
 
 }

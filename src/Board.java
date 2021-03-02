@@ -594,7 +594,8 @@ public class Board {
 
     // First element in returned list is the smallest hash value in the boards variants
     // Second element in the returned list is an integer that indicates what variation was applied
-    public ArrayList<Integer> getSmallestHashValue(){
+    // Parameter being passed into method is also used to return the smallest hash Board object
+    public SmallestHashValue getSmallestHashValue(){
 
         // 1. Adding all board variants to a list
 
@@ -644,78 +645,200 @@ public class Board {
 
         }
 
-        ArrayList<Integer> returnArray = new ArrayList<>();
-        returnArray.add(minValue);
-        returnArray.add(boardVariationType);
+        // 3. Storing smallest hash board, value & transformation from current board
+        SmallestHashValue smallestHashValue = new SmallestHashValue();
 
-        return returnArray;
+        smallestHashValue.hashValue = minValue;
+        smallestHashValue.transformation = boardVariationType;
+        smallestHashValue.board = variants.get(boardVariationType);
+
+        return smallestHashValue;
     }
 
     // rotates a point 90 degrees clockwise
-    public Square rotatePoint(int x, int y){
+    public Square rotatePoint(Square square){
 
         ArrayList<Integer> newPoint = new ArrayList<>();
 
         // x' = y
-        int newX = y;
+        int newX = square.getY();
 
         // y' = maximum y index - x
-        int newY = this.getRowBoardSize() - 1 - x;
+        int newY = this.getRowBoardSize() - 1 - square.getX();
 
         return new Square(newX, newY, null, false);
     }
 
     // rotates a point 90 degrees anti-clockwise
-    public Square rotatePointAnti(int x, int y){
+    public Square rotatePointAnti(Square square){
 
         ArrayList<Integer> newPoint = new ArrayList<>();
 
         // x' = maximum x index - y
-        int newX = this.getColumnBoardSize() - 1 - y;
+        int newX = this.getColumnBoardSize() - 1 - square.getY();
 
         // y' = x
-        int newY = x;
+        int newY = square.getX();
 
         return new Square(newX, newY, null, false);
     }
 
     // flips a point on a horizontal axis
-    public Square flipPointHorizontal(int x, int y){
+    public Square flipPointHorizontal(Square square){
 
         ArrayList<Integer> newPoint = new ArrayList<>();
 
-        // x' = x
-        int newX = x;
+        // x' = maximum x index - x
+        int newX = this.getColumnBoardSize() - 1 - square.getX();
 
-        // y' = maximum y index - y
-        int newY = this.getRowBoardSize() - 1 - y;
+        // y' = y
+        int newY = square.getY();
 
         return new Square(newX, newY, null, false);
     }
 
     // flips a point on a vertical axis
-    public Square flipPointVertical(int x, int y){
+    public Square flipPointVertical(Square square) {
 
         ArrayList<Integer> newPoint = new ArrayList<>();
 
-        // x' = maximum x index - x
-        int newX = this.getColumnBoardSize() - 1 - x;
+        // x' = x
+        int newX = square.getX();
 
-        // y' = y
-        int newY = y;
+        // y' = maximum y index - y
+        int newY = this.getRowBoardSize() - 1 - square.getY();
 
         return new Square(newX, newY, null, false);
+    }
+
+    // used to store the smalled board, its hash value, and the transformation from the current board to it.
+    private class SmallestHashValue {
+
+        int hashValue;
+        int transformation;
+        Board board;
+
+    }
+
+    // applies a specific transformation to a Moves Squares
+    public Move transformMove(Move oldMove, int transformation){
+
+        Move newMove = null;
+
+        Square start = oldMove.getStartPosition();
+        Square end = oldMove.getEndPosition();
+        Square shoot = oldMove.getBurnedSquare();
+
+        Square newStart = start;
+        Square newEnd = end;
+        Square newShoot = shoot;
+
+        if(transformation == 0 || transformation == 4){
+
+            return oldMove;
+
+        } else if(transformation == 1 || transformation == 5){
+
+            newStart = flipPointHorizontal(start);
+            newEnd = flipPointHorizontal(end);
+            newShoot = flipPointHorizontal(shoot);
+
+        } else if(transformation == 2 || transformation == 6){
+
+            newStart = flipPointVertical(start);
+            newEnd = flipPointVertical(end);
+            newShoot = flipPointVertical(shoot);
+
+        } else if(transformation == 3 || transformation == 7){
+
+            newStart = rotatePoint(rotatePoint(start));
+            newEnd = rotatePoint(rotatePoint(end));
+            newShoot = rotatePoint(rotatePoint(shoot));
+
+        } else if(transformation == 8 || transformation == 12){
+
+            newStart = rotatePointAnti(start);
+            newEnd = rotatePointAnti(end);
+            newShoot = rotatePointAnti(shoot);
+
+        } else if(transformation == 9 || transformation == 13){
+
+            newStart = rotatePoint(start);
+            newEnd = rotatePoint(end);
+            newShoot = rotatePoint(shoot);
+
+        } else if(transformation == 10 || transformation == 14){
+
+            newStart = rotatePointAnti(flipPointHorizontal(start));
+            newEnd = rotatePointAnti(flipPointHorizontal(end));
+            newShoot = rotatePointAnti(flipPointHorizontal(shoot));
+
+        } else if(transformation == 11 || transformation == 15){
+
+            newStart = rotatePoint(flipPointHorizontal(start));
+            newEnd = rotatePoint(flipPointHorizontal(end));
+            newShoot = rotatePoint(flipPointHorizontal(shoot));
+
+        }
+
+        newMove = new Move(oldMove.getPlayer(), newStart, newEnd, newShoot);
+
+        return newMove;
+
+    }
+
+    // transforms a GameValue from the smallestHashBoard, to the current board
+    public GameValue transformGameValue(SmallestHashValue smallestHash, GameValue smallestHashGameValue){
+
+        int transform = smallestHash.transformation;
+
+        GameValue transformedGameValue = new GameValue();
+
+        // 1. For each of the child "option" GameValues, translate the Move from the current board to smallest hash code board
+
+        // if transformation is 0-3 or 8-11, no inverse required
+        if(transform >= 4 && transform <= 7 || transform >= 12 && transform <= 15){
+
+            // swapping left and right sides, for inversion
+            transformedGameValue.left = smallestHashGameValue.right;
+            transformedGameValue.right = smallestHashGameValue.left;
+
+            // transforming each of the moves
+            for(GameValue leftOption: transformedGameValue.left){
+
+                Move newMove = transformMove(leftOption.move, transform);
+
+                leftOption.move = newMove;
+            }
+
+            for(GameValue rightOption: transformedGameValue.right){
+
+                Move newMove = transformMove(rightOption.move, transform);
+
+                rightOption.move = newMove;
+            }
+
+        }
+
+        return transformedGameValue;
     }
 
     // returns the current boards GameValue object if stored in the partitions database, or null otherwise
     public GameValue getGameValue(HashMap<Integer, GameValue> partitionsDB){
 
-        //ArrayList<Integer> hashValueAndVaritation = this.getSmallestHashValue();
-        //Integer smallestHashValue = hashValueAndVaritation.get(0);
-        //Integer variation = hashValueAndVaritation.get(0);
+        SmallestHashValue smallestHash = getSmallestHashValue();
 
-        // will either return gameValue object, or null
-        return partitionsDB.get(this.hashCode());
+        GameValue smallestHashGameValue = partitionsDB.get(smallestHash.hashValue);
+
+        // if some variation of the board has been evaluated before
+        if(smallestHashGameValue != null){
+
+            return transformGameValue(smallestHash, smallestHashGameValue);
+
+        }
+
+        // if board not in database, return null
+        return null;
 
     }
 
@@ -747,7 +870,6 @@ public class Board {
             if(!leftGame.isIn(left)){
 
                 leftGame.move = move;
-                // TODO- maybe simplify GameValue before adding it to list
                 leftGame.simplify();
                 left.add(leftGame);
             }
@@ -806,19 +928,22 @@ public class Board {
         // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
-            gameValue = evaluate(this, 0);
+            SmallestHashValue smallestHash = getSmallestHashValue();
+
+            // Storing the GameValue object for the smallest hash variation of our current Board
+            gameValue = evaluate(smallestHash.board, 0);
+            gameValue.simplify();
 
             if(partitionsDB != null){
 
-                // storing the GameValue in the database, to save evaluating it next time
-
-                gameValue.simplify();
-                partitionsDB.put(this.hashCode(), gameValue);
-                //partitionsDB.put(this.getSmallestHashValue().get(0), gameValue);
+                // storing the GameValue in the database, so don't have to evaluate it next time
+                partitionsDB.put(smallestHash.hashValue, gameValue);
             }
 
+            // Transforming our smallestHash GameValue, to the current board GameValue
+            GameValue currentBoardGameValue = transformGameValue(smallestHash, gameValue);
 
-            return gameValue;
+            return currentBoardGameValue;
 
         } else {
 
@@ -829,7 +954,6 @@ public class Board {
                 gameValues.add(evaluate(partition, 0));
 
             }
-
 
             GameValue gameValueTotal = new GameValue();
             gameValueTotal = gameValueTotal.plus(gameValues.get(0), gameValues.get(1));

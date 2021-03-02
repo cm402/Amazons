@@ -372,14 +372,14 @@ public class GameEngine {
         //aiTests.testBasicAIGameWhiteFirst();
 
         BoardTests boardTests = new BoardTests();
-        boardTests.testTransformingSquares();
+        boardTests.testTransformingGameValues();
+        //boardTests.testTransformingSquares();
         //boardTests.testGetGameValue();
         //boardTests.testBiggerAIGame2();
         //boardTests.testPartitionsDBLarge();
         //boardTests.testEvalutate3();
         //boardTests.testEvalutate2();
         //boardTests.testHashCode();
-        //boardTests.testSmallestHashValue();
         //boardTests.testPartitionsDBSpeed();
         //boardTests.testPartitionsDBSaved();
         //boardTests.testEvaluateSplit();
