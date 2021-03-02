@@ -721,9 +721,7 @@ public class Board {
     }
 
     // applies a specific transformation to a Moves Squares
-    public Move transformMove(Move oldMove, int transformation){
-
-        Move newMove = null;
+    public Move transformMove(Move oldMove, int transformation, Player player){
 
         Square start = oldMove.getStartPosition();
         Square end = oldMove.getEndPosition();
@@ -781,9 +779,7 @@ public class Board {
 
         }
 
-        newMove = new Move(oldMove.getPlayer(), newStart, newEnd, newShoot);
-
-        return newMove;
+        return new Move(player, newStart, newEnd, newShoot);
 
     }
 
@@ -794,30 +790,40 @@ public class Board {
 
         GameValue transformedGameValue = new GameValue();
 
-        // 1. For each of the child "option" GameValues, translate the Move from the current board to smallest hash code board
-
-        // if transformation is 0-3 or 8-11, no inverse required
+        // if transformation in this range of values, it requires an inversion
         if(transform >= 4 && transform <= 7 || transform >= 12 && transform <= 15){
 
             // swapping left and right sides, for inversion
             transformedGameValue.left = smallestHashGameValue.right;
             transformedGameValue.right = smallestHashGameValue.left;
 
-            // transforming each of the moves
-            for(GameValue leftOption: transformedGameValue.left){
+        } else {
 
-                Move newMove = transformMove(leftOption.move, transform);
+            transformedGameValue.left = smallestHashGameValue.left;
+            transformedGameValue.right = smallestHashGameValue.right;
 
-                leftOption.move = newMove;
-            }
+        }
 
-            for(GameValue rightOption: transformedGameValue.right){
+        // Getting players from and giving them their correct colour pieces
+        Player left = smallestHashGameValue.left.get(0).move.getPlayer();
+        Player right = smallestHashGameValue.right.get(0).move.getPlayer();
 
-                Move newMove = transformMove(rightOption.move, transform);
+        left.addPieces(this.getPieces(false));
+        right.addPieces(this.getPieces(true));
 
-                rightOption.move = newMove;
-            }
+        // transforming each of the moves
+        for(GameValue leftOption: transformedGameValue.left){
 
+            Move newMove = transformMove(leftOption.move, transform, left);
+
+            leftOption.move = newMove;
+        }
+
+        for(GameValue rightOption: transformedGameValue.right){
+
+            Move newMove = transformMove(rightOption.move, transform, right);
+
+            rightOption.move = newMove;
         }
 
         return transformedGameValue;
