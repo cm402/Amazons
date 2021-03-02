@@ -779,6 +779,7 @@ public class BoardTests {
 
     public void testGetGameValue(){
 
+        // Board 1
         Board board = new Board(2, 2);
         board.setupBoard();
 
@@ -794,14 +795,49 @@ public class BoardTests {
 
         board.burnSquare(1, 0);
 
+        // Board 2
+        Board board2 = new Board(2, 2);
+        board2.setupBoard();
+
+        ArrayList<Piece> blackPieces2 = new ArrayList<Piece>();
+        blackPieces2.add(new Piece(false));
+        blackPieces2.get(0).setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPieces2.get(0));
+
+        ArrayList<Piece> whitePieces2 = new ArrayList<Piece>();
+        whitePieces2.add(new Piece(true));
+        whitePieces2.get(0).setPosition(board.getSquare(1,1));
+        board.addPiece(1, 1, whitePieces2.get(0));
+
+        board2.burnSquare(1, 0);
+
         // getting partitions Database from file
         FileInputOutput fio = new FileInputOutput();
         HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
 
         GameValue gameValue = board.evaluate(null);
-        GameValue gameValue1 = board.evaluate(partitionsDB);
+        GameValue gameValue2 = board.evaluate(null);
 
         System.out.println("testing");
+
+    }
+
+    public void testTransformingSquares(){
+
+        Square rotatedSquare = new Square(2, 1, null, true);
+
+        for(int i = 0; i < 4; i++){
+
+            Board board = new Board(3, 3);
+            board.setupBoard();
+
+            board.burnSquare(rotatedSquare.getX(), rotatedSquare.getY());
+
+            board.printBoard();
+
+            rotatedSquare = board.rotatePoint(rotatedSquare.getX(), rotatedSquare.getY());
+
+        }
 
     }
 

@@ -324,7 +324,6 @@ public class Board {
         }
 
         return partitions;
-
     }
 
     // https://www.baeldung.com/cs/graph-connected-components
@@ -380,8 +379,6 @@ public class Board {
                     squares.add(board.getSquare(x + 1, y - 1));
                     squares.add(board.getSquare(x + 1, y + 1));
 
-
-
                     for(Square square: squares){
 
                         if(square != null && !square.isBurnt()){
@@ -397,7 +394,7 @@ public class Board {
 
     }
 
-    // Flips a board on a horizontal axis
+    // Flips the current board on a horizontal axis
     private Board flipHorizontal(){
 
         Board newBoard = new Board(this.getColumnBoardSize(), this.getRowBoardSize());
@@ -433,7 +430,7 @@ public class Board {
         return newBoard;
     }
 
-    // Flips a board on a vertical axis
+    // Flips the current board on a vertical axis
     private Board flipVertical(){
 
         Board newBoard = new Board(this.getColumnBoardSize(), this.getRowBoardSize());
@@ -652,6 +649,62 @@ public class Board {
         returnArray.add(boardVariationType);
 
         return returnArray;
+    }
+
+    // rotates a point 90 degrees clockwise
+    public Square rotatePoint(int x, int y){
+
+        ArrayList<Integer> newPoint = new ArrayList<>();
+
+        // x' = y
+        int newX = y;
+
+        // y' = maximum y index - x
+        int newY = this.getRowBoardSize() - 1 - x;
+
+        return new Square(newX, newY, null, false);
+    }
+
+    // rotates a point 90 degrees anti-clockwise
+    public Square rotatePointAnti(int x, int y){
+
+        ArrayList<Integer> newPoint = new ArrayList<>();
+
+        // x' = maximum x index - y
+        int newX = this.getColumnBoardSize() - 1 - y;
+
+        // y' = x
+        int newY = x;
+
+        return new Square(newX, newY, null, false);
+    }
+
+    // flips a point on a horizontal axis
+    public Square flipPointHorizontal(int x, int y){
+
+        ArrayList<Integer> newPoint = new ArrayList<>();
+
+        // x' = x
+        int newX = x;
+
+        // y' = maximum y index - y
+        int newY = this.getRowBoardSize() - 1 - y;
+
+        return new Square(newX, newY, null, false);
+    }
+
+    // flips a point on a vertical axis
+    public Square flipPointVertical(int x, int y){
+
+        ArrayList<Integer> newPoint = new ArrayList<>();
+
+        // x' = maximum x index - x
+        int newX = this.getColumnBoardSize() - 1 - x;
+
+        // y' = y
+        int newY = y;
+
+        return new Square(newX, newY, null, false);
     }
 
     // returns the current boards GameValue object if stored in the partitions database, or null otherwise
@@ -1239,8 +1292,6 @@ public class Board {
 
         System.out.println(numbersLine);
         System.out.println("");
-
-
 
     }
 
