@@ -376,7 +376,7 @@ public class GameEngine {
         //aiTests.testBasicAIGameWhiteFirst();
 
         BoardTests boardTests = new BoardTests();
-        boardTests.testSplit1();
+        //boardTests.testSplit1();
         //boardTests.testFlipVertical();
         //boardTests.testFlipHorizontal();
         //boardTests.testTransformingGameValues();
@@ -385,6 +385,7 @@ public class GameEngine {
         //boardTests.testBiggerAIGame2();
         //boardTests.testPartitionsDBLarge();
         //boardTests.testEvalutate3();
+        boardTests.testEvalutate4();
         //boardTests.testEvalutate2();
         //boardTests.testHashCode();
         //boardTests.testPartitionsDBSpeed();

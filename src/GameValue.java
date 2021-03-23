@@ -76,7 +76,6 @@ public class GameValue implements Serializable{
             }
 
         }
-
         return true;
     }
 

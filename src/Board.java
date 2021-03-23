@@ -688,9 +688,13 @@ public class Board {
                 if(piece != null){
 
                     if(piece.isWhite()){
-                        invertedBoard.getSquare(x, y).setAmazon(new Piece(false));
+                        Piece invertedPiece = new Piece(false);
+                        invertedPiece.setPosition(invertedBoard.getSquare(x, y));
+                        invertedBoard.getSquare(x, y).setAmazon(invertedPiece);
                     } else {
-                        invertedBoard.getSquare(x, y).setAmazon(new Piece(true));
+                        Piece invertedPiece = new Piece(true);
+                        invertedPiece.setPosition(invertedBoard.getSquare(x, y));
+                        invertedBoard.getSquare(x, y).setAmazon(invertedPiece);
                     }
                 }
             }
@@ -935,10 +939,13 @@ public class Board {
 
         }
 
-        // Getting players objects and giving them their correct colour pieces
+        // Getting players objects for left and right
         Player left = smallestHashGameValue.left.get(0).move.getPlayer();
         Player right = smallestHashGameValue.right.get(0).move.getPlayer();
 
+        // TODO- Ensure all pieces have correct locations
+
+        // Giving the players their correct pieces
         left.addPieces(this.getPieces(false));
         right.addPieces(this.getPieces(true));
 

@@ -1,3 +1,7 @@
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
 public class GameValueTests {
 
     GameValue zero = new GameValue();
@@ -7,7 +11,8 @@ public class GameValueTests {
     GameValue quarter = new GameValue();
     GameValue minusOne = new GameValue();
 
-    public GameValueTests(){
+    @Before
+    public void init(){
 
         one.left.add(zero);
 
