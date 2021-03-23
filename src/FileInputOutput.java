@@ -35,6 +35,8 @@ public class FileInputOutput {
             FileInputStream fileInputStream = new FileInputStream(new File("partitionsDB.txt"));
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
+            // Suppressing "unchecked" warning from casting the object read in at run-time, to the correct type
+            @SuppressWarnings("unchecked")
             HashMap<Integer, GameValue> partitionsDB = (HashMap<Integer, GameValue>) objectInputStream.readObject();
 
             objectInputStream.close();

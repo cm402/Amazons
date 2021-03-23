@@ -206,7 +206,7 @@ public class AITests {
         AIPlayer player = new AIPlayer(false, partitionsDB);
         player.addPieces(blackPieces);
 
-        Move move = player.getEndgameMove(board);
+        Move move = player.getCGTMove(board);
 
         System.out.println(move.toString());
 

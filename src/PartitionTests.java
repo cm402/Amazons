@@ -8,6 +8,66 @@ public class PartitionTests {
 
     GameEngine engine = new GameEngine();
 
+    /**
+     * Simulates a partition game a number of times, was used during development to test specific partitions
+     * @param noOfSimulations The number of simulations games that will be run
+     * @param partition The partition board shape used for the simulation games
+     * @param firstToMove Indicates which player will move first, 0 or 1
+     * @param setup Stores the pieces and burnt squares information for the partition
+     * @return The number of times white wins
+     */
+    public int simulatePartitionGames(int noOfSimulations, Board partition, int firstToMove, BoardPartitionSetup setup){
+
+        int whiteWins = 0;
+
+        for(int i = 0; i < noOfSimulations; i++){
+
+            ArrayList<Player> partitionPlayers = engine.setupPlayers(0); // both AI players
+
+            partition.setupPartitionPieces(setup, partitionPlayers); // uses setup object to burn squares / place pieces
+
+            Player partitionCurrentPlayer;
+
+            if(firstToMove == 0){
+                partitionCurrentPlayer = partitionPlayers.get(0);
+            } else {
+                partitionCurrentPlayer = partitionPlayers.get(1);
+            }
+
+            if(simulateGame(partition, partitionCurrentPlayer, partitionPlayers)){
+                whiteWins++;
+            }
+
+            // clearing the partition board, for the next iteration
+            partition.setupBoard();
+
+        }
+
+        return whiteWins;
+    }
+
+    /**
+     * Simulates a game, for a given board object
+     * @param board Board object we want to simulate a game for
+     * @param currentPlayer The first player to move
+     * @param players List of both player objects
+     * @return Result of simulated game, true if white wins, false otherwise
+     */
+    public Boolean simulateGame(Board board, Player currentPlayer, ArrayList<Player> players){
+
+        while(true){
+
+            Move nextMove = currentPlayer.getMove(board);
+
+            if(nextMove == null){
+                return currentPlayer.isWhite();
+            }
+
+            engine.updateBoard(nextMove, board, false);
+            currentPlayer = engine.swapPlayers(players, currentPlayer);
+        }
+    }
+
     // Asks the user for partition before simulating it
     public void testIO(){
 
@@ -28,7 +88,7 @@ public class PartitionTests {
         int firstToMove = io.getPartitionFirstToMove();
 
         // running through simulations
-        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
@@ -82,7 +142,7 @@ public class PartitionTests {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
@@ -135,7 +195,7 @@ public class PartitionTests {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
@@ -188,7 +248,7 @@ public class PartitionTests {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
@@ -234,7 +294,7 @@ public class PartitionTests {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
@@ -293,7 +353,7 @@ public class PartitionTests {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
@@ -425,7 +485,7 @@ public class PartitionTests {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = engine.simulateGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
 
@@ -485,7 +545,7 @@ public class PartitionTests {
                     Board board = new Board(columns, rows);
                     board.setupBoard();
 
-                    // looping through each of the squares individual state valus
+                    // looping through each of the squares individual state values
                     for(int i = 0; i < combination.length; i++) {
 
                         // using the array index, generating associated x & y co-ordinate values

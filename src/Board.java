@@ -1,24 +1,30 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.HashMap;
 
+/** Represents an Amazons board, storing its shape, as well
+ *  as each of the squares associated with it. Can also be used to
+ *  store a "partition", which is a section of a a larger board object
+ */
 public class Board {
 
-    private Square[][] squares;
-    private int columnBoardSize, rowBoardSize;
+    private Square[][] squares; // 2-D array of square objects
+    private int columnBoardSize, rowBoardSize; // number of columns and number of rows
 
-    // columnBoardSize = no of columns, so its the x co-ordinate
-    // rowBoardSize = no of rows, or the y co-ordinate
-
+    /**
+     * Constructor for a board object, number of columns and rows must be given
+     * @param columnBoardSize
+     * @param rowBoardSize
+     */
     public Board(int columnBoardSize, int rowBoardSize){
         squares = new Square[columnBoardSize][rowBoardSize];
         this.columnBoardSize = columnBoardSize;
         this.rowBoardSize = rowBoardSize;
     }
 
-
+    /**
+     * Generates a hashcode value, using the current board object
+     * @return The generated hashcode
+     */
     @Override
     public int hashCode() {
 
@@ -51,41 +57,54 @@ public class Board {
         return result;
     }
 
-    private boolean isColumnBurnt(Board board, int columnIndex) {
+    /**
+     * For this board object and a specific column, checks if the whole column is burnt
+     * @param columnIndex Index of column to check
+     * @return true if column is burnt, false otherwise
+     */
+    private boolean isColumnBurnt(int columnIndex) {
 
         // looping through each row
-        for (int i = 0; i < board.getRowBoardSize(); i++) {
+        for (int i = 0; i < this.getRowBoardSize(); i++) {
 
             // if square isn't burnt, then we stop checking
-            if (!board.getSquare(columnIndex, i).isBurnt()) {
+            if (!this.getSquare(columnIndex, i).isBurnt()) {
                 return false;
 
             }
         }
-
         return true;
-
     }
 
-    private boolean isRowBurnt(Board board, int rowIndex){
+    /**
+     * For this board object and a specific row, checks if whole row is burnt
+     * @param rowIndex Index of row to check
+     * @return true if row is burnt, false otherwise
+     */
+    private boolean isRowBurnt(int rowIndex){
 
         // looping through each column
-        for (int i = 0; i < board.getColumnBoardSize(); i++) {
+        for (int i = 0; i < this.getColumnBoardSize(); i++) {
 
             // if square isn't burnt, then we stop checking
-            if (!board.getSquare(i, rowIndex).isBurnt()) {
+            if (!this.getSquare(i, rowIndex).isBurnt()) {
                 return false;
 
             }
         }
-
         return true;
-
     }
 
-    // generates a partition of a board, given an original board and coordinates to start/end at
-    // if component Counter = -1, then we don't consider components
-    // any other value for a component counter, we only return squares that are part of component
+    /**
+     * Given a board object, and a partition to select, returns a new board which is a copy of that partition
+     * @param board Board object that we are copying a partition from
+     * @param startX X co-ordinate on the original board that the partition will start from
+     * @param startY Y co-ordinate on the original board that the partition will start from
+     * @param endX X co-ordinate on the original board that the partition will end at
+     * @param endY Y co-ordinate on the original board that the partition will end at
+     * @param componentCounter Used when considering components, for splitting a board. -1 means we don't consider components
+     * @return The new board object, a partition of the original board
+     */
     public Board newBoard(Board board, int startX, int startY, int endX, int endY, int componentCounter){
 
         // creating new board, with new size
@@ -142,37 +161,45 @@ public class Board {
 
     }
 
-    // removes outermost burnt rows from the board
-    private Board simplify(){
+    /**
+     * Simplifying the current board object, by recursively removing outer-most burnt rows and columns
+     * @return "simplified" board object
+     */
+    public Board simplify(){
 
         // first column
-        if(isColumnBurnt(this, 0)){
+        if(this.isColumnBurnt( 0)){
 
             return newBoard(this, 1, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // last column
-        if(isColumnBurnt(this, this.getColumnBoardSize() - 1)){
+        if(this.isColumnBurnt(this.getColumnBoardSize() - 1)){
 
             return newBoard(this, 0, 0, this.getColumnBoardSize() - 2, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // first row
-        if (isRowBurnt(this, 0)) {
+        if (this.isRowBurnt( 0)) {
 
             return newBoard(this, 0, 1, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // last row
-        if (isRowBurnt(this, this.getRowBoardSize() - 1)) {
+        if (this.isRowBurnt(this.getRowBoardSize() - 1)) {
 
             return newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 2, -1).simplify();
         }
 
         return this;
-
     }
 
+    /**
+     * Checks the equality of 2 board objects, by checking that each square has the same state on both boards
+     * @param board1 First board we want to check equality of
+     * @param board2 Second board we want to check equality of
+     * @return true if both boards equal, false otherwise
+     */
     private boolean boardsEqual(Board board1, Board board2){
 
         // now, we check if the 2 boards are equal, by checking each square is the same on both
@@ -200,11 +227,83 @@ public class Board {
                 }
             }
         }
-
         return true;
     }
 
-    // rotates a board 90 degrees clockwise, using a transposition
+    /**
+     * Checking equality of "this" board object, with another board object, for all possible transformations.
+     * @param o board object we are checking "this" board against
+     * @return true if both boards equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+
+        // self check
+        if (this == o) {
+            return true;
+        }
+
+        // first, we must simplify both boards fully
+        Board board1 = this.simplify();
+        Board board2 = ((Board) o).simplify();
+
+        // both simplified boards are the not same dimensions
+        if (board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
+                board1.getRowBoardSize() != board2.getRowBoardSize()) {
+
+
+            // meaning a rotation of 90 or 270 can show an equality of both boards
+            if (board1.getColumnBoardSize() == board2.getRowBoardSize() &&
+                    board1.getRowBoardSize() == board2.getColumnBoardSize()) {
+
+                Board rotatedBoard90 = board1.rotate();
+                Board rotatedBoard270 = rotatedBoard90.rotate().rotate();
+                Board diagonalFlipBoard1 = rotatedBoard90.flipHorizontal();
+                Board diagonalFlipBoard2 = rotatedBoard270.flipHorizontal();
+
+                return boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)
+                        || boardsEqual(diagonalFlipBoard1, board2) || boardsEqual(diagonalFlipBoard2, board2);
+
+            }
+
+            return false; // case where the sizes don't match, even after rotating, so 2 boards can't be equal
+
+            //  both boards are the same dimensions
+        } else {
+
+            Board horizontalFlippedBoard = board1.flipHorizontal();
+            Board verticalFlippedBoard = board1.flipVertical();
+            Board rotatedBoard180 = board1.rotate().rotate();
+
+            // board is a square, so check all 8 cases
+            if (board1.getColumnBoardSize() == board1.getRowBoardSize()) {
+
+
+                Board rotatedBoard90 = board1.rotate();
+                Board rotatedBoard270 = rotatedBoard90.rotate().rotate();
+                Board diagonalFlipBoard1 = rotatedBoard90.flipHorizontal();
+                Board diagonalFlipBoard2 = rotatedBoard270.flipHorizontal();
+
+                return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2)
+                        || boardsEqual(horizontalFlippedBoard, board2) || boardsEqual(verticalFlippedBoard, board2)
+                        || boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)
+                        || boardsEqual(diagonalFlipBoard1, board2) || boardsEqual(diagonalFlipBoard2, board2);
+
+                // board is a rectangle, so only check first 4 cases
+            } else {
+
+                return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2)
+                        || boardsEqual(horizontalFlippedBoard, board2) || boardsEqual(verticalFlippedBoard, board2);
+            }
+
+
+        }
+    }
+
+    /**
+     * Rotates current board object 90 degrees clockwise, using a transposition
+     * @return Rotated board object
+     */
     private Board rotate(){
 
         Board newBoard = new Board(this.getRowBoardSize(), this.getColumnBoardSize());
@@ -230,16 +329,17 @@ public class Board {
                 }
 
                 Square oldSquare = this.getSquare(x, y);
-
-                //System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
-
                 copySquare(newBoard, oldSquare, newX, newY);
             }
         }
-
         return newBoard;
     }
 
+    /**
+     * Splits the current board object into partitions, if possible due to burnt rows or columns.
+     * Utilises Connected-Components Graph Algorithm
+     * @return ArrayList of board partitions, or our original board
+     */
     public ArrayList<Board> split() {
 
         ArrayList<Board> partitions = new ArrayList<Board>();
@@ -266,12 +366,11 @@ public class Board {
                 // find a square that hasn't been visited yet, and isn't burnt
                 if(square.getX() == -1 && !square.isBurnt()){
 
-                    DFS(boardCopy, square, componentCounter);
+                    connectedComponentsDFS(boardCopy, square, componentCounter);
                     componentCounter++;
                 }
             }
         }
-
 
         // 3. Create a partition board for each component
         for(int i = 0; i < componentCounter; i++){
@@ -312,22 +411,23 @@ public class Board {
                         if(y > maxY){
                             maxY = y;
                         }
-
                     }
-
                 }
             }
 
             // 3.2. Use dimensions to create a new board partition
             partitions.add(newBoard(boardCopy, minX, minY, maxX, maxY, i));
-
         }
-
         return partitions;
     }
 
-    // https://www.baeldung.com/cs/graph-connected-components
-    private void DFS(Board board, Square square, int componentCounter){
+    /**
+     * DFS-based algorithm to give all nodes in a given squares component the same value
+     * @param board board object we are splitting into components
+     * @param square unburnt square, with a current value of -1
+     * @param componentCounter next component value to be used
+     */
+    private void connectedComponentsDFS(Board board, Square square, int componentCounter){
 
         for(int x = 0; x < board.getColumnBoardSize(); x++){
             for(int y = 0; y < board.getRowBoardSize(); y++){
@@ -345,17 +445,22 @@ public class Board {
 
                         // if adjacent unburnt square is also unvisited, visit that square recursively
                         if(adjacentSquare.getX() == -1){
-                            DFS(board, adjacentSquare, componentCounter);
+                            connectedComponentsDFS(board, adjacentSquare, componentCounter);
                         }
-
                     }
-
                 }
             }
         }
     }
 
     // returns an ArrayList of the squares that are surrounding the current square, and aren't burnt
+
+    /**
+     * Gets an list of the squares that surround the current square, and aren't burnt
+     * @param board
+     * @param originalSquare
+     * @return
+     */
     private ArrayList<Square> getSurroundingUnBurntSquares(Board board, Square originalSquare){
 
         ArrayList<Square> unburntSquares = new ArrayList<Square>();
@@ -592,9 +697,8 @@ public class Board {
         return invertedBoard;
     }
 
-    // First element in returned list is the smallest hash value in the boards variants
-    // Second element in the returned list is an integer that indicates what variation was applied
-    // Parameter being passed into method is also used to return the smallest hash Board object
+    // Returns a SmallestHashValue object, containing the smallest hash value,
+    // associated board and the transformation that was applied to get the board
     public SmallestHashValue getSmallestHashValue(){
 
         // 1. Adding all board variants to a list
@@ -712,7 +816,7 @@ public class Board {
     }
 
     // used to store the smalled board, its hash value, and the transformation from the current board to it.
-    private class SmallestHashValue {
+    public class SmallestHashValue {
 
         int hashValue;
         int transformation;
@@ -848,6 +952,7 @@ public class Board {
 
     }
 
+    // Evaluates a board into a GameValue object
     private GameValue evaluate(Board board, int depth){
 
         ArrayList<Move> blackMoves = board.getAllPossibleMoves(false);
@@ -856,19 +961,10 @@ public class Board {
         ArrayList<GameValue> left = new ArrayList<>();
         ArrayList<GameValue> right = new ArrayList<>();
 
-        //System.out.println("Depth = " + depth);
-        //System.out.println("Black now has " + blackMoves.size() + " moves");
-        //System.out.println("White now has " + whiteMoves.size() + " moves");
-
-        int blackMoveCounter = 0;
-
         for(Move move: blackMoves){
 
             Board newBoard = playMove(board, move);
 
-            if(depth == 0){
-                //System.out.println("At top evaluate() call, black move number " + blackMoveCounter++);
-            }
 
             GameValue leftGame = evaluate(newBoard, depth + 1);
 
@@ -883,15 +979,10 @@ public class Board {
 
         }
 
-        int whiteMoveCounter = 0;
-
         for(Move move: whiteMoves){
 
             Board newBoard = playMove(board, move);
 
-            if(depth == 0){
-                //System.out.println("At top evaluate() call, white move number " + whiteMoveCounter++);
-            }
 
             GameValue rightGame = evaluate(newBoard, depth + 1);
 
@@ -912,7 +1003,7 @@ public class Board {
 
     }
 
-    // Returns a GameValue object for the current Board
+    // Returns a GameValue object for the current Board, possibly from the endgame database
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
 
         GameValue gameValue;
@@ -922,12 +1013,11 @@ public class Board {
 
             gameValue = getGameValue(partitionsDB);
 
-            // 1. Check if GameValue already stored in partitions DB
+            // Check if GameValue already stored in partitions DB
             if(gameValue != null){
                 return gameValue;
             }
         }
-
 
         ArrayList<Board> partitions = this.split();
 
@@ -977,7 +1067,7 @@ public class Board {
 
             if(partitionsDB != null){
 
-                partitionsDB.put(this.hashCode(), gameValueTotal);
+                //partitionsDB.put(this.hashCode(), gameValueTotal);
                 //partitionsDB.put(this.getSmallestHashValue().get(0), gameValueTotal);
             }
 
@@ -985,72 +1075,6 @@ public class Board {
             return gameValueTotal;
         }
 
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-
-        // self check
-        if (this == o) {
-            return true;
-        }
-
-        // first, we must simplify both boards fully
-        Board board1 = this.simplify();
-        Board board2 = ((Board) o).simplify();
-
-        // both simplified boards are the not same dimensions
-        if(board1.getColumnBoardSize() != board2.getColumnBoardSize() ||
-        board1.getRowBoardSize() != board2.getRowBoardSize()){
-
-
-            // meaning a rotation of 90 or 270 can show an equality of both boards
-            if(board1.getColumnBoardSize() == board2.getRowBoardSize() &&
-            board1.getRowBoardSize() == board2.getColumnBoardSize()){
-
-                Board rotatedBoard90 = board1.rotate();
-                Board rotatedBoard270 = rotatedBoard90.rotate().rotate();
-                Board diagonalFlipBoard1 = rotatedBoard90.flipHorizontal();
-                Board diagonalFlipBoard2 = rotatedBoard270.flipHorizontal();
-
-                return boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)
-                        || boardsEqual(diagonalFlipBoard1, board2) || boardsEqual(diagonalFlipBoard2, board2);
-
-            }
-
-            return false; // case where the sizes don't match, even after rotating, so 2 board cant be equal
-
-        //  both boards are the same dimensions
-        } else {
-
-            Board horizontalFlippedBoard = board1.flipHorizontal();
-            Board verticalFlippedBoard = board1.flipVertical();
-            Board rotatedBoard180 = board1.rotate().rotate();
-
-            // board is a square, so check all 8 cases
-            if(board1.getColumnBoardSize() == board1.getRowBoardSize()){
-
-
-                Board rotatedBoard90 = board1.rotate();
-                Board rotatedBoard270 = rotatedBoard90.rotate().rotate();
-                Board diagonalFlipBoard1 = rotatedBoard90.flipHorizontal();
-                Board diagonalFlipBoard2 = rotatedBoard270.flipHorizontal();
-
-                return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2)
-                        || boardsEqual(horizontalFlippedBoard, board2) || boardsEqual(verticalFlippedBoard, board2)
-                        || boardsEqual(rotatedBoard90, board2) || boardsEqual(rotatedBoard270, board2)
-                        || boardsEqual(diagonalFlipBoard1, board2) || boardsEqual(diagonalFlipBoard2, board2);
-
-            // board is a rectangle, so only check first 4 cases
-            } else {
-
-                return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2)
-                        || boardsEqual(horizontalFlippedBoard, board2) || boardsEqual(verticalFlippedBoard, board2);
-            }
-
-
-        }
     }
 
     public int getColumnBoardSize(){
@@ -1275,6 +1299,7 @@ public class Board {
     }
 
     // used for regular game board
+    // Adds white pieces to p1, and black pieces to p2
     public void resetBoard(Player p1, Player p2){
 
         // create squares for board

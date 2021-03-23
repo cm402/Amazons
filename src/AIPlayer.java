@@ -9,6 +9,8 @@ public class AIPlayer extends Player implements Serializable {
 
     HashMap<Integer, GameValue> partitionsDB;
 
+    String AIType;
+
     public AIPlayer(boolean white){
         super(white, false);
     }
@@ -16,7 +18,6 @@ public class AIPlayer extends Player implements Serializable {
     public AIPlayer(boolean white, HashMap<Integer, GameValue> partitionsDB){
         super(white, false);
         this.partitionsDB = partitionsDB;
-
     }
 
     public Move getRandomMove(ArrayList<Move> moves){
@@ -29,7 +30,7 @@ public class AIPlayer extends Player implements Serializable {
 
         MCTS mcts = new MCTS();
 
-        return mcts.getNextMove(board, this.isWhite(), 10);
+        return mcts.getNextMove(board, this.isWhite(), 1);
     }
 
     // Returns a move chosen using the strategy of giving the opponent the least move options
@@ -59,7 +60,7 @@ public class AIPlayer extends Player implements Serializable {
     }
 
     // Returns a move that is chosen using the endgame database of partitions
-    public Move getEndgameMove(Board board){
+    public Move getCGTMove(Board board){
 
         GameValue gameValue = board.evaluate(partitionsDB);
         gameValue.simplify();
@@ -82,16 +83,34 @@ public class AIPlayer extends Player implements Serializable {
             return null;
         } else {
 
+            System.out.println("AI is thinking");
+
+            if(AIType.equals("MCTS")){
+
+                return getMonteCarloMove(board);
+
+            } else if(AIType.equals("Heuristic")){
+
+                return getHeuristicMove(board);
+
+            } else if(AIType.equals("CGT")){
+
+                return getCGTMove(board);
+
+            } else if(AIType.equals("Random")){
+
+                return getRandomMove(validMoves);
+
+            }
+
+            // When no AI type specified, default is MCTS
+            return getMonteCarloMove(board);
+
             // TODO- use experiments to decide when to switch between move strategies
             // Initial plan
             // 1. Heuristic for first 5 or 10 moves, depending on board size
             // 2. Monte Carlo for middle-game
             // 3. Once board split into partitions that are small enough, use endgame move
-
-            return getMonteCarloMove(board);
-            //return getHeuristicMove(board);
-            //return getEndgameMove(board);
-            //return getRandomMove(validMoves);
         }
     }
 

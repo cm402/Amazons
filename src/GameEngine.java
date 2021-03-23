@@ -54,7 +54,7 @@ public class GameEngine {
             colour = "black";
         }
 
-        System.out.println("player " + players.indexOf(currentPlayer) + " is next to move (" + colour + ")");
+        //System.out.println("player " + players.indexOf(currentPlayer) + " is next to move (" + colour + ")");
         System.out.println(move.toString());
     }
 
@@ -120,10 +120,14 @@ public class GameEngine {
 
             players.add(new AIPlayer(true));
             players.add(new AIPlayer(false));
+
         } else if(noOfHumanPlayers == 1){
+
             players.add(new HumanPlayer(true));
             players.add(new AIPlayer(false));
+
         } else {
+
             players.add(new HumanPlayer(true));
             players.add(new AIPlayer(false));
         }
@@ -131,58 +135,72 @@ public class GameEngine {
         return players;
     }
 
-    // simulates the game board that is passed in
-    // returns true if white wins, false if black wins
-    public Boolean simulateGame(Board board, Player currentPlayer, ArrayList<Player> players){
+    /**
+     * Simulates experiment games, with 2 types of AI, to compare their performance.
+     * @param noOfSimulations The number of games that will be simulated
+     * @param AIType1 The first AI strategy used
+     * @param AIType2 The second AI strategy used
+     * @return The number of times the first AI strategy wins
+     */
+    public int simulateGames(int noOfSimulations, String AIType1, String AIType2){
 
-        while(true){
-
-            Move nextMove = currentPlayer.getMove(board);
-
-            if(nextMove == null){
-                return currentPlayer.isWhite();
-            }
-
-            updateBoard(nextMove, board, false);
-            currentPlayer = swapPlayers(players, currentPlayer);
-        }
-    }
-
-    // simulates a partition game a number of times, returns the amount of wins white gets
-    public int simulateGames(int noOfSimulations, Board partition, int firstToMove, BoardPartitionSetup setup){
-
-        int whiteWins = 0;
+        int AIType1Wins = 0;
 
         for(int i = 0; i < noOfSimulations; i++){
 
-            ArrayList<Player> partitionPlayers = setupPlayers(0); // both AI players
+            Board board = new Board(6, 6);
 
-            partition.setupPartitionPieces(setup, partitionPlayers); // uses setup object to burn squares / place pieces
+            AIPlayer p1, p2;
 
-            // on first iteration, print board
-            if(i == 0){
-                partition.printBoard();
-            }
+            // for the first half of simulations, give player 1 white, then swap
+            if(i < noOfSimulations / 2){
 
-            Player partitionCurrentPlayer;
+                p1 = new AIPlayer(true);
+                p2 = new AIPlayer(false);
 
-            if(firstToMove == 0){
-                partitionCurrentPlayer = partitionPlayers.get(0);
             } else {
-                partitionCurrentPlayer = partitionPlayers.get(1);
+
+                p1 = new AIPlayer(false);
+                p2 = new AIPlayer(true);
+
             }
 
-            if(simulateGame(partition, partitionCurrentPlayer, partitionPlayers)){
-                whiteWins++;
+            // Giving both AI players their correct types
+            p1.AIType = AIType1;
+            p2.AIType = AIType2;
+
+            board.resetBoard(p1, p2);
+            AIPlayer currentPlayer = p1;
+
+            // Simulating a single game
+            while(true){
+
+                Move nextMove = currentPlayer.getMove(board);
+
+                // when game is over
+                if(nextMove == null){
+
+                    // if 2nd player can't move, add 1 to first players wins
+                    if(currentPlayer.equals(p2)){
+
+                      AIType1Wins++;
+
+                    }
+                    break;
+                }
+
+                updateBoard(nextMove, board, false);
+
+                // Swapping players
+                if(currentPlayer.equals(p1)){
+                    currentPlayer = p2;
+                } else {
+                    currentPlayer = p1;
+                }
+
             }
-
-            // clearing the partition board, for the next iteration
-            partition.setupBoard();
-
         }
-
-        return whiteWins;
-
+        return AIType1Wins;
     }
 
     public void playGame(IO io, GameEngine engine){
@@ -218,8 +236,6 @@ public class GameEngine {
         ArrayList<Board> boards = new ArrayList<Board>();
 
         boards.add(board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
-
-        // Issue with updateBoard not removing pieces from old position after move
 
         for(Move move: moves){
 
@@ -299,9 +315,9 @@ public class GameEngine {
         }
     }
 
-    public void tutorial(IO io, GameEngine engine){
+    public void tutorial(IO io, String Args[]){
 
-        System.out.println("Welcome to the tutorial, enter \"n\" for the next part, or \"back\" to return to the first menu");
+        System.out.println("Welcome to the tutorial, enter \"n\" for the next part, or \"b\" to return to the first menu");
 
         String tutorialInput = io.getTutorialInput();
 
@@ -310,7 +326,7 @@ public class GameEngine {
         if(tutorialInput.equals("n")){
             io.tutorialIntroducion();
         } else {
-            main(null);
+            main(Args);
         }
 
         tutorialInput = io.getTutorialInput();
@@ -320,7 +336,7 @@ public class GameEngine {
         if(tutorialInput.equals("n")){
             io.tutorialNotation();
         } else {
-            main(null);
+            main(Args);
         }
 
         tutorialInput = io.getTutorialInput();
@@ -330,35 +346,23 @@ public class GameEngine {
         if(tutorialInput.equals("n")){
             io.tutorialExample();
         } else {
-            main(null);
+            main(Args);
         }
 
-        main(null);
+        main(Args);
     }
 
+    public void testing(){
 
-    public static void main(String Args[]){
+        ReportExamples reportExamples = new ReportExamples();
+        //reportExamples.boardPrintExample();
+        //reportExamples.boardSimplifyExample();
+        //reportExamples.boardEqualsExample();
+        //reportExamples.boardSplitExample();
+        reportExamples.endgameDatabaseExample();
+        //reportExamples.boardEvaluateExample();
+        //reportExamples.boardHashCodeExample();
 
-        GameEngine engine = new GameEngine();
-
-        IO io = new IO();
-
-        /*
-        int introValue = io.getIntroduction();
-
-        if(introValue == 1){
-
-            engine.playGame(io, engine);
-
-        } else if(introValue == 2){
-
-            engine.reviewGame(io, engine);
-
-        } else {
-
-            engine.tutorial(io, engine);
-        }
-        */
 
         PartitionTests partitionTests = new PartitionTests();
         //partitionTests.testRandom();
@@ -372,7 +376,7 @@ public class GameEngine {
         //aiTests.testBasicAIGameWhiteFirst();
 
         BoardTests boardTests = new BoardTests();
-        boardTests.testTransformingGameValues();
+        //boardTests.testTransformingGameValues();
         //boardTests.testTransformingSquares();
         //boardTests.testGetGameValue();
         //boardTests.testBiggerAIGame2();
@@ -392,7 +396,48 @@ public class GameEngine {
         //gameValueTests.testGameValueEquals1();
         //gameValueTests.testGameValueEquals2();
         //gameValueTests.testGameValueEquals3();
+    }
 
+
+    public static void main(String Args[]){
+
+        GameEngine engine = new GameEngine();
+
+        // if no arguments are given, we just run the main program
+        if(Args.length == 0){
+
+            IO io = new IO();
+
+            int introValue = io.getIntroduction();
+
+            if(introValue == 1){
+
+                engine.playGame(io, engine);
+
+            } else if(introValue == 2){
+
+                engine.reviewGame(io, engine);
+
+            } else {
+
+                engine.tutorial(io, Args);
+            }
+
+        // if arguments given, in "testing" mode
+        } else {
+
+            if(Args[0].equals("experiments")){
+
+                int firstPlayerWins = engine.simulateGames(50, "Heuristic", "MCTS");
+                //System.out.println(firstPlayerWins);
+
+            } else if(Args[0].equals("testing")){
+
+                engine.testing();
+
+            }
+
+        }
     }
 
 }

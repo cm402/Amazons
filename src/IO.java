@@ -178,14 +178,10 @@ public class IO {
 
             tutorialInput = getUserInputString();
 
-            // options- "n", "back"
+            if(!tutorialInput.equals("n") && !tutorialInput.equals("b")){
 
-            if(!tutorialInput.equals("n") && !tutorialInput.equals("back")){
-
-                System.out.println("Error, either enter \"n\" for the next part of the tutorial, or \"back\" to go back" );
+                System.out.println("Error, either enter \"n\" for the next part of the tutorial, or \"b\" to go back" );
                 continue;
-
-
             }
 
             return tutorialInput;

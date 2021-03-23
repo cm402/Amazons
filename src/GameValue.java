@@ -380,7 +380,6 @@ public class GameValue implements Serializable{
     }
 
     // Compares 2 GameValue objects to see which is better for left
-    // X > Y
     public String compare(GameValue x, GameValue y){
 
         if(lessThanOrEqualTo(x, y)){
