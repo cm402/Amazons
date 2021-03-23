@@ -328,8 +328,6 @@ public class BoardTests {
         assertTrue(gameValue.equals(minusOneStar));
     }
 
-    // testing evaluating of a standard board partition, shape, 3 by 2 box with 1 of each piece
-
     /**
      * Testing evaluating a 3x2 partition, with 1 of each piece
      */
@@ -365,13 +363,15 @@ public class BoardTests {
         assertTrue(gameValue.equals(starMinus1));
     }
 
-    // testing evaluating of a bigger board size, 3 by 3
-    // Seems to now work, but will need to also test storing this in partitions DB
+    /**
+     * Testing evaluating a 3x3 board, takes roughly 20 seconds, no asserts used
+     */
     @Test
-    public void testEvalutate3(){
+    public void testEvaluateLarger(){
 
         Board board = new Board(3, 3);
         board.setupBoard();
+        board.burnSquare(2,2);
 
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
         blackPieces.add(new Piece(false));
@@ -383,136 +383,82 @@ public class BoardTests {
         whitePieces.get(0).setPosition(board.getSquare(1,0));
         board.addPiece(1, 0, whitePieces.get(0));
 
-        board.printBoard();
-
         GameValue gameValue = board.evaluate(null);
-        System.out.println(gameValue.toString());
-        //gameValue.simplify();
-        //System.out.println(gameValue.toString());
 
     }
 
-    // tests that a board with 1 players Amazon, or no amazons return correct value
+    /**
+     * Testing evaluating an empty board, should evaluate to "0"
+     */
     @Test
-    public void testEvalutate4(){
+    public void testEvaluateEmpty(){
 
         Board board = new Board(3, 2);
         board.setupBoard();
 
-        board.printBoard();
+        GameValue zero = new GameValue();
+
+        GameValue gameValue = board.evaluate(null);
 
         // testing empty board, should return "0"
-        GameValue gameValue = board.evaluate(null);
-        System.out.println(gameValue.toString());
+        assertTrue(gameValue.equals(zero));
+    }
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+    /**
+     *  Returns a GameValue object, for a specified integer
+     */
+    public GameValue getValue(int value){
+
+        GameValue newGameValue = new GameValue();
+        GameValue oldGameValue = new GameValue();
+
+        while(value != 0){
+
+            newGameValue = new GameValue();
+
+            if(value > 0){
+                newGameValue.left.add(oldGameValue);
+                value--;
+            } else {
+                newGameValue.right.add(oldGameValue);
+                value++;
+            }
+
+            oldGameValue = newGameValue;
+        }
+
+        return newGameValue;
+    }
+
+    /**
+     *  Testing evaluating a board with only one piece, should evaluate to
+     *  the number of empty squares
+     */
+    @Test
+    public void testEvalutateOnePiece() {
+
+        Board board = new Board(3, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<>();
         blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
+        blackPieces.get(0).setPosition(board.getSquare(0, 1));
         board.addPiece(0, 1, blackPieces.get(0));
 
-        board.printBoard();
-
-        // testing board with 5 squares left and a black piece, should return "5"
-        gameValue = board.evaluate(null);
-        System.out.println(gameValue.toString());
+        GameValue gameValue = board.evaluate(null);
+        GameValue five = getValue(5);
+        assertTrue(gameValue.equals(five));
     }
 
-    public void testOutcomeClassFuzzy(){
-
-        Board board1 = new Board(3, 1);
-        board1.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board1.getSquare(0,0));
-        board1.addPiece(0, 0, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board1.getSquare(2,0));
-        board1.addPiece(2, 0, whitePieces.get(0));
-
-        board1.printBoard();
-
-        GameValue gameValue = board1.evaluate(null);
-        System.out.println(gameValue.getOutcomeClass());
-        // The outcome of this should be "First"
-
-    }
-
-    public void testOutcomeClassPositive(){
-
-        Board board1 = new Board(3, 1);
-        board1.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board1.getSquare(1,0));
-        board1.addPiece(1, 0, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board1.getSquare(2,0));
-        board1.addPiece(2, 0, whitePieces.get(0));
-
-        board1.printBoard();
-
-        GameValue gameValue = board1.evaluate(null);
-        System.out.println(gameValue.getOutcomeClass());
-        // The outcome of this should be "Left"
-    }
-
-    public void testOutcomeClassNegative(){
-
-        Board board1 = new Board(3, 1);
-        board1.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board1.getSquare(0,0));
-        board1.addPiece(0, 0, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board1.getSquare(1,0));
-        board1.addPiece(1, 0, whitePieces.get(0));
-
-        board1.printBoard();
-
-        GameValue gameValue = board1.evaluate(null);
-        System.out.println(gameValue.getOutcomeClass());
-        // The outcome of this should be "Right"
-    }
-
-    public void testOutcomeClassZero(){
-
-        Board board1 = new Board(4, 1);
-        board1.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board1.getSquare(1,0));
-        board1.addPiece(1, 0, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board1.getSquare(2,0));
-        board1.addPiece(2, 0, whitePieces.get(0));
-
-        board1.printBoard();
-
-        GameValue gameValue = board1.evaluate(null);
-        System.out.println(gameValue.getOutcomeClass());
-        // The outcome of this should be "Second"
-    }
-
+    /**
+     * Testing that a board hashcode returns a consistent value
+     */
+    @Test
     public void testHashCode(){
 
         Board board = new Board(3, 2);
         board.setupBoard();
 
-        // adding the piece to the board correctly so that we can look at valid moves
-
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
         blackPieces.add(new Piece(false));
         blackPieces.get(0).setPosition(board.getSquare(0,1));
@@ -523,24 +469,19 @@ public class BoardTests {
         whitePieces.get(0).setPosition(board.getSquare(1,0));
         board.addPiece(1, 0, whitePieces.get(0));
 
+        int hashCode = board.hashCode();
+
         for(int i = 0; i < 5; i++){
-            System.out.println(board.hashCode());
+            assertEquals(hashCode, board.hashCode());
         }
 
-        System.out.println("Changing board");
         board.getSquare(0, 1).removeAmazon();
-
-        for(int i = 0; i < 5; i++){
-            System.out.println(board.hashCode());
-        }
-
-        System.out.println("Reverting changes");
+        assertNotEquals(hashCode, board.hashCode());
         board.addPiece(0, 1, blackPieces.get(0));
 
         for(int i = 0; i < 5; i++) {
-            System.out.println(board.hashCode());
+            assertEquals(hashCode, board.hashCode());
         }
-
     }
 
     public void testInvertBoard(){

@@ -385,7 +385,7 @@ public class GameEngine {
         //boardTests.testBiggerAIGame2();
         //boardTests.testPartitionsDBLarge();
         //boardTests.testEvalutate3();
-        boardTests.testEvalutate4();
+        //boardTests.testEvalutate4();
         //boardTests.testEvalutate2();
         //boardTests.testHashCode();
         //boardTests.testPartitionsDBSpeed();

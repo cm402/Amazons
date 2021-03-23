@@ -1,5 +1,8 @@
 import org.junit.Test;
 import org.junit.Before;
+
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class GameValueTests {
@@ -26,7 +29,30 @@ public class GameValueTests {
         quarter.right.add(half);
 
         minusOne.right.add(zero);
+    }
 
+    /**
+     * Testing that < 5 | -2 > inverted equals < 2 | -5 >
+     */
+    @Test
+    public void invertGameValue(){
+
+        GameValue five = getValue(5);
+        GameValue negativeTwo = getValue(-2);
+        GameValue fiveNegativeTwo = new GameValue();
+        fiveNegativeTwo.left.add(five);
+        fiveNegativeTwo.right.add(negativeTwo);
+
+        fiveNegativeTwo.invert();
+
+        GameValue negativeFive = getValue(-5);
+        GameValue two = getValue(2);
+        GameValue twoNegativeFive = new GameValue();
+
+        twoNegativeFive.left.add(two);
+        twoNegativeFive.right.add(negativeFive);
+
+        assertTrue(fiveNegativeTwo.equals(twoNegativeFive));
     }
 
     // This clearly simplifies to 0.25, and this
@@ -210,8 +236,97 @@ public class GameValueTests {
         test2.right.add(three);
 
         System.out.println("The simplest form of < 2.5 | 3 > is " + test.toString());
+    }
 
+    /**
+     * Testing a board which is "fuzzy" produces the correct outcome class
+     */
+    @Test
+    public void testOutcomeClassFuzzy(){
 
+        Board board1 = new Board(3, 1);
+        board1.setupBoard();
 
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(0,0));
+        board1.addPiece(0, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(2,0));
+        board1.addPiece(2, 0, whitePieces.get(0));
+
+        GameValue gameValue = board1.evaluate(null);
+        assertEquals(gameValue.getOutcomeClass(), "First");
+    }
+
+    /**
+     * Testing a board which is "Positive" produces the correct outcome class
+     */
+    @Test
+    public void testOutcomeClassPositive(){
+
+        Board board1 = new Board(3, 1);
+        board1.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(1,0));
+        board1.addPiece(1, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(2,0));
+        board1.addPiece(2, 0, whitePieces.get(0));
+
+        GameValue gameValue = board1.evaluate(null);
+        assertEquals(gameValue.getOutcomeClass(), "Left");
+    }
+
+    /**
+     * Testing a board which is "Negative" produces the correct outcome class
+     */
+    @Test
+    public void testOutcomeClassNegative(){
+
+        Board board1 = new Board(3, 1);
+        board1.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(0,0));
+        board1.addPiece(0, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(1,0));
+        board1.addPiece(1, 0, whitePieces.get(0));
+
+        GameValue gameValue = board1.evaluate(null);
+        assertEquals(gameValue.getOutcomeClass(), "Right");
+    }
+
+    /**
+     * Testing a board which is "Zero" produces the correct outcome class
+     */
+    @Test
+    public void testOutcomeClassZero(){
+
+        Board board1 = new Board(4, 1);
+        board1.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board1.getSquare(1,0));
+        board1.addPiece(1, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board1.getSquare(2,0));
+        board1.addPiece(2, 0, whitePieces.get(0));
+
+        GameValue gameValue = board1.evaluate(null);
+        assertEquals(gameValue.getOutcomeClass(), "Second");
     }
 }

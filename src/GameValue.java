@@ -25,6 +25,28 @@ public class GameValue implements Serializable{
         simplified = false;
     }
 
+    /**
+     * Invert a GameValue object, swapping left and rights options recursively
+     */
+    public void invert(){
+
+        // Swapping left and right
+        final ArrayList<GameValue> temp = this.right;
+        this.right = this.left;
+        this.left = temp;
+
+        for(GameValue leftGV: this.left){
+
+            leftGV.invert();
+        }
+
+        for(GameValue rightGV: this.right){
+
+            rightGV.invert();
+        }
+
+    }
+
     public boolean equals(GameValue game){
 
         // 1. check sizes match for both GameValue objects

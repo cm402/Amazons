@@ -666,7 +666,6 @@ public class Board {
         if(newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).getAmazon() != null){
             newBoard.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
         }
-
         return newBoard;
     }
 
@@ -911,8 +910,6 @@ public class Board {
         return new Move(player, newStart, newEnd, newShoot);
     }
 
-    // transforms a GameValue from the smallestHashBoard, to the current board
-
     /**
      * Transforms the smallest hash GameValue, into the current board GameValue object
      * @param smallestHash Contains the smallest hash board, hash value, and transformation from current board
@@ -922,48 +919,44 @@ public class Board {
     public GameValue transformGameValue(SmallestHashValue smallestHash, GameValue smallestHashGameValue){
 
         int transform = smallestHash.transformation;
-
         GameValue transformedGameValue = new GameValue();
 
         // if transformation in this range of values, it requires an inversion
         if(transform >= 4 && transform <= 7 || transform >= 12 && transform <= 15){
 
-            // swapping left and right sides, for inversion
-            transformedGameValue.left = smallestHashGameValue.right;
-            transformedGameValue.right = smallestHashGameValue.left;
-
-        } else {
-
-            transformedGameValue.left = smallestHashGameValue.left;
-            transformedGameValue.right = smallestHashGameValue.right;
-
+           smallestHashGameValue.invert();
         }
 
-        // Getting players objects for left and right
-        Player left = smallestHashGameValue.left.get(0).move.getPlayer();
-        Player right = smallestHashGameValue.right.get(0).move.getPlayer();
+        transformedGameValue.left = smallestHashGameValue.left;
+        transformedGameValue.right = smallestHashGameValue.right;
 
-        // TODO- Ensure all pieces have correct locations
+        // Must check that there are moves for left and right first
+        if(smallestHashGameValue.left.size() > 0){
 
-        // Giving the players their correct pieces
-        left.addPieces(this.getPieces(false));
-        right.addPieces(this.getPieces(true));
+            // Getting the "left" player object
+            Player left = smallestHashGameValue.left.get(0).move.getPlayer();
+            left.addPieces(this.getPieces(false));
 
-        // transforming each of the moves
-        for(GameValue leftOption: transformedGameValue.left){
+            // Transforming each of the player moves
+            for(GameValue leftOption: transformedGameValue.left){
 
-            Move newMove = transformMove(leftOption.move, transform, left);
+                Move newMove = transformMove(leftOption.move, transform, left);
 
-            leftOption.move = newMove;
+                leftOption.move = newMove;
+            }
         }
 
-        for(GameValue rightOption: transformedGameValue.right){
+        if(smallestHashGameValue.right.size() > 0){
 
-            Move newMove = transformMove(rightOption.move, transform, right);
+            Player right = smallestHashGameValue.right.get(0).move.getPlayer();
+            right.addPieces(this.getPieces(true));
+            for(GameValue rightOption: transformedGameValue.right){
 
-            rightOption.move = newMove;
+                Move newMove = transformMove(rightOption.move, transform, right);
+
+                rightOption.move = newMove;
+            }
         }
-
         return transformedGameValue;
     }
 
@@ -1064,6 +1057,8 @@ public class Board {
         if(partitions.size() == 1){
 
             SmallestHashValue smallestHash = getSmallestHashValue();
+
+            smallestHash.board.printBoard();
 
             // Storing the GameValue object for the smallest hash variation of our current Board
             gameValue = smallestHash.board.evaluate(0);
