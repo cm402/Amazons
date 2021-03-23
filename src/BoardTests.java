@@ -161,7 +161,7 @@ public class BoardTests {
     }
 
     /**
-     * Testing horizontally flipping a board
+     * Testing horizontally flipping a board works for equality checking
      */
     @Test
     public void testFlipHorizontal(){
@@ -187,7 +187,7 @@ public class BoardTests {
     }
 
     /**
-     * Testing vertically flipping a board
+     * Testing vertically flipping a board works for equality checking
      */
     @Test
     public void testFlipVertical(){
@@ -210,6 +210,8 @@ public class BoardTests {
         board2.getSquare(3, 0).setAmazon(new Piece(false));
 
         assertTrue(board1.equals(board2));
+
+
     }
 
     /**
@@ -484,29 +486,41 @@ public class BoardTests {
         }
     }
 
+    /**
+     * Testing a board is inverted correctly, including the piece's stored positions
+     */
+    @Test
     public void testInvertBoard(){
 
         Board board = new Board(3, 2);
         board.setupBoard();
 
-        // adding the piece to the board correctly so that we can look at valid moves
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(board.getSquare(0, 1));
+        board.addPiece(0, 1, blackPiece);
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(1, 0));
+        board.addPiece(1, 0, whitePiece);
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
+        Board board2 = new Board(3, 2);
+        board2.setupBoard();
 
-        board.printBoard();
+        Piece blackPiece2 = new Piece(false);
+        blackPiece2.setPosition(board2.getSquare(1, 0));
+        board2.addPiece(1, 0, blackPiece2);
+
+        Piece whitePiece2 = new Piece(true);
+        whitePiece2.setPosition(board2.getSquare(0, 1));
+        board2.addPiece(0, 1, whitePiece2);
 
         Board invertedBoard = board.invert();
+        assertEquals(board2, invertedBoard);
 
-        invertedBoard.printBoard();
-
+        assertEquals(whitePiece.getPosition().getX(), blackPiece2.getPosition().getX());
+        assertEquals(whitePiece.getPosition().getY(), blackPiece2.getPosition().getY());
+        assertEquals(blackPiece.getPosition().getX(), whitePiece2.getPosition().getX());
+        assertEquals(blackPiece.getPosition().getY(), whitePiece2.getPosition().getY());
     }
 
     public void testPartitionsDBSpeed(){
