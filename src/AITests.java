@@ -145,7 +145,7 @@ public class AITests {
 
         board.printBoard();
 
-        Board newBoard = board.playMove(board, move);
+        Board newBoard = board.playMove(move);
         newBoard.printBoard();
 
     }
@@ -173,7 +173,7 @@ public class AITests {
 
         board.printBoard();
 
-        Board newBoard = board.playMove(board, move);
+        Board newBoard = board.playMove(move);
         newBoard.printBoard();
 
     }

@@ -44,7 +44,7 @@ public class AIPlayer extends Player implements Serializable {
 
         for(Move move: validMoves){
 
-            Board newBoard = board.playMove(board, move);
+            Board newBoard = board.playMove(move);
 
             int opponentMoves = newBoard.getAllPossibleMoves(!this.isWhite()).size();
 

@@ -97,7 +97,6 @@ public class Board {
 
     /**
      * Given a board object, and a partition to select, returns a new board which is a copy of that partition
-     * @param board Board object that we are copying a partition from
      * @param startX X co-ordinate on the original board that the partition will start from
      * @param startY Y co-ordinate on the original board that the partition will start from
      * @param endX X co-ordinate on the original board that the partition will end at
@@ -105,7 +104,7 @@ public class Board {
      * @param componentCounter Used when considering components, for splitting a board. -1 means we don't consider components
      * @return The new board object, a partition of the original board
      */
-    public Board newBoard(Board board, int startX, int startY, int endX, int endY, int componentCounter){
+    public Board newBoard(int startX, int startY, int endX, int endY, int componentCounter){
 
         // creating new board, with new size
         int newColumnSize = endX - startX + 1;
@@ -133,12 +132,12 @@ public class Board {
                     newY++;
                 }
 
-                Square oldSquare = board.getSquare(x, y);
+                Square oldSquare = this.getSquare(x, y);
 
                 // We aren't dealing with components
                 if(componentCounter == -1){
 
-                    copySquare(newBoard, oldSquare, newX, newY);
+                    newBoard.copySquare(oldSquare, newX, newY);
 
                 // We are dealing with components
                 } else {
@@ -150,15 +149,13 @@ public class Board {
                     // part of current component
                     } else {
 
-                        copySquare(newBoard, oldSquare, newX, newY);
+                        newBoard.copySquare(oldSquare, newX, newY);
                     }
 
                 }
             }
         }
-
         return newBoard;
-
     }
 
     /**
@@ -170,27 +167,26 @@ public class Board {
         // first column
         if(this.isColumnBurnt( 0)){
 
-            return newBoard(this, 1, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
+            return this.newBoard(1, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // last column
         if(this.isColumnBurnt(this.getColumnBoardSize() - 1)){
 
-            return newBoard(this, 0, 0, this.getColumnBoardSize() - 2, this.getRowBoardSize() - 1, -1).simplify();
+            return this.newBoard(0, 0, this.getColumnBoardSize() - 2, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // first row
         if (this.isRowBurnt( 0)) {
 
-            return newBoard(this, 0, 1, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
+            return this.newBoard( 0, 1, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
         }
 
         // last row
         if (this.isRowBurnt(this.getRowBoardSize() - 1)) {
 
-            return newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 2, -1).simplify();
+            return this.newBoard(0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 2, -1).simplify();
         }
-
         return this;
     }
 
@@ -329,7 +325,7 @@ public class Board {
                 }
 
                 Square oldSquare = this.getSquare(x, y);
-                copySquare(newBoard, oldSquare, newX, newY);
+                newBoard.copySquare(oldSquare, newX, newY);
             }
         }
         return newBoard;
@@ -346,7 +342,7 @@ public class Board {
 
         // making a copy of the board that we can manipulate
         // simplify board first, to remove any edge rows or columns that aren't needed
-        Board boardCopy = newBoard(this, 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
+        Board boardCopy = this.newBoard( 0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1).simplify();
 
         int componentCounter = 0;
 
@@ -366,7 +362,7 @@ public class Board {
                 // find a square that hasn't been visited yet, and isn't burnt
                 if(square.getX() == -1 && !square.isBurnt()){
 
-                    connectedComponentsDFS(boardCopy, square, componentCounter);
+                    boardCopy.connectedComponentsDFS(square, componentCounter);
                     componentCounter++;
                 }
             }
@@ -416,36 +412,35 @@ public class Board {
             }
 
             // 3.2. Use dimensions to create a new board partition
-            partitions.add(newBoard(boardCopy, minX, minY, maxX, maxY, i));
+            partitions.add(boardCopy.newBoard(minX, minY, maxX, maxY, i));
         }
         return partitions;
     }
 
     /**
-     * DFS-based algorithm to give all nodes in a given squares component the same value
-     * @param board board object we are splitting into components
+     * DFS-based algorithm to give all nodes in a given squares component the same value.
      * @param square unburnt square, with a current value of -1
      * @param componentCounter next component value to be used
      */
-    private void connectedComponentsDFS(Board board, Square square, int componentCounter){
+    private void connectedComponentsDFS(Square square, int componentCounter){
 
-        for(int x = 0; x < board.getColumnBoardSize(); x++){
-            for(int y = 0; y < board.getRowBoardSize(); y++){
+        for(int x = 0; x < this.getColumnBoardSize(); x++){
+            for(int y = 0; y < this.getRowBoardSize(); y++){
 
                 // We have located the correct square
-                if(board.getSquare(x, y).equals(square)){
+                if(this.getSquare(x, y).equals(square)){
 
                     // add square to current component
-                    board.getSquare(x, y).setX(componentCounter);
+                    this.getSquare(x, y).setX(componentCounter);
 
                     // get list of adjacent squares that are also unburnt
-                    ArrayList<Square> unburntAdjacentSquares = getSurroundingUnBurntSquares(board, square);
+                    ArrayList<Square> unburntAdjacentSquares = this.getSurroundingUnBurntSquares(square);
 
                     for(Square adjacentSquare: unburntAdjacentSquares){
 
                         // if adjacent unburnt square is also unvisited, visit that square recursively
                         if(adjacentSquare.getX() == -1){
-                            connectedComponentsDFS(board, adjacentSquare, componentCounter);
+                            this.connectedComponentsDFS(adjacentSquare, componentCounter);
                         }
                     }
                 }
@@ -453,36 +448,33 @@ public class Board {
         }
     }
 
-    // returns an ArrayList of the squares that are surrounding the current square, and aren't burnt
-
     /**
-     * Gets an list of the squares that surround the current square, and aren't burnt
-     * @param board
-     * @param originalSquare
-     * @return
+     * Gets a list of the squares that surround a given square, and aren't burnt.
+     * @param originalSquare The given square
+     * @return An ArrayList of the surrounding unburnt squares
      */
-    private ArrayList<Square> getSurroundingUnBurntSquares(Board board, Square originalSquare){
+    private ArrayList<Square> getSurroundingUnBurntSquares(Square originalSquare){
 
         ArrayList<Square> unburntSquares = new ArrayList<Square>();
 
-        for(int x = 0; x < board.getColumnBoardSize(); x++) {
-            for (int y = 0; y < board.getRowBoardSize(); y++) {
+        for(int x = 0; x < this.getColumnBoardSize(); x++) {
+            for (int y = 0; y < this.getRowBoardSize(); y++) {
 
                 // We have located the correct square
-                if (board.getSquare(x, y).equals(originalSquare)) {
+                if (this.getSquare(x, y).equals(originalSquare)) {
 
                     ArrayList<Square> squares = new ArrayList<Square>();
 
-                    squares.add(board.getSquare(x + 1, y));
-                    squares.add(board.getSquare(x - 1, y));
-                    squares.add(board.getSquare(x, y + 1));
-                    squares.add(board.getSquare(x, y - 1));
+                    squares.add(this.getSquare(x + 1, y));
+                    squares.add(this.getSquare(x - 1, y));
+                    squares.add(this.getSquare(x, y + 1));
+                    squares.add(this.getSquare(x, y - 1));
 
                     // diagonals also count
-                    squares.add(board.getSquare(x - 1, y - 1));
-                    squares.add(board.getSquare(x - 1, y + 1));
-                    squares.add(board.getSquare(x + 1, y - 1));
-                    squares.add(board.getSquare(x + 1, y + 1));
+                    squares.add(this.getSquare(x - 1, y - 1));
+                    squares.add(this.getSquare(x - 1, y + 1));
+                    squares.add(this.getSquare(x + 1, y - 1));
+                    squares.add(this.getSquare(x + 1, y + 1));
 
                     for(Square square: squares){
 
@@ -490,16 +482,16 @@ public class Board {
                             unburntSquares.add(square);
                         }
                     }
-
                 }
             }
         }
-
         return unburntSquares;
-
     }
 
-    // Flips the current board on a horizontal axis
+    /**
+     * Applying a reflection in the horizontal perpendicular bisector of the current board object.
+     * @return Horizontally "flipped" board object
+     */
     private Board flipHorizontal(){
 
         Board newBoard = new Board(this.getColumnBoardSize(), this.getRowBoardSize());
@@ -525,17 +517,16 @@ public class Board {
                 }
 
                 Square oldSquare = this.getSquare(x, y);
-
-                //System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
-
-                copySquare(newBoard, oldSquare, newX, newY);
+                newBoard.copySquare(oldSquare, newX, newY);
             }
         }
-
         return newBoard;
     }
 
-    // Flips the current board on a vertical axis
+    /**
+     * Applying a reflection in the vertical perpendicular bisector of the current board object.
+     * @return Vertically "flipped" board object
+     */
     private Board flipVertical(){
 
         Board newBoard = new Board(this.getColumnBoardSize(), this.getRowBoardSize());
@@ -561,37 +552,42 @@ public class Board {
                 }
 
                 Square oldSquare = this.getSquare(x, y);
-
-                //System.out.println("(" + x + ", " + y + ") ---->" + "(" + newX + ", " + newY + ")");
-
-                copySquare(newBoard, oldSquare, newX, newY);
+                newBoard.copySquare(oldSquare, newX, newY);
             }
         }
-
         return newBoard;
     }
 
-    // copies a square to a new board, given the old square and the coordinates to place it on new board
-    private void copySquare(Board board, Square oldSquare, int x, int y){
+    /**
+     * Copying a square to a position in the current board object
+     * @param oldSquare Square we want to copy
+     * @param x X co-ordinate on current board that we want to copy square onto
+     * @param y Y co-ordinate on current board that we want to copy square onto
+     */
+    private void copySquare(Square oldSquare, int x, int y){
 
         // if any square on old board is burnt or contains a piece, replicate on new board
         if (oldSquare.isBurnt()) {
 
-            board.burnSquare(x, y);
+            this.burnSquare(x, y);
 
         } else if (oldSquare.getAmazon() != null) {
 
             if (oldSquare.getAmazon().isWhite()) {
 
-                board.addPiece(x, y, new Piece(true));
+                this.addPiece(x, y, new Piece(true));
+
             } else {
 
-                board.addPiece(x, y, new Piece(false));
+                this.addPiece(x, y, new Piece(false));
             }
         }
     }
 
-    // Returns number of squares that are burnt
+    /**
+     * Gets the number of burnt squares on the current board object
+     * @return The number of burnt squares
+     */
     public int getNumberOfBurntSquares(){
 
         int burntSquares = 0;
@@ -605,14 +601,15 @@ public class Board {
                 }
             }
         }
-
         return burntSquares;
     }
 
-    // Returns all the pieces of one colour on the current board
-    // true = white pieces
-    // false = black pieces
-    public ArrayList<Piece> getPieces(boolean white){
+    /**
+     * Gets all the pieces of a given colour, on the current board
+     * @param isWhite indicates what colour to check, true for white, false for black
+     * @return The number of pieces of the colour given, on the current board
+     */
+    public ArrayList<Piece> getPieces(boolean isWhite){
 
         ArrayList<Piece> pieces = new ArrayList<>();
 
@@ -622,34 +619,37 @@ public class Board {
                 Piece piece = this.getSquare(x, y).getAmazon();
 
                 // if there is an amazon on the current square, and it matches the colour we are looking for
-                if(piece != null && piece.isWhite() == white){
-
+                if(piece != null && piece.isWhite() == isWhite){
                     pieces.add(piece);
                 }
             }
         }
-
         return pieces;
-
     }
 
-    // Returns an ArrayList of all possible moves for one colour
-    // true = white pieces
-    // false = black pieces
-    public ArrayList<Move> getAllPossibleMoves(boolean white) {
+    /**
+     * Gets a list of all the possible moves for a given colour, on the current board
+     * @param isWhite indicates what colour to check, true for white, false for black
+     * @return The number of possible moves for the given colour, on the current board
+     */
+    public ArrayList<Move> getAllPossibleMoves(boolean isWhite) {
 
         // create an AI player who uses one colours pieces
-        AIPlayer player = new AIPlayer(white);
-        player.addPieces(this.getPieces(white));
+        AIPlayer player = new AIPlayer(isWhite);
+        player.addPieces(this.getPieces(isWhite));
 
         return player.getValidMoves(this);
 
     }
 
-    // Given a board and a move, returns a new board, with the move played
-    public Board playMove(Board board, Move move){
+    /**
+     * Plays a move on a copy of the current board, returning the newly updated board
+     * @param move Move to be played
+     * @return New board object, with given move played
+     */
+    public Board playMove(Move move){
 
-        Board newBoard = this.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1);
+        Board newBoard = this.newBoard(0, 0, this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1);
 
         // storing the piece we will move, on the new board
         Piece oldPiece = move.getPiece();
@@ -670,10 +670,13 @@ public class Board {
         return newBoard;
     }
 
-    // Inverts the board, by swapping the players pieces
+    /**
+     * Inverting the current board, meaning swapping the players pieces
+     * @return Inverted board object
+     */
     public Board invert(){
 
-        Board invertedBoard = this.newBoard(this, 0, 0,
+        Board invertedBoard = this.newBoard(0, 0,
                 this.getColumnBoardSize() - 1, this.getRowBoardSize() - 1, -1);
 
         for(int x = 0; x < this.getColumnBoardSize(); x++){
@@ -689,20 +692,21 @@ public class Board {
                     } else {
                         invertedBoard.getSquare(x, y).setAmazon(new Piece(true));
                     }
-
                 }
             }
         }
-
         return invertedBoard;
     }
 
-    // Returns a SmallestHashValue object, containing the smallest hash value,
-    // associated board and the transformation that was applied to get the board
+    /**
+     * Returns a SmallestHashValue object for the current board, containing the smallest
+     * hash value board, its associated hash value, and the transformation applied to the
+     * current board to get to the smallest hash value board
+     * @return SmallestHashValue object for the current board object
+     */
     public SmallestHashValue getSmallestHashValue(){
 
         // 1. Adding all board variants to a list
-
         ArrayList<Board> variants = new ArrayList<>();
 
         variants.add(this);
@@ -759,10 +763,12 @@ public class Board {
         return smallestHashValue;
     }
 
-    // rotates a point 90 degrees clockwise
+    /**
+     * Rotates a squares co-ordinates 90 degrees clockwise
+     * @param square Square to be rotated
+     * @return Rotated Square object
+     */
     public Square rotatePoint(Square square){
-
-        ArrayList<Integer> newPoint = new ArrayList<>();
 
         // x' = y
         int newX = square.getY();
@@ -773,10 +779,12 @@ public class Board {
         return new Square(newX, newY, null, false);
     }
 
-    // rotates a point 90 degrees anti-clockwise
+    /**
+     * Rotates a squares co-ordinates 90 degrees anti-clockwise
+     * @param square Square to be rotated
+     * @return Rotated Square object
+     */
     public Square rotatePointAnti(Square square){
-
-        ArrayList<Integer> newPoint = new ArrayList<>();
 
         // x' = maximum x index - y
         int newX = this.getColumnBoardSize() - 1 - square.getY();
@@ -787,10 +795,12 @@ public class Board {
         return new Square(newX, newY, null, false);
     }
 
-    // flips a point on a horizontal axis
+    /**
+     * Reflects a squares co-ordinates in a horizontal axis
+     * @param square Square to be reflected
+     * @return Horizontally reflected Square object
+     */
     public Square flipPointHorizontal(Square square){
-
-        ArrayList<Integer> newPoint = new ArrayList<>();
 
         // x' = maximum x index - x
         int newX = this.getColumnBoardSize() - 1 - square.getX();
@@ -801,10 +811,12 @@ public class Board {
         return new Square(newX, newY, null, false);
     }
 
-    // flips a point on a vertical axis
+    /**
+     * Reflects a squares co-ordinates in a vertical axis
+     * @param square Square to be reflected
+     * @return Vertically reflected Square object
+     */
     public Square flipPointVertical(Square square) {
-
-        ArrayList<Integer> newPoint = new ArrayList<>();
 
         // x' = x
         int newX = square.getX();
@@ -815,16 +827,25 @@ public class Board {
         return new Square(newX, newY, null, false);
     }
 
-    // used to store the smalled board, its hash value, and the transformation from the current board to it.
+    /**
+     * Stores the smallest hash value board, its hash value, and the
+     * transformation from the current board, to the smallest hash value board
+     */
     public class SmallestHashValue {
 
         int hashValue;
         int transformation;
         Board board;
-
     }
 
-    // applies a specific transformation to a Moves Squares
+    // TODO- after set up JUNIT tests, check if we can remove player parameter, replaced with oldMove.getPlayer()
+    /**
+     * Transforms a Move objects Squares, given a specific transformation value
+     * @param oldMove The Move we want to transform
+     * @param transformation An integer indicating the type of transformation required
+     * @param player Player we want to add to the new move
+     * @return new Move object, with Squares transformed
+     */
     public Move transformMove(Move oldMove, int transformation, Player player){
 
         Square start = oldMove.getStartPosition();
@@ -884,10 +905,16 @@ public class Board {
         }
 
         return new Move(player, newStart, newEnd, newShoot);
-
     }
 
     // transforms a GameValue from the smallestHashBoard, to the current board
+
+    /**
+     * Transforms the smallest hash GameValue, into the current board GameValue object
+     * @param smallestHash Contains the smallest hash board, hash value, and transformation from current board
+     * @param smallestHashGameValue The GameValue of the smallest hash board
+     * @return The GameValue of the current board
+     */
     public GameValue transformGameValue(SmallestHashValue smallestHash, GameValue smallestHashGameValue){
 
         int transform = smallestHash.transformation;
@@ -908,7 +935,7 @@ public class Board {
 
         }
 
-        // Getting players from and giving them their correct colour pieces
+        // Getting players objects and giving them their correct colour pieces
         Player left = smallestHashGameValue.left.get(0).move.getPlayer();
         Player right = smallestHashGameValue.right.get(0).move.getPlayer();
 
@@ -933,40 +960,45 @@ public class Board {
         return transformedGameValue;
     }
 
-    // returns the current boards GameValue object if stored in the partitions database, or null otherwise
+    /**
+     * Queries the partitions DB for the current boards GameValue object
+     * @param partitionsDB HashMap of boards hashcodes to their associated GameValue objects
+     * @return Either the current boards GameValue object, or null
+     */
     public GameValue getGameValue(HashMap<Integer, GameValue> partitionsDB){
 
         SmallestHashValue smallestHash = getSmallestHashValue();
-
         GameValue smallestHashGameValue = partitionsDB.get(smallestHash.hashValue);
 
         // if some variation of the board has been evaluated before
         if(smallestHashGameValue != null){
 
+            // Transforming the smallest hash GameValue, to the current boards GameValue
             return transformGameValue(smallestHash, smallestHashGameValue);
-
         }
 
         // if board not in database, return null
         return null;
-
     }
 
-    // Evaluates a board into a GameValue object
-    private GameValue evaluate(Board board, int depth){
+    /**
+     * Used to evaluate the current board object into a GameValue object, at run-time
+     * @param depth Depth of current recursive call, used for testing purposes
+     * @return GameValue object for the current board object
+     */
+    private GameValue evaluate(int depth){
 
-        ArrayList<Move> blackMoves = board.getAllPossibleMoves(false);
-        ArrayList<Move> whiteMoves = board.getAllPossibleMoves(true);
+        ArrayList<Move> blackMoves = this.getAllPossibleMoves(false);
+        ArrayList<Move> whiteMoves = this.getAllPossibleMoves(true);
 
         ArrayList<GameValue> left = new ArrayList<>();
         ArrayList<GameValue> right = new ArrayList<>();
 
         for(Move move: blackMoves){
 
-            Board newBoard = playMove(board, move);
+            Board newBoard = this.playMove(move);
 
-
-            GameValue leftGame = evaluate(newBoard, depth + 1);
+            GameValue leftGame = newBoard.evaluate(depth + 1);
 
             // checking this isn't a duplicate
             if(!leftGame.isIn(left)){
@@ -975,16 +1007,13 @@ public class Board {
                 leftGame.simplify();
                 left.add(leftGame);
             }
-
-
         }
 
         for(Move move: whiteMoves){
 
-            Board newBoard = playMove(board, move);
+            Board newBoard = this.playMove(move);
 
-
-            GameValue rightGame = evaluate(newBoard, depth + 1);
+            GameValue rightGame = newBoard.evaluate(depth + 1);
 
             // checking this isn't a duplicate
             if(!rightGame.isIn(right)){
@@ -1000,10 +1029,13 @@ public class Board {
         gameValue.right = right;
 
         return gameValue;
-
     }
 
-    // Returns a GameValue object for the current Board, possibly from the endgame database
+    /**
+     * Returns a GameValue object for the current board object, possibly using the endgame database
+     * @param partitionsDB HashMap used as the Endgame Database
+     * @return GameValue object for the current board object
+     */
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
 
         GameValue gameValue;
@@ -1027,7 +1059,7 @@ public class Board {
             SmallestHashValue smallestHash = getSmallestHashValue();
 
             // Storing the GameValue object for the smallest hash variation of our current Board
-            gameValue = evaluate(smallestHash.board, 0);
+            gameValue = smallestHash.board.evaluate(0);
             gameValue.simplify();
 
             if(partitionsDB != null){
@@ -1041,14 +1073,17 @@ public class Board {
 
             return currentBoardGameValue;
 
+        // board can be split into partitions, must evaluate partitions separately, and add them
         } else {
 
+            // TODO- Setup a board into 3 partitions, and update the AIPlayer to decide which subgame to
+            // TODO- play in, based on the GameValue objects of each subgame.
+            // TODO- Change from adding partitions, to selecting correct one to move in?
             ArrayList<GameValue> gameValues = new ArrayList<>();
 
             for(Board partition: partitions){
 
-                gameValues.add(evaluate(partition, 0));
-
+                gameValues.add(partition.evaluate(0));
             }
 
             GameValue gameValueTotal = new GameValue();
@@ -1062,7 +1097,6 @@ public class Board {
                     gameValueTotal = gameValueTotal.plus(gameValueTotal, gameValues.get(i));
 
                 }
-
             }
 
             if(partitionsDB != null){
@@ -1074,51 +1108,83 @@ public class Board {
             gameValueTotal.simplify();
             return gameValueTotal;
         }
-
     }
 
+    /**
+     * Getter for the columnBoardSize
+     * @return this boards objects columnBoardSize
+     */
     public int getColumnBoardSize(){
         return this.columnBoardSize;
     }
 
+    /**
+     * Getter for the rowBoardSize
+     * @return this boards objects rowBoardSize
+     */
     public int getRowBoardSize(){
         return this.rowBoardSize;
     }
 
+    /**
+     * Gets the square at a particular x & y co-ordinate
+     * @return Square object at given co-ordinates
+     */
     public Square getSquare(int x, int y){
         
         if (x >= columnBoardSize || y >= rowBoardSize || x < 0 || y < 0){
-            //System.out.println("Square out of range");
             return null;
         }
-
         return squares[x][y];
     }
 
+    /**
+     * Creates a new square at a particular x & y co-ordinate
+     * @param x square x co-ordinate
+     * @param y square y co-ordinate
+     */
     public void createSquare(int x, int y){
         this.squares[x][y] = new Square(x, y, null, false);
     }
 
+    /**
+     * Burns the square at a particular x & y co-ordinate
+     * @param x square x co-ordinate
+     * @param y square y co-ordinate
+     */
     public void burnSquare(int x, int y){
         this.squares[x][y].burnSquare();
     }
 
-    // adding a piece to a square
+    /**
+     * Adds a piece to a particular x and y co-ordinate
+     * @param x square x co-ordinate
+     * @param y square y co-ordinate
+     */
     public void addPiece(int x, int y, Piece piece){
 
         this.squares[x][y].setAmazon(piece);
         piece.setPosition(squares[x][y]);
     }
 
+    /**
+     * Removes an amazon from its old position, and moves it to a new square
+     * @param x new square x co-ordinate
+     * @param y new square y co-ordinate
+     * @param piece piece to be moved
+     */
     public void setSquarePiece(int x, int y, Piece piece){
 
-        // remove amazon from old square, place it on new square
         piece.getPosition().removeAmazon(); // removes amazon from square
         this.squares[x][y].setAmazon(piece); // places amazon in new square
         piece.setPosition(squares[x][y]); // updates new position within piece object
     }
 
-    // returns if a square is empty or not
+    /**
+     * Checks if a square is empty
+     * @param square Square to be checked
+     * @return true if empty, false otherwise
+     */
     public boolean isSquareEmpty(Square square){
 
         if (square.isBurnt() || square.getAmazon() != null){
@@ -1128,15 +1194,19 @@ public class Board {
         }
     }
 
-    // Gets all valid squares that can be shot at from the startSquare
-    // If passed a non-null oldSquare, we also add this square even if its not empty
+    /**
+     * Gets all squares that can be moved to according to amazons rules, from a starting square
+     * @param startSquare Square we are starting from
+     * @param skipX X co-ordinate that should be skipped
+     * @param skipY Y co-ordinate that should be skipped
+     * @return ArrayList of squares that can be moved to
+     */
     public ArrayList<Square> getValidSquares(Square startSquare, int skipX, int skipY){
 
         ArrayList<Square> validSquares = new ArrayList<Square>();
 
         int startX = startSquare.getX();
         int startY = startSquare.getY();
-
 
         for(int x = startX - 1; x >= 0; x--) {
 
@@ -1239,9 +1309,7 @@ public class Board {
                 }
             }
         }
-
         return validSquares;
-
     }
 
     // used for board partitions
@@ -1298,8 +1366,11 @@ public class Board {
         partitionPlayers.get(1).addPieces(blackPieces);
     }
 
-    // used for regular game board
-    // Adds white pieces to p1, and black pieces to p2
+    /**
+     * Used to reset a 6x6 or 10x10 board, placing pieces in starting positions
+     * @param p1 First player object, white pieces
+     * @param p2 Second player object, black pieces
+     */
     public void resetBoard(Player p1, Player p2){
 
         // create squares for board
@@ -1388,6 +1459,11 @@ public class Board {
         }
     }
 
+    /**
+     * Prints a given square to the console, used for printing the current board object
+     * @param x x co-ordinate for the square to be printed
+     * @param y y co-ordinate for the square to be printed
+     */
     public void printSquare(int x, int y){
 
         System.out.print("| ");
@@ -1408,6 +1484,9 @@ public class Board {
         }
     }
 
+    /**
+     * Prints the current board object to the console, with algebraic notation
+     */
     public void printBoard(){
 
         StringBuilder rowLine = new StringBuilder();
@@ -1447,7 +1526,5 @@ public class Board {
 
         System.out.println(numbersLine);
         System.out.println("");
-
     }
-
 }

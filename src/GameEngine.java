@@ -235,7 +235,7 @@ public class GameEngine {
 
         ArrayList<Board> boards = new ArrayList<Board>();
 
-        boards.add(board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
+        boards.add(board.newBoard(0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
 
         for(Move move: moves){
 
@@ -243,7 +243,7 @@ public class GameEngine {
                 updateBoard(move, board, false);
                 // removing amazon from old square
                 board.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
-                boards.add(board.newBoard(board, 0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
+                boards.add(board.newBoard(0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
             }
         }
 
@@ -359,7 +359,7 @@ public class GameEngine {
         //reportExamples.boardSimplifyExample();
         //reportExamples.boardEqualsExample();
         //reportExamples.boardSplitExample();
-        reportExamples.endgameDatabaseExample();
+        //reportExamples.endgameDatabaseExample();
         //reportExamples.boardEvaluateExample();
         //reportExamples.boardHashCodeExample();
 
@@ -376,6 +376,9 @@ public class GameEngine {
         //aiTests.testBasicAIGameWhiteFirst();
 
         BoardTests boardTests = new BoardTests();
+        boardTests.testSplit1();
+        //boardTests.testFlipVertical();
+        //boardTests.testFlipHorizontal();
         //boardTests.testTransformingGameValues();
         //boardTests.testTransformingSquares();
         //boardTests.testGetGameValue();

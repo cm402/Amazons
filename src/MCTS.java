@@ -120,7 +120,7 @@ public class MCTS {
 
         // creating a duplicate Board to be used in the simulation, so that the Node board isn't affected
         Board nodeBoard = node.state.board;
-        Board simulBoard = nodeBoard.newBoard(nodeBoard, 0, 0, nodeBoard.getColumnBoardSize() - 1, nodeBoard.getRowBoardSize() - 1, -1);
+        Board simulBoard = nodeBoard.newBoard(0, 0, nodeBoard.getColumnBoardSize() - 1, nodeBoard.getRowBoardSize() - 1, -1);
 
         // setup of player objects
         boolean nextPlayer = node.state.nextPlayer;
@@ -278,7 +278,7 @@ public class MCTS {
 
             for(Move move: validMoves){
 
-                Board newBoard = board.playMove(board, move);
+                Board newBoard = board.playMove(move);
 
                 State newState = new State();
                 newState.move = move;
