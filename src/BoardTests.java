@@ -5,6 +5,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ * Unit tests used throughout development of the
+ * board class, allowing for testing of its methods.
+ */
 public class BoardTests {
 
     public static Board board;

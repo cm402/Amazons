@@ -1,5 +1,11 @@
 import java.util.ArrayList;
 
+/**
+ * Used to store information about how a board partitions
+ * shape and what squares are burnt / contain pieces. This
+ * was used throughout development for testing how different
+ * partitions are favourable, via simulation tests.
+ */
 public class BoardPartitionSetup {
 
     private int noOfColumns, noOfRows;
@@ -90,7 +96,4 @@ public class BoardPartitionSetup {
     public void setYBlackPieceCoordinates(ArrayList<Integer> yBlackPieceCoordinates){
         this.yBlackPieceCoordinates = yBlackPieceCoordinates;
     }
-
-
-
 }

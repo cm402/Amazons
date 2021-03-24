@@ -101,8 +101,7 @@ public class GameEngine {
     }
 
     /**
-     * Writing a gameFile to disk, once a game has been completed,
-     * allowing the game to be reviewed later.
+     * Writing a finished games gameFile to disk.
      * @param movesPlayed A list of the moves played in the completed game.
      * @param board The board that the game was played on.
      */
@@ -116,7 +115,7 @@ public class GameEngine {
     }
 
     /**
-     * Declaring a winner to the last game, storing the gameFile and exiting the program.
+     * Outputting the winner of the game, and exiting the program.
      * @param players List of the 2 player objects
      * @param currentPlayer The player who lost
      * @param movesPlayed The number of moves made
@@ -132,7 +131,7 @@ public class GameEngine {
     }
 
     /**
-     * Used to play a game, once the board and players have been initialised
+     * Playing through a game, once the board and players have been initialised
      * @param board The board that will be used for the game
      * @param movesPlayed A list to store the moves that have been played
      * @param currentPlayer Stores the player who is next to move
@@ -159,9 +158,9 @@ public class GameEngine {
     }
 
     /**
-     *
-     * @param io
-     * @param engine
+     * Used to play a game
+     * @param io Input/Output object, used for console I/O
+     * @param engine GameEngine, providing essential game methods
      */
     public void playGame(IO io, GameEngine engine){
 
@@ -178,6 +177,163 @@ public class GameEngine {
         engine.startGame(board, movesPlayed, currentPlayer, players);
 
         engine.outputGameFile(movesPlayed, board);
+    }
+
+    /**
+     * Retrieving a gameFile from disk, allowing it to be reviewed.
+     * @return A GameFile object for the most recently played game
+     */
+    public GameFile inputGameFile(){
+
+        FileInputOutput fio = new FileInputOutput();
+        GameFile gameFile = fio.getGameFile();
+        return gameFile;
+    }
+
+    /**
+     * Reviewing a game, allowing the user to go through the moves
+     * in the most recent game, navigating forwards and  backwards
+     * through moves or selecting a specific move number.
+     * @param io Input/Output object, used for console I/O
+     * @param engine GameEngine, providing essential game methods
+     */
+    public void reviewGame(IO io, GameEngine engine){
+
+        GameFile gf = engine.inputGameFile();
+
+        ArrayList<Move> moves = gf.getMovesPlayed();
+        int boardSize = gf.getBoardSize();
+
+        io.reviewIntroduction(boardSize);
+
+        Board board = new Board(boardSize, boardSize);
+        board.resetBoard(new Player(true, false), new Player(false, false));
+
+        // Storing a list of boards, one for each move played, to allow for quick
+        // traversal between the moves
+        ArrayList<Board> boards = new ArrayList<>();
+
+        boards.add(board.newBoard(0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
+
+        for(Move move: moves){
+
+            if(move != null){
+
+                updateBoard(move, board, false);
+
+                // removing amazon from old square
+                board.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
+                boards.add(board.newBoard(0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
+            }
+        }
+
+        int moveCounter = 0;
+
+        while(true) {
+
+            String userInput = io.getReviewInput(moves.size());
+
+            if (userInput.equals("m")) {
+
+                int moveNumber = 1;
+
+                for (Move move : moves) {
+                    System.out.println(moveNumber + ". " + move);
+                    moveNumber++;
+                }
+
+            } else if (userInput.equals("n")) {
+
+                if (moveCounter == moves.size() - 1) {
+                    System.out.println("Error- can't go forward any more, game is finished");
+                    continue;
+                }
+
+                moveCounter++;
+                boards.get(moveCounter).printBoard();
+                System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
+
+            } else if (userInput.equals("b")) {
+
+                if (moveCounter == 0) {
+                    System.out.println("Error- can't go back any more, this is the starting board");
+                    continue;
+                }
+
+                moveCounter--;
+                boards.get(moveCounter).printBoard();
+
+                if(moveCounter == 0){
+                    System.out.println("Starting board (move 0)");
+                } else {
+                    System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
+                }
+
+            } else if (userInput.equals("help")) {
+
+                io.reviewIntroduction(boardSize);
+
+            } else {
+
+                int moveValue = Integer.parseInt(userInput);
+
+                if(moveValue < 0 || moveValue >= moves.size()){
+                    System.out.println("Error- please enter a valid move number");
+                    continue;
+                }
+
+                moveCounter = moveValue;
+                boards.get(moveCounter).printBoard();
+
+                if(moveCounter == 0){
+                    System.out.println("Starting board (move 0)");
+                } else {
+                    System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
+                }
+            }
+        }
+    }
+
+    /**
+     * A quick tutorial allowing a user to learn how to play the Amazons game.
+     * @param io Input/Output object, used for console I/O
+     * @param Args List of command-line arguments
+     */
+    public void tutorial(IO io, String Args[]){
+
+        System.out.println("Welcome to the tutorial, enter \"n\" for the next part, or \"b\" to return to the first menu");
+
+        String tutorialInput = io.getTutorialInput();
+
+        // part 1 = background & rules explanation
+
+        if(tutorialInput.equals("n")){
+            io.tutorialIntroducion();
+        } else {
+            main(Args);
+        }
+
+        tutorialInput = io.getTutorialInput();
+
+        // part 2 = algebraic notation & board shown
+
+        if(tutorialInput.equals("n")){
+            io.tutorialNotation();
+        } else {
+            main(Args);
+        }
+
+        tutorialInput = io.getTutorialInput();
+
+        // part 3 = how to enter a move & move shown on board
+
+        if(tutorialInput.equals("n")){
+            io.tutorialExample();
+        } else {
+            main(Args);
+        }
+
+        main(Args);
     }
 
     /**
@@ -228,7 +384,7 @@ public class GameEngine {
                     // if 2nd player can't move, add 1 to first players wins
                     if(currentPlayer.equals(p2)){
 
-                      AIType1Wins++;
+                        AIType1Wins++;
 
                     }
                     break;
@@ -246,148 +402,6 @@ public class GameEngine {
             }
         }
         return AIType1Wins;
-    }
-
-    /**
-     * Retrieving a gameFile from disk, allowing it to be reviewed.
-     * @return A GameFile object for the most recently played game
-     */
-    public GameFile inputGameFile(){
-
-        FileInputOutput fio = new FileInputOutput();
-        GameFile gameFile = fio.getGameFile();
-        return gameFile;
-    }
-
-    public void reviewGame(IO io, GameEngine engine){
-
-        GameFile gf = engine.inputGameFile();
-
-        ArrayList<Move> moves = gf.getMovesPlayed();
-        int boardSize = gf.getBoardSize();
-
-        io.reviewIntroduction(boardSize);
-
-        Board board = new Board(boardSize, boardSize);
-        board.resetBoard(new Player(true, false), new Player(false, false));
-
-        ArrayList<Board> boards = new ArrayList<Board>();
-
-        boards.add(board.newBoard(0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
-
-        for(Move move: moves){
-
-            if(move != null){
-                updateBoard(move, board, false);
-                // removing amazon from old square
-                board.getSquare(move.getStartPosition().getX(), move.getStartPosition().getY()).removeAmazon();
-                boards.add(board.newBoard(0, 0, board.getColumnBoardSize() - 1, board.getRowBoardSize() - 1, -1));
-            }
-        }
-
-        int moveCounter = 0;
-
-        while(true) {
-
-            String userInput = io.getReviewInput(moves.size());
-
-            if (userInput.equals("m")) {
-
-                int moveNumber = 1;
-
-                for (Move move : moves) {
-                    System.out.println(moveNumber + ". " + move);
-                    moveNumber++;
-                }
-
-            } else if (userInput.equals("n")) {
-
-                if (moveCounter == moves.size() - 1) {
-                    System.out.println("Error- can't go forward any more, game is finished");
-                    continue;
-                }
-
-                moveCounter++;
-                boards.get(moveCounter).printBoard();
-                System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
-
-            } else if (userInput.equals("b")) {
-
-                if (moveCounter == 0) {
-                    System.out.println("Error- can't go back any more, this is the starting board");
-                    continue;
-                }
-
-                moveCounter--;
-                boards.get(moveCounter).printBoard();
-
-                if(moveCounter == 0){
-                    System.out.println("Starting board (move 0)");
-                } else {
-                    System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
-                }
-
-
-            } else if (userInput.equals("help")) {
-
-                io.reviewIntroduction(boardSize);
-
-            } else {
-
-                int moveValue = Integer.parseInt(userInput);
-
-                if(moveValue < 0 || moveValue >= moves.size()){
-                    System.out.println("Error- please enter a valid move number");
-                    continue;
-                }
-
-                moveCounter = moveValue;
-                boards.get(moveCounter).printBoard();
-
-                if(moveCounter == 0){
-                    System.out.println("Starting board (move 0)");
-                } else {
-                    System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
-                }
-            }
-        }
-    }
-
-    public void tutorial(IO io, String Args[]){
-
-        System.out.println("Welcome to the tutorial, enter \"n\" for the next part, or \"b\" to return to the first menu");
-
-        String tutorialInput = io.getTutorialInput();
-
-        // part 1 = background & rules explanation
-
-        if(tutorialInput.equals("n")){
-            io.tutorialIntroducion();
-        } else {
-            main(Args);
-        }
-
-        tutorialInput = io.getTutorialInput();
-
-        // part 2 = algebraic notation & board shown
-
-        if(tutorialInput.equals("n")){
-            io.tutorialNotation();
-        } else {
-            main(Args);
-        }
-
-        tutorialInput = io.getTutorialInput();
-
-        // part 3 = how to enter a move & move shown on board
-
-        if(tutorialInput.equals("n")){
-            io.tutorialExample();
-        } else {
-            main(Args);
-        }
-
-        main(Args);
     }
 
     public static void main(String Args[]){
@@ -430,7 +444,6 @@ public class GameEngine {
                  DatabaseFiller databaseFiller = new DatabaseFiller();
                  databaseFiller.fillPartitionsDatabase(3);
             }
-
         }
     }
 }

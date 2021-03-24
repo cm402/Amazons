@@ -3,29 +3,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+/**
+ * An AI Player, with 4 options for selecting moves.
+ * 1. Monte-Carlo Tree Search
+ * 2. Limit Opponents move options heuristic
+ * 3. Combinatorial Game Theory evaluation
+ * 4. Random Choice
+ */
 public class AIPlayer extends Player implements Serializable {
 
     private static final long serialVersionUID = 4L;
-
     HashMap<Integer, GameValue> partitionsDB;
-
     String AIType;
 
     public AIPlayer(boolean white){
         super(white, false);
     }
 
-    public AIPlayer(boolean white, HashMap<Integer, GameValue> partitionsDB){
+    public AIPlayer(boolean white, HashMap<Integer, GameValue> partitionsDB) {
         super(white, false);
         this.partitionsDB = partitionsDB;
     }
 
-    public Move getRandomMove(ArrayList<Move> moves){
-        Random rand = new Random();
-        return moves.get(rand.nextInt(moves.size()));
-    }
-
-    // Returns a move chosen using a monte-carlo tree search strategy
+    /**
+     * Returns a move chosen using a monte-carlo tree search strategy
+     * @param board current board
+     * @return selected move
+     */
     public Move getMonteCarloMove(Board board){
 
         MCTS mcts = new MCTS();
@@ -33,7 +37,11 @@ public class AIPlayer extends Player implements Serializable {
         return mcts.getNextMove(board, this.isWhite(), 5);
     }
 
-    // Returns a move chosen using the strategy of giving the opponent the least move options
+    /**
+     * Returns a move chosen using the strategy of giving the opponent the least move options
+     * @param board current board
+     * @return selected move
+     */
     public Move getHeuristicMove(Board board){
 
         ArrayList<Move> validMoves = super.getValidMoves(board);
@@ -42,6 +50,7 @@ public class AIPlayer extends Player implements Serializable {
         int minOpponentMoves = 0;
         Move bestMove = null;
 
+        // standard finding min algorithm used
         for(Move move: validMoves){
 
             Board newBoard = board.playMove(move);
@@ -59,11 +68,19 @@ public class AIPlayer extends Player implements Serializable {
         return bestMove;
     }
 
-    // Returns a move that is chosen using the endgame database of partitions
+    /**
+     * Returns a move that is chosen using the Combinatorial Game Theory strategy,
+     * of evaluating a board into a GameValue, coupled with the endgame database optimisations
+     * @param board current board
+     * @return selected move
+     */
     public Move getCGTMove(Board board){
 
         GameValue gameValue = board.evaluate(partitionsDB);
         gameValue.simplify();
+
+        // TODO- Change this to select a move from the list, by comparing?
+        // Or, could choose a random element in list?
 
         if(this.isWhite()){
 
@@ -74,6 +91,21 @@ public class AIPlayer extends Player implements Serializable {
         }
     }
 
+    /**
+     * Returns a randomly chosen move, from the list of valid moves
+     * @param moves List of valid possible moves
+     * @return selected move
+     */
+    public Move getRandomMove(ArrayList<Move> moves){
+        Random rand = new Random();
+        return moves.get(rand.nextInt(moves.size()));
+    }
+
+    /**
+     * Selecting what type of AI to choose a move using
+     * @param board current board
+     * @return selected move
+     */
     @Override
     public Move getMove(Board board){
 

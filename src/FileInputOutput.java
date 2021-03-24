@@ -7,8 +7,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
+/**
+ * File input/output for both saved games in
+ * GameFile objects, as well as the Endgame Database,
+ * a mapping of boards hashcodes to evaluated GameValue objects.
+ */
 public class FileInputOutput {
 
+    /**
+     * Outputting the Endgame Database to file
+     * @param partitionsDB Endgame Database, HashMap of evaluated boards GameValues
+     */
     public void outputDB(HashMap<Integer, GameValue> partitionsDB){
 
         try {
@@ -29,6 +38,10 @@ public class FileInputOutput {
 
     }
 
+    /**
+     * Retrieving the Endgame Database from file
+     * @return HashMap of evaluated boards GameValues
+     */
     public HashMap<Integer, GameValue> getPartitionsDB(){
 
         try{
@@ -54,6 +67,10 @@ public class FileInputOutput {
         return null;
     }
 
+    /**
+     * Outputting a GameFile object to file
+     * @param gameFile GameFile to be stored
+     */
     public void outputGameFile(GameFile gameFile){
 
         try {
@@ -74,6 +91,10 @@ public class FileInputOutput {
 
     }
 
+    /**
+     * Retrieving the most recent saved game from file
+     * @return a GameFile object
+     */
     public GameFile getGameFile(){
 
         try{
@@ -96,5 +117,4 @@ public class FileInputOutput {
         }
         return null;
     }
-
 }

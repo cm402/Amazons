@@ -174,7 +174,8 @@ public class DatabaseFiller{
         // 3. Evaluating each board, storing the GameValues in the HashMap
         for(Board board: boards){
 
-            board.printBoard();
+            // Note- if any variation already evaluated, will just retrieve
+            // from the HashMap, and won't re-evaluate the same board
             board.evaluate(partitionsDB);
         }
 
