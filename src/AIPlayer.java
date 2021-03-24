@@ -30,7 +30,7 @@ public class AIPlayer extends Player implements Serializable {
 
         MCTS mcts = new MCTS();
 
-        return mcts.getNextMove(board, this.isWhite(), 1);
+        return mcts.getNextMove(board, this.isWhite(), 5);
     }
 
     // Returns a move chosen using the strategy of giving the opponent the least move options
@@ -85,6 +85,9 @@ public class AIPlayer extends Player implements Serializable {
 
             System.out.println("AI is thinking");
 
+            // When no AI type specified, default is MCTS
+            return getMonteCarloMove(board);
+            /*
             if(AIType.equals("MCTS")){
 
                 return getMonteCarloMove(board);
@@ -102,9 +105,7 @@ public class AIPlayer extends Player implements Serializable {
                 return getRandomMove(validMoves);
 
             }
-
-            // When no AI type specified, default is MCTS
-            return getMonteCarloMove(board);
+            */
 
             // TODO- use experiments to decide when to switch between move strategies
             // Initial plan

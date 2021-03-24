@@ -921,7 +921,7 @@ public class Board {
         int transform = smallestHash.transformation;
         GameValue transformedGameValue = new GameValue();
 
-        // if transformation in this range of values, it requires an inversion
+        // 1. Check if Inversion required
         if(transform >= 4 && transform <= 7 || transform >= 12 && transform <= 15){
 
            smallestHashGameValue.invert();
@@ -930,7 +930,8 @@ public class Board {
         transformedGameValue.left = smallestHashGameValue.left;
         transformedGameValue.right = smallestHashGameValue.right;
 
-        // Must check that there are moves for left and right first
+
+        // 2. Transform any moves on both left and right
         if(smallestHashGameValue.left.size() > 0){
 
             // Getting the "left" player object
@@ -1056,9 +1057,14 @@ public class Board {
         // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
+            // Second optimisation, using smallest hash value
+
             SmallestHashValue smallestHash = getSmallestHashValue();
 
+            // TODO- remove
+            this.printBoard();
             smallestHash.board.printBoard();
+            System.out.println(smallestHash.transformation);
 
             // Storing the GameValue object for the smallest hash variation of our current Board
             gameValue = smallestHash.board.evaluate(0);
@@ -1074,6 +1080,19 @@ public class Board {
             GameValue currentBoardGameValue = transformGameValue(smallestHash, gameValue);
 
             return currentBoardGameValue;
+
+
+            /*
+            // Without second optimisation
+            gameValue = this.evaluate(0);
+            gameValue.simplify();
+
+            if(partitionsDB != null){
+                partitionsDB.put(this.hashCode(), gameValue);
+            }
+
+            return gameValue;
+            */
 
         // board can be split into partitions, must evaluate partitions separately, and add them
         } else {

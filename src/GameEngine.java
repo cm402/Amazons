@@ -352,57 +352,6 @@ public class GameEngine {
         main(Args);
     }
 
-    public void testing(){
-
-        ReportExamples reportExamples = new ReportExamples();
-        //reportExamples.boardPrintExample();
-        //reportExamples.boardSimplifyExample();
-        //reportExamples.boardEqualsExample();
-        //reportExamples.boardSplitExample();
-        //reportExamples.endgameDatabaseExample();
-        //reportExamples.boardEvaluateExample();
-        //reportExamples.boardHashCodeExample();
-
-
-        PartitionTests partitionTests = new PartitionTests();
-        //partitionTests.testRandom();
-        //partitionTests.fillPartitionsDatabase();
-
-        AITests aiTests = new AITests();
-        //aiTests.testHeuristicMove();
-        //aiTests.testMonteCarloMove();
-        //aiTests.testAIWithPartitionsDB();
-        //aiTests.testBasicAIGameBlackFirst();
-        //aiTests.testBasicAIGameWhiteFirst();
-
-        BoardTests boardTests = new BoardTests();
-        //boardTests.testSplit1();
-        //boardTests.testFlipVertical();
-        //boardTests.testFlipHorizontal();
-        //boardTests.testTransformingGameValues();
-        //boardTests.testTransformingSquares();
-        //boardTests.testGetGameValue();
-        //boardTests.testBiggerAIGame2();
-        //boardTests.testPartitionsDBLarge();
-        //boardTests.testEvalutate3();
-        //boardTests.testEvalutate4();
-        //boardTests.testEvalutate2();
-        //boardTests.testHashCode();
-        //boardTests.testPartitionsDBSpeed();
-        //boardTests.testPartitionsDBSaved();
-        //boardTests.testEvaluateSplit();
-        //boardTests.testEvaluateSplit2();
-
-        GameValueTests gameValueTests = new GameValueTests();
-        //gameValueTests.testGetSimplestForm();
-        //gameValueTests.testIsSimpleFraction();
-        //gameValueTests.testSimplify();
-        //gameValueTests.testGameValueEquals1();
-        //gameValueTests.testGameValueEquals2();
-        //gameValueTests.testGameValueEquals3();
-    }
-
-
     public static void main(String Args[]){
 
         GameEngine engine = new GameEngine();
@@ -437,8 +386,8 @@ public class GameEngine {
 
             } else if(Args[0].equals("testing")){
 
-                engine.testing();
-
+                BoardTests boardTests = new BoardTests();
+                boardTests.testPartitionsDBSaved();
             }
 
         }

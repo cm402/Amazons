@@ -1,9 +1,35 @@
 import java.util.HashMap;
 import java.util.ArrayList;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class BoardTests {
+
+    public static Board board;
+
+    /**
+     * Example Board that is used in the some of the tests
+     */
+    @BeforeClass
+    public static void setup(){
+
+        board = new Board(3, 2);
+        board.setupBoard();
+
+        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        blackPieces.add(new Piece(false));
+        blackPieces.get(0).setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPieces.get(0));
+
+        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        whitePieces.add(new Piece(true));
+        whitePieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePieces.get(0));
+
+    }
 
     /**
      * Testing that a board is simplified correctly, with
@@ -523,101 +549,121 @@ public class BoardTests {
         assertEquals(blackPiece.getPosition().getY(), whitePiece2.getPosition().getY());
     }
 
+    /**
+     * Testing the speed increase shown by using the Endgame Database optimisation
+     */
+    @Test
     public void testPartitionsDBSpeed(){
-
-        Board board = new Board(3, 2);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        board.printBoard();
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
 
         // first evaluation, will actually evaluate the board
         long start = System.currentTimeMillis();
-        GameValue gameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
         long end = System.currentTimeMillis();
         long firstEvaluationTime = end - start;
 
         // second evaluation, will retrieve from the partitions DB
         start = System.currentTimeMillis();
-        GameValue newGameValue = board.evaluate(partitionsDB);
+        GameValue retrievedGameValue = board.evaluate(partitionsDB);
         end = System.currentTimeMillis();
         long secondEvaluationTime = end - start;
 
-        System.out.println("The first evalutation took " + firstEvaluationTime + " ns");
-        System.out.println("The second evalutation took " + secondEvaluationTime + " ns");
+        assertTrue(evaluatedGameValue.equals(retrievedGameValue));
+        assertTrue(secondEvaluationTime < firstEvaluationTime);
     }
 
+    /**
+     * Testing storing and retrieving the Endgame Database from file works correctly.
+     * The board used is shown below, the transformation to the smallest hash board is
+     * number 2, meaning
+     *   -------------
+     * 1 |   |   |   |
+     *   -------------
+     * 0 | B | W |   |
+     *   -------------
+     *     A   B   C
+     */
+    @Test
     public void testPartitionsDBSaved(){
-
-        Board board = new Board(3, 2);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        board.printBoard();
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
 
-        GameValue gameValue1 = board.evaluate(partitionsDB);
+        // first evaluation, will actually evaluate the board
+        long start = System.currentTimeMillis();
+        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
+        long end = System.currentTimeMillis();
+        long firstEvaluationTime = end - start;
 
-        board.burnSquare(0, 0);
-        board.burnSquare(1, 1);
-
-        GameValue gameValue2 = board.evaluate(partitionsDB);
-        board.printBoard();
-
+        // Storing in the endgame database
         FileInputOutput fio = new FileInputOutput();
         fio.outputDB(partitionsDB);
 
-        HashMap<Integer, GameValue> newPartitionsDB = fio.getPartitionsDB();
+        // Retrieving the endgame database, from file
+        HashMap<Integer, GameValue> retrievedPartitionsDB = fio.getPartitionsDB();
 
-        System.out.println(newPartitionsDB);
+        // second evaluation, will retrieve from the partitions DB
+        start = System.currentTimeMillis();
+        GameValue retrievedGameValue = board.evaluate(retrievedPartitionsDB);
+        end = System.currentTimeMillis();
+        long secondEvaluationTime = end - start;
+
+        System.out.println(evaluatedGameValue);
+        System.out.println(retrievedGameValue);
+
+        assertTrue(evaluatedGameValue.equals(retrievedGameValue));
+        assertTrue(secondEvaluationTime < firstEvaluationTime);
+
     }
 
-    public void testPartitionsDBLarge(){
+    /**
+     * Testing storing and retrieving the Endgame Database from file works correctly.
+     * The board used is shown below, the transformation to the smallest hash board is
+     * number 2, meaning flipping vertical (reflection in horizontal axis)
+     *   -------------            -------------
+     * 1 |   |   |   |          1 | B | W |   |
+     *   -------------            -------------
+     * 0 | B | W |   |          0 |   |   |   |
+     *   -------------            -------------
+     *     A   B   C                A   B   C
+     *  Original board         Smallest Hash Board
+     */
+    @Test
+    public void testMovesTransformed(){
 
-        Board board = new Board(3, 3);
+        board = new Board(3, 2);
         board.setupBoard();
 
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
         blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
+        blackPieces.get(0).setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPieces.get(0));
 
         ArrayList<Piece> whitePieces = new ArrayList<Piece>();
         whitePieces.add(new Piece(true));
         whitePieces.get(0).setPosition(board.getSquare(1,0));
         board.addPiece(1, 0, whitePieces.get(0));
 
-        board.printBoard();
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
+        GameValue retrievedGameValue = board.evaluate(partitionsDB);
 
-        // getting partitions Database from file
-        FileInputOutput fio = new FileInputOutput();
-        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+        // Checking each of the white and blacks moves transformed correctly
+        for(int i = 0; i < evaluatedGameValue.left.size(); i++){
 
-        GameValue gameValue = board.evaluate(partitionsDB);
+            Move evaluatedBlackMove = evaluatedGameValue.left.get(i).move;
+            Move retrievedBlackMove = retrievedGameValue.left.get(i).move;
 
-        // storing GameValue object to file
-        fio.outputDB(partitionsDB);
+            assertTrue(evaluatedBlackMove.equals(retrievedBlackMove));
+        }
+
+        for(int i = 0; i < evaluatedGameValue.right.size(); i++){
+
+            Move evaluatedWhiteMove = evaluatedGameValue.right.get(i).move;
+            Move retrievedWhiteMove = retrievedGameValue.right.get(i).move;
+
+            assertTrue(evaluatedWhiteMove.equals(retrievedWhiteMove));
+        }
     }
 
     public void testEvaluateSplit(){
