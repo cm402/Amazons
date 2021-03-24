@@ -1032,12 +1032,10 @@ public class Board {
      */
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
 
-        GameValue gameValue;
-
-        // if partitionsDB is null, we don't check it
+        // First optimisation, check endgame database
         if(partitionsDB != null){
 
-            gameValue = getGameValue(partitionsDB);
+            GameValue gameValue = getGameValue(partitionsDB);
 
             // Check if GameValue already stored in partitions DB
             if(gameValue != null){
@@ -1050,73 +1048,48 @@ public class Board {
         // game isn't split into partitions, just evaluate the board
         if(partitions.size() == 1){
 
-            // Second optimisation, using smallest hash value
+            // Second optimisation, using smallest hash value board w/ transformation
             SmallestHashValue smallestHash = getSmallestHashValue();
 
-            // TODO- remove
-            this.printBoard();
-            smallestHash.board.printBoard();
-            System.out.println(smallestHash.transformation);
-
             // Storing the GameValue object for the smallest hash variation of our current Board
-            gameValue = smallestHash.board.evaluate(0);
-            gameValue.simplify();
+            GameValue smallestHashGameValue = smallestHash.board.evaluate(0);
+            smallestHashGameValue.simplify();
 
             if(partitionsDB != null){
 
                 // storing the GameValue in the database, so don't have to evaluate it next time
-                partitionsDB.put(smallestHash.hashValue, gameValue);
+                partitionsDB.put(smallestHash.hashValue, smallestHashGameValue);
             }
 
             // Transforming our smallestHash GameValue, to the current board GameValue
-            GameValue currentBoardGameValue = transformGameValue(smallestHash, gameValue);
+            GameValue currentBoardGameValue = transformGameValue(smallestHash, smallestHashGameValue);
 
             return currentBoardGameValue;
-            /*
-            // Without second optimisation
-            gameValue = this.evaluate(0);
-            gameValue.simplify();
-
-            if(partitionsDB != null){
-                partitionsDB.put(this.hashCode(), gameValue);
-            }
-
-            return gameValue;
-            */
 
         // board can be split into partitions, must evaluate partitions separately, and add them
         } else {
 
-            // TODO- Setup a board into 3 partitions, and update the AIPlayer to decide which subgame to
-            // TODO- play in, based on the GameValue objects of each subgame.
-            // TODO- Change from adding partitions, to selecting correct one to move in?
-            ArrayList<GameValue> gameValues = new ArrayList<>();
+            // Idea, evaluate each of the sub-game partitions, to get the "best" moves in each
+            // Create a GameValue object to store the left and right values of all of the partitions
+            GameValue gameValueTotal = new GameValue();
 
             for(Board partition: partitions){
 
-                gameValues.add(partition.evaluate(0));
+                GameValue partitionGameValue = partition.evaluate(partitionsDB);
+                partitionGameValue.simplify();
+
+                gameValueTotal.left.addAll(partitionGameValue.left);
+                gameValueTotal.right.addAll(partitionGameValue.right);
             }
 
-            GameValue gameValueTotal = new GameValue();
-            gameValueTotal = gameValueTotal.plus(gameValues.get(0), gameValues.get(1));
+            // Simplifying to remove "dominated" options
+            gameValueTotal.simplify();
 
-            // if more than 2 partitions to add together
-            if(gameValues.size() > 2){
-
-                for(int i = 2; i < gameValues.size(); i++){
-
-                    gameValueTotal = gameValueTotal.plus(gameValueTotal, gameValues.get(i));
-
-                }
-            }
-
+            // Storing the GameValue in the endgame database
             if(partitionsDB != null){
 
-                //partitionsDB.put(this.hashCode(), gameValueTotal);
-                //partitionsDB.put(this.getSmallestHashValue().get(0), gameValueTotal);
+                partitionsDB.put(this.hashCode(), gameValueTotal);
             }
-
-            gameValueTotal.simplify();
             return gameValueTotal;
         }
     }

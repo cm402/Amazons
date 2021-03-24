@@ -1,7 +1,6 @@
 import java.util.HashMap;
 import java.util.ArrayList;
-
-import org.junit.Assert;
+;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -764,147 +763,49 @@ public class BoardTests {
         checkMoves(evaluatedGameValue, retrievedGameValue);
     }
 
-    public void testEvaluateSplit(){
+    /** Testing evaluate when board can be split into partitions
+     *   -----------------
+     * 3 | X | X | X | W |
+     *   -----------------
+     * 2 | W |   | X |   |
+     *   -----------------
+     * 1 | B |   | X | B |
+     *   -----------------
+     * 0 |   |   | X |   |
+     *   -----------------
+     *     A   B   C   D
+     */
+    @Test
+    public void testEvaluateWithSplit(){
 
-        Board board = new Board(3, 3);
+        board = new Board(4, 4);
         board.setupBoard();
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, blackPiece);
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(2,1));
-        board.addPiece(2, 1, whitePieces.get(0));
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(0,2));
+        board.addPiece(0, 2, whitePiece);
 
-        board.burnSquare(1, 0);
-        board.burnSquare(1, 1);
-        board.burnSquare(1, 2);
+        Piece blackPiece2 = new Piece(false);
+        blackPiece2.setPosition(board.getSquare(3, 1));
+        board.addPiece(3,1, blackPiece2);
 
-        board.printBoard();
+        Piece whitePiece2 = new Piece(true);
+        whitePiece2.setPosition(board.getSquare(3,3));
+        board.addPiece(3, 3, whitePiece2);
 
-        GameValue gameValue = board.evaluate(null);
-        System.out.println(gameValue);
-    }
-    public void testEvaluateSplit2(){
-
-        Board board = new Board(3, 4);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,2));
-        board.addPiece(0, 2, blackPieces.get(0));
-        blackPieces.add(new Piece(false));
-        blackPieces.get(1).setPosition(board.getSquare(2,2));
-        board.addPiece(2, 2, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, whitePieces.get(0));
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(2,1));
-        board.addPiece(2, 1, whitePieces.get(0));
-
-        board.burnSquare(1, 0);
-        board.burnSquare(1, 1);
-        board.burnSquare(1, 2);
+        board.burnSquare(2, 0);
+        board.burnSquare(2, 1);
+        board.burnSquare(2, 2);
+        board.burnSquare(0, 3);
         board.burnSquare(1, 3);
-
-        board.printBoard();
-
-        GameValue gameValue = board.evaluate(null);
-        System.out.println(gameValue);
-    }
-
-    public void testGetGameValue(){
-
-        // Board 1
-        Board board = new Board(2, 2);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,1));
-        board.addPiece(1, 1, whitePieces.get(0));
-
-        board.burnSquare(1, 0);
-
-        // Board 2
-        Board board2 = new Board(2, 2);
-        board2.setupBoard();
-
-        ArrayList<Piece> blackPieces2 = new ArrayList<Piece>();
-        blackPieces2.add(new Piece(false));
-        blackPieces2.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces2.get(0));
-
-        ArrayList<Piece> whitePieces2 = new ArrayList<Piece>();
-        whitePieces2.add(new Piece(true));
-        whitePieces2.get(0).setPosition(board.getSquare(1,1));
-        board.addPiece(1, 1, whitePieces2.get(0));
-
-        board2.burnSquare(1, 0);
-
-        // getting partitions Database from file
-        FileInputOutput fio = new FileInputOutput();
-        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+        board.burnSquare(2, 3);
 
         GameValue gameValue = board.evaluate(null);
-        GameValue gameValue2 = board.evaluate(null);
-
-        System.out.println("testing");
-
-    }
-
-    public void testTransformingSquares(){
-
-        Square rotatedSquare = new Square(2, 1, null, true);
-
-
-        for(int i = 0; i < 4; i++){
-
-            Board board = new Board(3, 3);
-            board.setupBoard();
-
-            board.burnSquare(rotatedSquare.getX(), rotatedSquare.getY());
-            board.printBoard();
-
-            rotatedSquare = board.rotatePoint(rotatedSquare);
-
-        }
-
-    }
-
-    // testing that we correctly transform our GameValue objects
-    public void testTransformingGameValues(){
-
-        Board board = new Board(3, 2);
-        board.setupBoard();
-
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPieces.get(0));
-
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
-
-        board.printBoard();
-
-        GameValue gameValue = board.evaluate(null);
-        System.out.println(gameValue.toString());
-
+        System.out.println("test");
     }
 
 }

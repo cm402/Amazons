@@ -1,6 +1,10 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Stores a previously played game, with the moves played and board size,
+ * allowing the game to be stored in a file, as well as reviewed later.
+ */
 public class GameFile implements Serializable {
 
     private ArrayList<Move> movesPlayed;

@@ -1,120 +1,20 @@
 import java.util.ArrayList;
 
+/**
+ * Used to run the Amazons program, containing methods to play the game,
+ * simulate games, as well the tutorial and review game options.
+ */
 public class GameEngine {
 
-    private Player setupPlayers(Player p1, Player p2){
-
-        Player currentPlayer;
-
-        // white goes first, so whoever is white to being is currentPlayer
-        if(p1.isWhite()){
-            currentPlayer = p1;
-        } else {
-            currentPlayer = p2;
-        }
-
-        return currentPlayer;
-    }
-
-    private Board setupBoard(int boardSize, ArrayList<Player> players){
-
-        Board board = new Board(boardSize, boardSize);
-        board.resetBoard(players.get(0), players.get(1));
-        board.printBoard();
-
-        return board;
-    }
-
-
-    public void updateBoard(Move nextMove, Board board, boolean printBoard){
-
-        board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
-        board.burnSquare(nextMove.getBurnedSquare().getX(), nextMove.getBurnedSquare().getY());
-
-        if(printBoard){
-            board.printBoard();
-        }
-    }
-
-    public Player swapPlayers(ArrayList<Player> players, Player currentPlayer){
-
-        if(players.indexOf(currentPlayer) == 0){
-            return players.get(1);
-        } else {
-            return players.get(0);
-        }
-    }
-
-    private void outputMove(Move move, Player currentPlayer, ArrayList<Player> players){
-
-        String colour = "";
-        if(currentPlayer.isWhite()){
-            colour = "white";
-        } else {
-            colour = "black";
-        }
-
-        //System.out.println("player " + players.indexOf(currentPlayer) + " is next to move (" + colour + ")");
-        System.out.println(move.toString());
-    }
-
-    private void finishGame(ArrayList<Player> players, Player currentPlayer, ArrayList<Move> movesPlayed, Board board){
-
-        System.out.println("");
-        System.out.println("player " + players.indexOf(currentPlayer) + " is unable to move, and therefore has lost");
-        System.out.println("This game lasted " + movesPlayed.size() + " moves");
-        outputGameFile(movesPlayed, board);
-        System.exit(0);
-    }
-
-    public void outputGameFile(ArrayList<Move> movesPlayed, Board board){
-
-        GameFile gameFile = new GameFile(movesPlayed, board.getRowBoardSize());
-
-        FileInputOutput fio = new FileInputOutput();
-
-        fio.outputGameFile(gameFile);
-    }
-
-    public GameFile inputGameFile(){
-
-        FileInputOutput fio = new FileInputOutput();
-        GameFile gameFile = fio.getGameFile();
-        return gameFile;
-
-    }
-
-    public void printGameFile(GameFile gf){
-
-        System.out.println("previous games board size was " + gf.getBoardSize());
-
-        ArrayList<Move> previousGamesMoves = gf.getMovesPlayed();
-
-        for(Move move: previousGamesMoves){
-            System.out.println(move);
-        }
-    }
-
-    public void startGame(Board board, ArrayList<Move> movesPlayed, Player currentPlayer, ArrayList<Player> players){
-
-        while(true){
-
-            Move nextMove = currentPlayer.getMove(board);
-            movesPlayed.add(nextMove);
-
-            if(nextMove == null){
-                finishGame(players, currentPlayer, movesPlayed, board);
-            }
-
-            updateBoard(nextMove, board, true);
-            outputMove(nextMove, currentPlayer, players);
-            currentPlayer = swapPlayers(players, currentPlayer);
-        }
-    }
-
+    /**
+     * Defining and initialising 2 player objects, either AI or human,
+     * depending on how many are specified
+     * @param noOfHumanPlayers The number of humanPlayer objects required
+     * @return A list of 2 Player objects
+     */
     public static ArrayList<Player> setupPlayers(int noOfHumanPlayers){
 
-        ArrayList<Player> players = new ArrayList<Player>();
+        ArrayList<Player> players = new ArrayList<>();
 
         if(noOfHumanPlayers == 0){
 
@@ -131,8 +31,153 @@ public class GameEngine {
             players.add(new HumanPlayer(true));
             players.add(new AIPlayer(false));
         }
-
         return players;
+    }
+
+    /**
+     * Defining and initialising a new Board object, filling it with pieces and giving
+     * the pieces to the correct player objects
+     * @param boardSize Size of the board required
+     * @param players List of players to give the pieces to
+     * @return a Board object, ready to be used for a game
+     */
+    private Board setupBoard(int boardSize, ArrayList<Player> players){
+
+        Board board = new Board(boardSize, boardSize);
+        board.resetBoard(players.get(0), players.get(1));
+        board.printBoard();
+
+        return board;
+    }
+
+    /**
+     * Chooses the first player, depending on who has the white pieces.
+     * @param p1 First player object
+     * @param p2 Second player object
+     * @return The player with the white pieces, to play first.
+     */
+    private Player chooseFirstPlayer(Player p1, Player p2){
+
+        Player currentPlayer;
+
+        if(p1.isWhite()){
+            currentPlayer = p1;
+        } else {
+            currentPlayer = p2;
+        }
+
+        return currentPlayer;
+    }
+
+    /**
+     * Updating a board, with move that has been selected by a player.
+     * @param nextMove Move to be played
+     * @param board Board to update
+     * @param printBoard boolean used to indicate if the board should be printed or not
+     */
+    public void updateBoard(Move nextMove, Board board, boolean printBoard){
+
+        board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
+        board.burnSquare(nextMove.getBurnedSquare().getX(), nextMove.getBurnedSquare().getY());
+
+        if(printBoard){
+            board.printBoard();
+        }
+    }
+
+    /**
+     * Gets the other player, given the player who was the last "currentPlayer"
+     * @param players List of 2 player objects
+     * @param currentPlayer Player who played last
+     * @return Player object indicating who will play next
+     */
+    public Player swapPlayers(ArrayList<Player> players, Player currentPlayer){
+
+        if(players.indexOf(currentPlayer) == 0){
+            return players.get(1);
+        } else {
+            return players.get(0);
+        }
+    }
+
+    /**
+     * Writing a gameFile to disk, once a game has been completed,
+     * allowing the game to be reviewed later.
+     * @param movesPlayed A list of the moves played in the completed game.
+     * @param board The board that the game was played on.
+     */
+    public void outputGameFile(ArrayList<Move> movesPlayed, Board board){
+
+        GameFile gameFile = new GameFile(movesPlayed, board.getRowBoardSize());
+
+        FileInputOutput fio = new FileInputOutput();
+
+        fio.outputGameFile(gameFile);
+    }
+
+    /**
+     * Declaring a winner to the last game, storing the gameFile and exiting the program.
+     * @param players List of the 2 player objects
+     * @param currentPlayer The player who lost
+     * @param movesPlayed The number of moves made
+     * @param board The board played on
+     */
+    private void finishGame(ArrayList<Player> players, Player currentPlayer, ArrayList<Move> movesPlayed, Board board){
+
+        System.out.println("");
+        System.out.println("player " + players.indexOf(currentPlayer) + " is unable to move, and therefore has lost");
+        System.out.println("This game lasted " + movesPlayed.size() + " moves");
+        outputGameFile(movesPlayed, board);
+        System.exit(0);
+    }
+
+    /**
+     * Used to play a game, once the board and players have been initialised
+     * @param board The board that will be used for the game
+     * @param movesPlayed A list to store the moves that have been played
+     * @param currentPlayer Stores the player who is next to move
+     * @param players List of the 2 players for the game
+     */
+    public void startGame(Board board, ArrayList<Move> movesPlayed, Player currentPlayer, ArrayList<Player> players){
+
+        while(true){
+
+            // Getting the next move from the current player
+            Move nextMove = currentPlayer.getMove(board);
+            movesPlayed.add(nextMove);
+
+            // Checking if the game is over, as the current player can't make a move
+            if(nextMove == null){
+                finishGame(players, currentPlayer, movesPlayed, board);
+            }
+
+            // Updating the board, outputting the move player to console, and swapping the current player
+            updateBoard(nextMove, board, true);
+            System.out.println(nextMove.toString());
+            currentPlayer = swapPlayers(players, currentPlayer);
+        }
+    }
+
+    /**
+     *
+     * @param io
+     * @param engine
+     */
+    public void playGame(IO io, GameEngine engine){
+
+        Board board;
+        Player currentPlayer;
+        ArrayList<Move> movesPlayed = new ArrayList<>();
+
+        ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
+
+        board = engine.setupBoard(io.getBoardSize(), players);
+
+        currentPlayer = engine.chooseFirstPlayer(players.get(0), players.get(1));
+
+        engine.startGame(board, movesPlayed, currentPlayer, players);
+
+        engine.outputGameFile(movesPlayed, board);
     }
 
     /**
@@ -203,22 +248,15 @@ public class GameEngine {
         return AIType1Wins;
     }
 
-    public void playGame(IO io, GameEngine engine){
+    /**
+     * Retrieving a gameFile from disk, allowing it to be reviewed.
+     * @return A GameFile object for the most recently played game
+     */
+    public GameFile inputGameFile(){
 
-        Board board;
-        Player currentPlayer;
-        ArrayList<Move> movesPlayed = new ArrayList<>();
-
-        ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
-
-        board = engine.setupBoard(io.getBoardSize(), players);
-
-        currentPlayer = engine.setupPlayers(players.get(0), players.get(1));
-
-        engine.startGame(board, movesPlayed, currentPlayer, players);
-
-        engine.outputGameFile(movesPlayed, board);
-
+        FileInputOutput fio = new FileInputOutput();
+        GameFile gameFile = fio.getGameFile();
+        return gameFile;
     }
 
     public void reviewGame(IO io, GameEngine engine){
@@ -375,13 +413,17 @@ public class GameEngine {
 
                 engine.tutorial(io, Args);
             }
-            
+
         } else {
 
             if(Args[0].equals("experiments")){
 
-                int firstPlayerWins = engine.simulateGames(50, "Heuristic", "MCTS");
-                //System.out.println(firstPlayerWins);
+                String AIType1 = "Heuristic";
+                String AIType2 = "Random";
+                int noOfSimulations = 50;
+
+                int firstPlayerWins = engine.simulateGames(noOfSimulations, AIType1, AIType2);
+                System.out.println(AIType1 + " won " + firstPlayerWins + " games out of " + noOfSimulations + " against " + AIType2);
 
             } else if(Args[0].equals("fillDatabase")){
 
@@ -391,5 +433,4 @@ public class GameEngine {
 
         }
     }
-
 }
