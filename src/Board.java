@@ -717,25 +717,13 @@ public class Board {
         variants.add(this.flipVertical());
         variants.add(this.rotate().rotate());
 
-        Board invertedBoard = this.invert();
-
-        variants.add(invertedBoard);
-        variants.add(invertedBoard.flipHorizontal());
-        variants.add(invertedBoard.flipVertical());
-        variants.add(invertedBoard.rotate().rotate());
-
-        // Special case- if board is a square, 8 more possible variants
+        // Special case- if board is a square, 4 more possible variants
         if(this.getColumnBoardSize() == this.getRowBoardSize()){
 
             variants.add(this.rotate());
             variants.add(this.rotate().rotate().rotate());
-            variants.add(this.rotate().flipHorizontal());
-            variants.add(this.rotate().rotate().rotate().flipHorizontal());
-
-            variants.add(invertedBoard.rotate());
-            variants.add(invertedBoard.rotate().rotate().rotate());
-            variants.add(invertedBoard.rotate().flipHorizontal());
-            variants.add(invertedBoard.rotate().rotate().rotate().flipHorizontal());
+            variants.add(this.rotate().flipVertical());
+            variants.add(this.rotate().rotate().rotate().flipVertical());
         }
 
         // 2. Standard find min algorithm to retrieve the smallest hash value from list
@@ -753,7 +741,6 @@ public class Board {
                 minValue = hashValue;
                 boardVariationType = i;
             }
-
         }
 
         // 3. Storing smallest hash board, value & transformation from current board
@@ -799,11 +786,18 @@ public class Board {
     }
 
     /**
-     * Reflects a squares co-ordinates in a horizontal axis
+     * Reflects a squares co-ordinates in a vertical axis
      * @param square Square to be reflected
-     * @return Horizontally reflected Square object
+     * @return Vertically reflected Square object
+     *   -------------            -------------
+     * 1 |   |   |   |          1 |   |   |   |
+     *   -------------            -------------
+     * 0 | B | W |   |          0 |   | W | B |
+     *   -------------            -------------
+     *     A   B   C                A   B   C
+     *  Original board      Vertically flipped Board
      */
-    public Square flipPointHorizontal(Square square){
+    public Square flipPointVertical(Square square){
 
         // x' = maximum x index - x
         int newX = this.getColumnBoardSize() - 1 - square.getX();
@@ -815,11 +809,18 @@ public class Board {
     }
 
     /**
-     * Reflects a squares co-ordinates in a vertical axis
+     * Reflects a squares co-ordinates in a horizontal axis
      * @param square Square to be reflected
-     * @return Vertically reflected Square object
+     * @return Horizontally reflected Square object
+     *   -------------            -------------
+     * 1 |   |   |   |          1 | B | W |   |
+     *   -------------            -------------
+     * 0 | B | W |   |          0 |   |   |   |
+     *   -------------            -------------
+     *     A   B   C                A   B   C
+     *  Original board      Horizontally flipped Board
      */
-    public Square flipPointVertical(Square square) {
+    public Square flipPointHorizontal(Square square) {
 
         // x' = x
         int newX = square.getX();
@@ -859,54 +860,53 @@ public class Board {
         Square newEnd = end;
         Square newShoot = shoot;
 
-        if(transformation == 0 || transformation == 4){
+        if(transformation == 0){
 
             return oldMove;
 
-        } else if(transformation == 1 || transformation == 5){
-
-            newStart = flipPointHorizontal(start);
-            newEnd = flipPointHorizontal(end);
-            newShoot = flipPointHorizontal(shoot);
-
-        } else if(transformation == 2 || transformation == 6){
+        } else if(transformation == 1){
 
             newStart = flipPointVertical(start);
             newEnd = flipPointVertical(end);
             newShoot = flipPointVertical(shoot);
 
-        } else if(transformation == 3 || transformation == 7){
+        } else if(transformation == 2){
+
+            newStart = flipPointHorizontal(start);
+            newEnd = flipPointHorizontal(end);
+            newShoot = flipPointHorizontal(shoot);
+
+        } else if(transformation == 3){
 
             newStart = rotatePoint(rotatePoint(start));
             newEnd = rotatePoint(rotatePoint(end));
             newShoot = rotatePoint(rotatePoint(shoot));
 
-        } else if(transformation == 8 || transformation == 12){
+        } else if(transformation == 4){
 
             newStart = rotatePointAnti(start);
             newEnd = rotatePointAnti(end);
             newShoot = rotatePointAnti(shoot);
 
-        } else if(transformation == 9 || transformation == 13){
+        } else if(transformation == 5){
 
             newStart = rotatePoint(start);
             newEnd = rotatePoint(end);
             newShoot = rotatePoint(shoot);
 
-        } else if(transformation == 10 || transformation == 14){
+        } else if(transformation == 5){
 
-            newStart = rotatePointAnti(flipPointHorizontal(start));
-            newEnd = rotatePointAnti(flipPointHorizontal(end));
-            newShoot = rotatePointAnti(flipPointHorizontal(shoot));
+            newStart = rotatePointAnti(flipPointVertical(start));
+            newEnd = rotatePointAnti(flipPointVertical(end));
+            newShoot = rotatePointAnti(flipPointVertical(shoot));
 
-        } else if(transformation == 11 || transformation == 15){
+        } else if(transformation == 7){
 
-            newStart = rotatePoint(flipPointHorizontal(start));
-            newEnd = rotatePoint(flipPointHorizontal(end));
-            newShoot = rotatePoint(flipPointHorizontal(shoot));
+            newStart = rotatePoint(flipPointVertical(start));
+            newEnd = rotatePoint(flipPointVertical(end));
+            newShoot = rotatePoint(flipPointVertical(shoot));
 
         }
-
         return new Move(player, newStart, newEnd, newShoot);
     }
 
@@ -920,18 +920,10 @@ public class Board {
 
         int transform = smallestHash.transformation;
         GameValue transformedGameValue = new GameValue();
-
-        // 1. Check if Inversion required
-        if(transform >= 4 && transform <= 7 || transform >= 12 && transform <= 15){
-
-           smallestHashGameValue.invert();
-        }
-
         transformedGameValue.left = smallestHashGameValue.left;
         transformedGameValue.right = smallestHashGameValue.right;
 
-
-        // 2. Transform any moves on both left and right
+        // 1. Transform any moves on left side
         if(smallestHashGameValue.left.size() > 0){
 
             // Getting the "left" player object
@@ -947,6 +939,7 @@ public class Board {
             }
         }
 
+        // 2. Transform any moves on right side
         if(smallestHashGameValue.right.size() > 0){
 
             Player right = smallestHashGameValue.right.get(0).move.getPlayer();
@@ -1058,7 +1051,6 @@ public class Board {
         if(partitions.size() == 1){
 
             // Second optimisation, using smallest hash value
-
             SmallestHashValue smallestHash = getSmallestHashValue();
 
             // TODO- remove
@@ -1080,8 +1072,6 @@ public class Board {
             GameValue currentBoardGameValue = transformGameValue(smallestHash, gameValue);
 
             return currentBoardGameValue;
-
-
             /*
             // Without second optimisation
             gameValue = this.evaluate(0);

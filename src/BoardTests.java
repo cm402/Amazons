@@ -575,14 +575,6 @@ public class BoardTests {
 
     /**
      * Testing storing and retrieving the Endgame Database from file works correctly.
-     * The board used is shown below, the transformation to the smallest hash board is
-     * number 2, meaning
-     *   -------------
-     * 1 |   |   |   |
-     *   -------------
-     * 0 | B | W |   |
-     *   -------------
-     *     A   B   C
      */
     @Test
     public void testPartitionsDBSaved(){
@@ -613,13 +605,11 @@ public class BoardTests {
 
         assertTrue(evaluatedGameValue.equals(retrievedGameValue));
         assertTrue(secondEvaluationTime < firstEvaluationTime);
-
     }
 
     /**
-     * Testing storing and retrieving the Endgame Database from file works correctly.
-     * The board used is shown below, the transformation to the smallest hash board is
-     * number 2, meaning flipping vertical (reflection in horizontal axis)
+     * Testing that moves are transformed to the smallest hash version,
+     * and correctly back after being retrieved from the endgame database.
      *   -------------            -------------
      * 1 |   |   |   |          1 | B | W |   |
      *   -------------            -------------
