@@ -608,8 +608,100 @@ public class BoardTests {
     }
 
     /**
+     * Checking that the moves for black and white are the same for 2 GameValue objects
+     * @param evaluatedGameValue The GameValue object evaluated at run-time
+     * @param retrievedGameValue The transformed GameValue object retrieved from the Endgame Database
+     */
+    public void checkMoves(GameValue evaluatedGameValue, GameValue retrievedGameValue){
+
+        for(int i = 0; i < evaluatedGameValue.left.size(); i++){
+
+            Move evaluatedBlackMove = evaluatedGameValue.left.get(i).move;
+            Move retrievedBlackMove = retrievedGameValue.left.get(i).move;
+            assertTrue(evaluatedBlackMove.equals(retrievedBlackMove));
+        }
+
+        for(int i = 0; i < evaluatedGameValue.right.size(); i++){
+
+            Move evaluatedWhiteMove = evaluatedGameValue.right.get(i).move;
+            Move retrievedWhiteMove = retrievedGameValue.right.get(i).move;
+            assertTrue(evaluatedWhiteMove.equals(retrievedWhiteMove));
+        }
+    }
+
+    /**
      * Testing that moves are transformed to the smallest hash version,
      * and correctly back after being retrieved from the endgame database.
+     * Transformation = 0, no transformation
+     *   -------------            -------------
+     * 1 |   | W | B |          1 |   | W | B |
+     *   -------------            -------------
+     * 0 | X |   | X |          0 | X |   | X |
+     *   -------------            -------------
+     *     A   B   C                A   B   C
+     *  Original board         Smallest Hash Board
+     */
+    @Test
+    public void testMovesTransformed0(){
+
+        board = new Board(3, 2);
+        board.setupBoard();
+
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(board.getSquare(2,1));
+        board.addPiece(2, 1, blackPiece);
+
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(1,1));
+        board.addPiece(1, 1, whitePiece);
+
+        board.burnSquare(0, 0);
+        board.burnSquare(2, 0);
+
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
+        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+
+        checkMoves(evaluatedGameValue, retrievedGameValue);
+    }
+
+    /**
+     * Testing that moves are transformed to the smallest hash version,
+     * and correctly back after being retrieved from the endgame database.
+     * Transformation = 1, vertical flip
+     *   -------------            -------------
+     * 1 |   |   |   |          1 |   |   |   |
+     *   -------------            -------------
+     * 0 | B |   | W |          0 | W |   | B |
+     *   -------------            -------------
+     *     A   B   C                A   B   C
+     *  Original board         Smallest Hash Board
+     */
+    @Test
+    public void testMovesTransformed1(){
+
+        board = new Board(3, 2);
+        board.setupBoard();
+
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPiece);
+
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(2,0));
+        board.addPiece(2, 0, whitePiece);
+
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
+        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+
+        checkMoves(evaluatedGameValue, retrievedGameValue);
+    }
+
+    /**
+     * Testing that moves are transformed to the smallest hash version,
+     * and correctly back after being retrieved from the endgame database.
+     * Transformation = 2, horizontal flip
      *   -------------            -------------
      * 1 |   |   |   |          1 | B | W |   |
      *   -------------            -------------
@@ -619,41 +711,57 @@ public class BoardTests {
      *  Original board         Smallest Hash Board
      */
     @Test
-    public void testMovesTransformed(){
+    public void testMovesTransformed2(){
 
         board = new Board(3, 2);
         board.setupBoard();
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-        blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,0));
-        board.addPiece(0, 0, blackPieces.get(0));
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPiece);
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(1,0));
-        board.addPiece(1, 0, whitePieces.get(0));
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, whitePiece);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
         GameValue evaluatedGameValue = board.evaluate(partitionsDB);
         GameValue retrievedGameValue = board.evaluate(partitionsDB);
 
-        // Checking each of the white and blacks moves transformed correctly
-        for(int i = 0; i < evaluatedGameValue.left.size(); i++){
+        checkMoves(evaluatedGameValue, retrievedGameValue);
+    }
 
-            Move evaluatedBlackMove = evaluatedGameValue.left.get(i).move;
-            Move retrievedBlackMove = retrievedGameValue.left.get(i).move;
+    /**
+     * Testing that moves are transformed to the smallest hash version,
+     * and correctly back after being retrieved from the endgame database.
+     * Transformation = 3, rotate 180 degrees
+     *   -------------            -------------
+     * 1 |   |   | W |          1 |   |   | B |
+     *   -------------            -------------
+     * 0 | B |   |   |          0 | W |   |   |
+     *   -------------            -------------
+     *     A   B   C                A   B   C
+     *  Original board         Smallest Hash Board
+     */
+    @Test
+    public void testMovesTransformed3(){
 
-            assertTrue(evaluatedBlackMove.equals(retrievedBlackMove));
-        }
+        board = new Board(3, 2);
+        board.setupBoard();
 
-        for(int i = 0; i < evaluatedGameValue.right.size(); i++){
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPiece);
 
-            Move evaluatedWhiteMove = evaluatedGameValue.right.get(i).move;
-            Move retrievedWhiteMove = retrievedGameValue.right.get(i).move;
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(2,1));
+        board.addPiece(2, 1, whitePiece);
 
-            assertTrue(evaluatedWhiteMove.equals(retrievedWhiteMove));
-        }
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
+        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+
+        checkMoves(evaluatedGameValue, retrievedGameValue);
     }
 
     public void testEvaluateSplit(){

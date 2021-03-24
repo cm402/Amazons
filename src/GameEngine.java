@@ -375,8 +375,7 @@ public class GameEngine {
 
                 engine.tutorial(io, Args);
             }
-
-        // if arguments given, in "testing" mode
+            
         } else {
 
             if(Args[0].equals("experiments")){
@@ -384,10 +383,10 @@ public class GameEngine {
                 int firstPlayerWins = engine.simulateGames(50, "Heuristic", "MCTS");
                 //System.out.println(firstPlayerWins);
 
-            } else if(Args[0].equals("testing")){
+            } else if(Args[0].equals("fillDatabase")){
 
-                BoardTests boardTests = new BoardTests();
-                boardTests.testPartitionsDBSaved();
+                 DatabaseFiller databaseFiller = new DatabaseFiller();
+                 databaseFiller.fillPartitionsDatabase(3);
             }
 
         }
