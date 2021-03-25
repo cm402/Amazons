@@ -197,6 +197,7 @@ public class GameValue implements Serializable{
     }
 
     /**
+     * TODO- Change this
      * Getting the simplest form of a fraction,
      * where top and bottom cannot be any smaller,
      * while still being whole numbers.
@@ -360,10 +361,15 @@ public class GameValue implements Serializable{
 
     }
 
-    // Given 2 GameValue Objects, X & Y, returns true if X <= Y
-    // Definition from winning ways book:
-    // G >= H means that G + (-H) >= 0
-    // or X <= Y unless some Y <= XL or some YR <= X
+    /**
+     * Given 2 GameValue Objects, X & Y, returns true if X <= Y,
+     * according to the definition in "Winning Ways":
+     * G >= H means that G + (-H) >= 0
+     * or X <= Y unless some Y <= XL or some YR <= X
+     * @param x First GameValue object
+     * @param y Second GameValue object
+     * @return true if X <= Y, false otherwise
+     */
     public boolean lessThanOrEqualTo(GameValue x, GameValue y){
 
         for(GameValue xleft: x.left){
@@ -383,18 +389,18 @@ public class GameValue implements Serializable{
         return true;
     }
 
-    // Given a GameValue object, describes which player has a winning strategy
-    // Can be "Left", "Right", "First" or "Second"
-
+    /**
+     * Returns the outcome class for "this" GameValue object,
+     * meaning which player has a winning strategy.
+     * @return "First", "Second", "Left" or "Right"
+     */
     public String getOutcomeClass(){
 
-        // 0 = { : }
         GameValue zero = new GameValue();
 
         if(lessThanOrEqualTo(this, zero)){
 
-            // x <= 0 and 0 <= 0 only true when x = 0
-            // This is a zero position
+            // x <= 0 and 0 <= 0 only true when x = 0, meaning its a zero position
             if(lessThanOrEqualTo(zero, this)){
 
                 return "Second";
@@ -416,12 +422,16 @@ public class GameValue implements Serializable{
         }
 
         // x || 0 means the position is fuzzy
-        // Meaning we can't specify a clear winner
-        // and so the first player can always win
+        // Meaning we can't specify a clear winner, so the first player can always win
         return "First";
     }
 
-    // Compares 2 GameValue objects to see which is better for left
+    /**
+     * Comparing 2 GameValue objects, checking which one is better for left
+     * @param x First GameValue object
+     * @param y Second GameValue object
+     * @return "x", "y", "Equal", or "Fuzzy" if not clear
+     */
     public String compare(GameValue x, GameValue y){
 
         if(lessThanOrEqualTo(x, y)){
@@ -443,13 +453,16 @@ public class GameValue implements Serializable{
                 return "x";
             }
         }
-
         return "Fuzzy";
 
     }
 
-    // Given an ArrayList of GameValues, find the one that dominates the most
-    // of the other GameValue objects
+    /**
+     * Find the GameValue which dominates the most in a list
+     * @param games List to check through
+     * @param side Which side we are using, "left" or "right"
+     * @return "Maximum" GameValue in list
+     */
     public GameValue findMax(ArrayList<GameValue> games, String side){
 
         if(games.isEmpty()){
@@ -476,9 +489,7 @@ public class GameValue implements Serializable{
 
             }
         }
-
         return max;
-
     }
 
     /**
@@ -505,9 +516,12 @@ public class GameValue implements Serializable{
         return duplicates;
     }
 
-    // Removes the GameValue objects that are dominated by others, as well as duplicates
-    // { A, B, C : D, E, F }
-    // if A > B > C, remove B & C
+    /**
+     * Simplifies "this" GameValue object, by first removing all
+     * GameValues that are dominated by others, before also
+     * removing duplicates GameValues.
+     * e.g. < A, B, C | D, E, F >, if A > B > C, removes B & C
+     */
     public void simplify(){
 
         // if "this" already simplified, we just return
@@ -516,7 +530,7 @@ public class GameValue implements Serializable{
         }
 
         GameValue maxLeft = findMax(this.left, "left");
-        ArrayList<GameValue> toRemove = new ArrayList<GameValue>();
+        ArrayList<GameValue> toRemove = new ArrayList<>();
 
         // 1. finding dominated GameValue objects to remove
         if(maxLeft != null){
@@ -584,6 +598,15 @@ public class GameValue implements Serializable{
 
     // Definition from winning ways book:
     // X + Y = { XL + Y, X + YL | XR + Y, X + YR }
+
+    /**
+     * Addition of 2 GameValue objects, using definition
+     * from "Winning Ways":
+     * X + Y = < XL + Y, X + YL | XR + Y, X + YR >
+     * @param x First GameValue object
+     * @param y Second GameValue object
+     * @return Sum of first and second GameValue objects
+     */
     public GameValue plus(GameValue x, GameValue y){
 
         GameValue gameValue = new GameValue();
