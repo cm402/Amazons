@@ -308,7 +308,7 @@ public class GameEngine {
         // part 1 = background & rules explanation
 
         if(tutorialInput.equals("n")){
-            io.tutorialIntroducion();
+            io.tutorialIntroduction();
         } else {
             main(Args);
         }
@@ -450,6 +450,10 @@ public class GameEngine {
                 int noOfEntries = databaseFiller.getEndgameDatabaseSize();
                 System.out.println("Endgame database has " + noOfEntries + " entries");
 
+            } else if(Args[0].equals("reportExamples")){
+
+                ReportExamples reportExamples = new ReportExamples();
+                reportExamples.boardTransformationsExamples();
             }
         }
     }

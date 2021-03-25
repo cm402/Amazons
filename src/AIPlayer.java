@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
- * An AI Player, with 4 options for selecting moves.
+ * Represents an AI Player, with 4 options for selecting moves.
  * 1. Monte-Carlo Tree Search
  * 2. Limit Opponents move options heuristic
  * 3. Combinatorial Game Theory evaluation

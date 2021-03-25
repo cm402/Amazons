@@ -1,11 +1,15 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Used for getting all input from the user, including
+ * setup and playing of games, navigating the tutorial,
+ * reviewing of games, and choosing partitions to simulate.
+ */
 public class IO {
 
     /**
-     * Asking the user for an input string.
-     * Used in human player
+     * Asking the user for an input string, used in human player.
      * @param userPrompt String message prompt for the user
      * @return Input received by the user
      */
@@ -16,6 +20,11 @@ public class IO {
         return sc.nextLine().trim().toLowerCase();
     }
 
+    /**
+     * Asking the user for an input string, used for
+     * the tutorial and review games
+     * @return Input received by the user
+     */
     private String getUserInputString(){
 
         Scanner sc = new Scanner(System.in);
@@ -23,6 +32,10 @@ public class IO {
         return in;
     }
 
+    /**
+     * Outputting the introduction to the game review
+     * @param boardSize Size of the board of the previous game
+     */
     public void reviewIntroduction(int boardSize){
 
         System.out.println("The previous game was played on a " + boardSize + " by " + boardSize + " board.");
@@ -33,6 +46,11 @@ public class IO {
         System.out.println("Finally, to see this list of options again, enter \'help\'");
     }
 
+    /**
+     * Getting the input for the game review
+     * @param noOfMoves The number of moves in the previous game
+     * @return The input received from the user
+     */
     public String getReviewInput(int noOfMoves){
 
         String reviewInput = "";
@@ -61,12 +79,14 @@ public class IO {
                     continue;
                 }
             }
-
             return reviewInput;
         }
     }
 
-    public void tutorialIntroducion(){
+    /**
+     * Outputting the introduction to the tutorial
+     */
+    public void tutorialIntroduction(){
 
         System.out.println("");
 
@@ -82,9 +102,11 @@ public class IO {
                 "player is then declared the winner.\n\nAs in normal chess, white always moves first";
 
         System.out.println(gameBackground);
-
     }
 
+    /**
+     * Outputting the second part of the tutorial
+     */
     public void tutorialNotation(){
 
         String gameNotation = "The board in this game uses the same algebraic notation for squares as " +
@@ -104,9 +126,11 @@ public class IO {
         board.printBoard();
 
         System.out.println(gameNotation);
-
     }
 
+    /**
+     * Outputting the final part of the tutorial
+     */
     public void tutorialExample(){
 
         String exampleMove = "So, to play a move, we enter the location of the piece we want to move, the " +
@@ -133,10 +157,9 @@ public class IO {
 
         board.printBoard();
 
-        // 1. first value is "b3"
-        // 2. third value is "e1"
-        // 3. second value is either "b1", "c3", "b4", "d1" or "e3"
-
+        // 1. first value must be "b3"
+        // 2. second value can be any of "b1", "c3", "b4", "d1" or "e3"
+        // 3. third value must be "e1"
         System.out.println(exampleMove);
 
         while(true){
@@ -172,11 +195,12 @@ public class IO {
             System.out.println("");
             return;
         }
-
     }
 
-
-
+    /**
+     * Getting the input for the tutorial
+     * @return The input received from the user
+     */
     public String getTutorialInput(){
 
         String tutorialInput = "";
@@ -195,6 +219,10 @@ public class IO {
         }
     }
 
+    /**
+     * Getting the input for the program introduction
+     * @return The integer received from the user
+     */
     public int getIntroduction(){
 
         System.out.println("Welcome, to \"Game of the Amazons\"");
@@ -223,9 +251,13 @@ public class IO {
             }
             return introValue;
         }
-
     }
 
+    /**
+     * Asking the user for an input integer, used for board
+     * setup, and partition setup
+     * @return Input received by the user
+     */
     private int getUserInputInteger(String inputPrompt){
 
         Scanner sc = new Scanner(System.in);
@@ -234,6 +266,10 @@ public class IO {
         return Integer.parseInt(in);
     }
 
+    /**
+     * Getting the number of human players for a game, from the user
+     * @return number of human players, selected by user
+     */
     public int getNoOfPlayers(){
 
         int noOfHumanPlayers = - 1;
@@ -251,6 +287,10 @@ public class IO {
 
     }
 
+    /**
+     * Getting the size of the board for a game, from the user
+     * @return board size, selected by user
+     */
     public int getBoardSize(){
 
         int boardSize = -1;
@@ -266,6 +306,11 @@ public class IO {
     }
 
     // getting the dimensions of the partition board
+
+    /**
+     * Getting the dimensions for a partition board, from the user
+     * @param setup Partition setup object, to be updated
+     */
     public void getPartitionBoardSize(BoardPartitionSetup setup){
 
         int noOfColumns = -1;
@@ -292,21 +337,21 @@ public class IO {
 
         setup.setNoOfColumns(noOfColumns);
         setup.setNoOfRows(noOfRows);
-
         return;
-
     }
 
-    // Ask the user for co-ordinates, returns either an ArrayList of the 2 coordinates,
-    // or null if the user is finished
-    // xcoord = index 0
-    // ycoord = index 1
+    /**
+     * Asking the user for co-ordinates
+     * @param partition partition board, to validate that co-ordinate not already in use
+     * @param outputType type of selection, e.g "white piece"
+     * @return Arraylist of 2 co-ordinates, x = index 0, y = index 1, or null if user finished
+     */
     public ArrayList<Integer> getCoordinates(Board partition, String outputType){
 
         int xCoord = -2;
         int yCoord = -2;
 
-        ArrayList<Integer> coordinates = new ArrayList<Integer>();
+        ArrayList<Integer> coordinates = new ArrayList<>();
 
         // validating that the x co-ordinate entered is valid, for the board size
         while (xCoord < 0 || xCoord >= partition.getColumnBoardSize()) {
@@ -335,12 +380,14 @@ public class IO {
                 coordinates.add(yCoord);
             }
         }
-
         return coordinates;
-
     }
 
-    // getting the pieces information for the partition
+    /**
+     * Getting the pieces locations for a partition, from the user
+     * @param partition partition board
+     * @param setup partition setup information
+     */
     public void getPartitionPieces(Board partition, BoardPartitionSetup setup){
 
         ArrayList<Integer> whiteXCoordinates = new ArrayList<Integer>();
@@ -382,11 +429,14 @@ public class IO {
 
         setup.setXBlackPieceCoordinates(blackXCoordinates);
         setup.setYBlackPieceCoordinates(blackYCoordinates);
-
     }
 
 
-    // getting the burnt squares information for the partition
+    /**
+     * Getting the burnt square locations for a partition, from the user
+     * @param partition partition board
+     * @param setup partition setup information
+     */
     public void getPartitionBurntSquares(Board partition, BoardPartitionSetup setup){
 
         ArrayList<Integer> xCoordinates = new ArrayList<Integer>();
@@ -409,6 +459,10 @@ public class IO {
         setup.setYBurntSquareCoordinates(yCoordinates);
     }
 
+    /**
+     * Getting who moves first for simulating the partition, from the user
+     * @return Player who moves first, 0 for white, 1 for black
+     */
     public int getPartitionFirstToMove(){
 
         int firstToMove = -1;

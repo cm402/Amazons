@@ -297,10 +297,10 @@ public class Board {
     }
 
     /**
-     * Rotates current board object 90 degrees clockwise, using a transposition
+     * Rotates current board object 90 degrees anti-clockwise, using a transposition
      * @return Rotated board object
      */
-    private Board rotate(){
+    public Board rotate(){
 
         Board newBoard = new Board(this.getRowBoardSize(), this.getColumnBoardSize());
         newBoard.setupBoard();
@@ -755,6 +755,13 @@ public class Board {
      * Rotates a squares co-ordinates 90 degrees clockwise
      * @param square Square to be rotated
      * @return Rotated Square object
+     *   -------------
+     * 1 |   |   |   |
+     *   -------------
+     * 0 | B | W |   |
+     *   -------------
+     *     A   B   C
+     *  Original board
      */
     public Square rotatePoint(Square square){
 
