@@ -2,15 +2,21 @@ import java.util.ArrayList;
 import java.util.*;
 import java.io.Serializable;
 
+/**
+ * Represents the value of a particular position in
+ * a game. In the context of Amazons, each GameValue
+ * stores a list of move options for both black and
+ * white, left and right respectively, for a given
+ * Board object.
+ */
 public class GameValue implements Serializable{
 
-    ArrayList<GameValue> left;
-    ArrayList<GameValue> right;
-    Move move;
-    boolean simplified;
+    ArrayList<GameValue> left; // List of move options for black
+    ArrayList<GameValue> right; // List of move options for white
+    Move move; // The move associated with this GameValue
+    boolean simplified; // Indicates if this GameValue has already been simplified
 
     public GameValue(){
-
         this.left = new ArrayList<>();
         this.right = new ArrayList<>();
         this.move = null;
@@ -18,7 +24,6 @@ public class GameValue implements Serializable{
     }
 
     public GameValue(Move move){
-
         this.left = new ArrayList<>();
         this.right = new ArrayList<>();
         this.move = move;
@@ -47,6 +52,32 @@ public class GameValue implements Serializable{
 
     }
 
+    /**
+     * Checks if "this" GameValue object is stored in a list of GameValue objects
+     * Note- Mutually-Recursive with equals()
+     * @param gameValues List of GameValue objects
+     * @return true if "this" object is in list, false otherwise
+     */
+    public boolean isIn(ArrayList<GameValue> gameValues){
+
+        for(GameValue gameValue: gameValues){
+
+            if(gameValue.equals(this)){
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Checking the equality of "this" GameValue, with another.
+     * This relates to the toString() content of both, and accepts
+     * lists on the left and right side which are not in the same order.
+     * The Moves stored also don't matter.
+     * @param game GameValue object to compare "this" object with
+     * @return true if both GameValue objects are the same, false otherwise
+     */
     public boolean equals(GameValue game){
 
         // 1. check sizes match for both GameValue objects
@@ -58,7 +89,6 @@ public class GameValue implements Serializable{
 
         // 2. if either side is a single GameValue object, check that
         // its toString() notation matches the other game
-
         if(this.left.size() == 1) {
 
             if (!this.left.toString().equals(game.left.toString())) {
@@ -101,29 +131,14 @@ public class GameValue implements Serializable{
         return true;
     }
 
-    // returns a list of all the duplicate GameValue objects in an ArrayList
-    public ArrayList<GameValue> findDuplicates(ArrayList<GameValue> gameValues){
-
-        ArrayList<GameValue> duplicates = new ArrayList<GameValue>();
-
-        for(int i = 0; i < gameValues.size(); i++){
-            for(int j = i + 1; j < gameValues.size(); j++){
-
-                if(gameValues.get(i).toString().equals(gameValues.get(j).toString())){
-                    duplicates.add(gameValues.get(i));
-
-                } else if(gameValues.get(i).equals(gameValues.get(j))){
-                    duplicates.add(gameValues.get(i));
-                }
-            }
-
-        }
-        return duplicates;
-    }
-
-    // finds the position of a toString() value in a list of GameValue objects
-    // returns -1 if not found in list
-    // note- must be called after duplicates are removed
+    /**
+     * Finding the position of a GameValue string representation, in a
+     * list of GameValue objects.
+     * Helper method for toString()
+     * @param gameValues list of GameValues to search
+     * @param value GameValue string
+     * @return index of GameValue, or -1 of not found in list
+     */
     public int findPosition(ArrayList<GameValue> gameValues, String value){
 
         int counter = 0;
@@ -137,26 +152,16 @@ public class GameValue implements Serializable{
             counter++;
         }
         return -1;
-
     }
 
-    // checking if a GameValue object is already stored in a list of GameValue objects
-    public boolean isIn(ArrayList<GameValue> gameValues){
-
-        for(GameValue gameValue: gameValues){
-
-            if(gameValue.equals(this)){
-                return true;
-            }
-
-        }
-        return false;
-
-    }
-
-    // returns maximum depth of possible moves for a given side
-    // side false = left, true = right
-    // algorithm adapted from: https://www.educative.io/edpresso/finding-the-maximum-depth-of-a-binary-tree
+    /**
+     * Finding the maximum recursive depth of possible moves, for a given side.
+     * Algorithm adapted from:
+     * https://www.educative.io/edpresso/finding-the-maximum-depth-of-a-binary-tree
+     * @param side Side to search
+     * @param game
+     * @return Maximum depth for the side chosen
+     */
     public int maxDepth(String side, GameValue game){
 
         if (side.equals("left")) {
@@ -188,11 +193,85 @@ public class GameValue implements Serializable{
             }
 
             return Collections.max(rightGames) + 1;
-
         }
-
     }
 
+    /**
+     * Getting the simplest form of a fraction,
+     * where top and bottom cannot be any smaller,
+     * while still being whole numbers.
+     * @param a
+     * @param b
+     * @return
+     */
+    public double getSimplestForm(double a, double b){
+
+        if(Math.ceil(a) < b){
+            return Math.ceil(a);
+        } else {
+            return 0.5 * getSimplestForm(2*a, 2*b);
+        }
+    }
+
+    /**
+     * Checks if a string contains a number.
+     * @param strNum String to check
+     * @return true if string is numeric, false otherwise
+     */
+    public static boolean isNumeric(String strNum) {
+
+        if (strNum == null) {
+            return false;
+        }
+
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checking if the left and right sides of a GameValue are a "simple" fraction
+     * @param left Numerical representation of left side
+     * @param right Numerical representation of right side
+     * @return true if GameValue is a simple fraction, false otherwise
+     */
+    public static boolean isSimpleFraction(double left, double right){
+
+        // 1. Find the difference between the left and right values
+        double difference = Math.abs(right - left);
+
+        // 2. If the difference is less than 1, then get the inverse, otherwise return false
+        if(difference > 1){
+            return false;
+        }
+
+        // 3. Check if the inverse is a power of 2
+        double meanDifference = difference / 2;
+
+        // get inverse so we can manipulate the denominator more easily
+        double inverse = Math.pow(meanDifference, -1);
+
+        // use ceiling of value so it will always round up
+        int inverseInt = (int) Math.ceil(inverse);
+
+        // returns if a value is a positive power of 2
+        return inverseInt > 0 && ((inverseInt & (inverseInt - 1)) == 0);
+    }
+
+    /**
+     * Getting the human-readable form of "this" GameValue object.
+     * Using the same notation as "Winning Ways".
+     * Positive Values indicate a number of moves for left (black).
+     * Negative Values indicate a number of moves for right (white).
+     * Special notations include:
+     * * = < 0 | 0 >
+     * -n* = < -n | -n >
+     * ± n = < n | -n >
+     * @return String form of "this" GameValue
+     */
     public String toString() {
 
         if (left.isEmpty() && right.isEmpty()) {
@@ -214,7 +293,7 @@ public class GameValue implements Serializable{
             String leftSide = left.toString().replace("[", "").replace("]", "");
             String rightSide = right.toString().replace("[", "").replace("]", "");
 
-            // both sides are single, numerical values
+            // Both sides are single, numerical values
             if (isNumeric(leftSide) && isNumeric(rightSide)) {
 
                 double leftValue = Double.parseDouble(leftSide);
@@ -229,27 +308,23 @@ public class GameValue implements Serializable{
                     return String.valueOf((leftValue + rightValue) / 2);
                 }
 
-                // not sure what should come first, if statement above or this
+                // TODO- check if this should come first, or if statement above
                 if(0 < leftValue && leftValue < rightValue){
                     return Double.toString(getSimplestForm(leftValue, rightValue));
                 }
-
 
                 // < -n | -n > = -n*
                 if (leftValue == rightValue) {
                     return leftSide + "*";
                 }
 
-                // < a | b > = 0
-                // where a < 0 and b > 0
+                // < a | b > = 0, where a < 0 and b > 0
                 if (leftValue < 0 && rightValue > 0) {
                     return "0";
                 }
 
-                // switch games, {x|y}, x & y are numbers and x >= y
-                // chapter 5 of winning ways
-                // both players keen to move first
-                // these are "hot" positions
+                // switch games, {x|y}, x & y are numbers and x >= y, chapter 5 of "Winning Ways"
+                // both players keen to move first as these are "hot" positions
                 if (leftValue >= rightValue) {
 
                     // < n | -n > = ± n (page 123 winning ways)
@@ -279,63 +354,9 @@ public class GameValue implements Serializable{
                 right.remove(findPosition(right, "*"));
             }
 
-
             return "<" + this.left.toString().replace("[", " ").replace("]", " ")
                     + " | " + this.right.toString().replace("[", " ").replace("]", " ") + ">";
         }
-
-    }
-
-    public double getSimplestForm(double a, double b){
-
-        if(Math.ceil(a) < b){
-            return Math.ceil(a);
-        } else {
-            return 0.5 * getSimplestForm(2*a, 2*b);
-        }
-
-    }
-
-    public static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            double d = Double.parseDouble(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
-    }
-
-    // < 0 | 1 > = 1/2
-    // < 0 | 1/2 > = 1/4
-    // < -1 3/4 | -1 1/2 > = -1 5/8
-    public static boolean isSimpleFraction(double left, double right){
-
-        // 1. Find the difference between the left and right values
-        // 2. If the difference is less than 1, then get the inverse, otherwise return false
-        // 3. If the inverse is a power of 2, then return true
-        // 4. Otherwise, return false
-
-        // shouldn't need to use the absolute value, in the cases above
-        double difference = Math.abs(right - left);
-
-        if(difference > 1){
-            return false;
-        }
-
-        double meanDifference = difference / 2;
-
-        // get inverse so we can manipulate the denominator more easily
-        double inverse = Math.pow(meanDifference, -1);
-
-        // use ceiling of value so it will always round up
-        int inverseInt = (int) Math.ceil(inverse);
-
-        // https://codereview.stackexchange.com/questions/172849/checking-if-a-number-is-power-of-2-or-not
-        // returns if a value is a positive power of 2
-        return inverseInt > 0 && ((inverseInt & (inverseInt - 1)) == 0);
 
     }
 
@@ -458,6 +479,30 @@ public class GameValue implements Serializable{
 
         return max;
 
+    }
+
+    /**
+     * Finding all duplicate GameValues, in a list of GameValue objects
+     * @param gameValues list of GameValues to search
+     * @return A list of the duplicate GameValues
+     */
+    public ArrayList<GameValue> findDuplicates(ArrayList<GameValue> gameValues){
+
+        ArrayList<GameValue> duplicates = new ArrayList<GameValue>();
+
+        for(int i = 0; i < gameValues.size(); i++){
+            for(int j = i + 1; j < gameValues.size(); j++){
+
+                if(gameValues.get(i).toString().equals(gameValues.get(j).toString())){
+                    duplicates.add(gameValues.get(i));
+
+                } else if(gameValues.get(i).equals(gameValues.get(j))){
+                    duplicates.add(gameValues.get(i));
+                }
+            }
+
+        }
+        return duplicates;
     }
 
     // Removes the GameValue objects that are dominated by others, as well as duplicates

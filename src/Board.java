@@ -585,23 +585,21 @@ public class Board {
     }
 
     /**
-     * Gets the number of burnt squares on the current board object
-     * @return The number of burnt squares
+     * Checks if the board has any empty squares
+     * @return true if board has an empty square, false otherwise
      */
-    public int getNumberOfBurntSquares(){
-
-        int burntSquares = 0;
+    public boolean containsEmptySquares(){
 
         for(int x = 0; x < this.getColumnBoardSize(); x++){
             for(int y = 0; y < this.getRowBoardSize(); y++){
 
-                if(this.getSquare(x, y).isBurnt()){
+                if(this.isSquareEmpty(this.getSquare(x, y))){
 
-                    burntSquares++;
+                    return true;
                 }
             }
         }
-        return burntSquares;
+        return false;
     }
 
     /**

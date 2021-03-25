@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -18,11 +19,18 @@ public class AIPlayer extends Player implements Serializable {
 
     public AIPlayer(boolean white){
         super(white, false);
+        AIType = "Heuristic";
     }
 
     public AIPlayer(boolean white, HashMap<Integer, GameValue> partitionsDB) {
         super(white, false);
         this.partitionsDB = partitionsDB;
+        AIType = "Heuristic";
+    }
+
+    public void setAIType(String AIType){
+
+        this.AIType = AIType;
     }
 
     /**
@@ -85,6 +93,7 @@ public class AIPlayer extends Player implements Serializable {
         if(this.isWhite()){
 
             return gameValue.right.get(0).move;
+
         } else {
 
             return gameValue.left.get(0).move;
@@ -97,6 +106,7 @@ public class AIPlayer extends Player implements Serializable {
      * @return selected move
      */
     public Move getRandomMove(ArrayList<Move> moves){
+
         Random rand = new Random();
         return moves.get(rand.nextInt(moves.size()));
     }
@@ -112,14 +122,13 @@ public class AIPlayer extends Player implements Serializable {
         ArrayList<Move> validMoves = super.getValidMoves(board);
 
         if(validMoves.isEmpty()){
+
             return null;
+
         } else {
 
             System.out.println("AI is thinking");
 
-            // When no AI type specified, default is MCTS
-            return getMonteCarloMove(board);
-            /*
             if(AIType.equals("MCTS")){
 
                 return getMonteCarloMove(board);
@@ -132,12 +141,16 @@ public class AIPlayer extends Player implements Serializable {
 
                 return getCGTMove(board);
 
-            } else if(AIType.equals("Random")){
+            } else if(AIType.equals("Random")) {
 
                 return getRandomMove(validMoves);
 
+            } else {
+
+                // When no AI type specified, default is random
+                return getRandomMove(validMoves);
             }
-            */
+
 
             // TODO- use experiments to decide when to switch between move strategies
             // Initial plan

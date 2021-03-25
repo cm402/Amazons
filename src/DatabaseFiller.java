@@ -142,12 +142,13 @@ public class DatabaseFiller{
 
                     // not storing partitions with
                     // - over 2 pieces of either colour
-                    // - only 1 square
                     // - no pieces of any colour
-                    // - all squares burnt
+                    // - only 1 square
+                    // - no empty squares
                     if(whitePieces.size() > 2 || blackPieces.size() > 2
+                            || (whitePieces.size() == 0 && blackPieces.size() == 0)
                             || board.getRowBoardSize() == 1 && board.getColumnBoardSize() == 1
-                            || board.getNumberOfBurntSquares() == numberOfSquares){
+                            || !board.containsEmptySquares()){
                         continue;
                     }
                     boards.add(board);
@@ -158,28 +159,67 @@ public class DatabaseFiller{
     }
 
     /**
+     * Gets the number of entries in the Endgame Database
+     * @return size of Endgame Database
+     */
+    public int getEndgameDatabaseSize(){
+
+        // Retrieving the old Endgame database, from file
+        FileInputOutput fio = new FileInputOutput();
+        HashMap<Integer, GameValue> endgameDB = fio.getPartitionsDB();
+
+        int noOfEntries = endgameDB.size();
+
+        return noOfEntries;
+    }
+
+
+
+    /**
      * Filling the Endgame database with all possible GameValue objects for boards
      * up to a specified size
      * @param maxSize maximum board size
+     * @param runTime number of minutes to evaluate for
      */
-    public void fillPartitionsDatabase(int maxSize){
+    public void fillEndgameDatabase(int maxSize, int runTime){
 
         // 1. Getting all possible board variations, up to specified size
         ArrayList<Board> boards = generateAllBoardCombinations(maxSize);
 
-        // 2. Creating a new HashMap to store the GameValues
+        // 2. Retrieving the old Endgame database, from file
         FileInputOutput fio = new FileInputOutput();
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+
+        int sizeBefore = partitionsDB.size();
+        long start = System.currentTimeMillis();
+        long finishTime = start + 1000 * 60 * runTime;
+        Board lastBoard = new Board(3, 3);
+        int boardCounter = 0;
+
 
         // 3. Evaluating each board, storing the GameValues in the HashMap
         for(Board board: boards){
 
+            if(System.currentTimeMillis() >= finishTime){
+                lastBoard = board;
+                break;
+            }
+
             // Note- if any variation already evaluated, will just retrieve
             // from the HashMap, and won't re-evaluate the same board
+            System.out.println(boardCounter++);
+            board.printBoard();
             board.evaluate(partitionsDB);
         }
 
-        // 4. Writing the HashMap of GameValues to a file, to act as the Endgame Database
+
+        // 4. Writing the newly updated Endgame Database
         fio.outputDB(partitionsDB);
+
+        int sizeAfter = partitionsDB.size();
+        System.out.println("Database had " + sizeBefore + " entries.");
+        System.out.println("It now has " + sizeAfter + " entries");
+        System.out.println("The next board to be evaluated is ");
+        lastBoard.printBoard();
     }
 }

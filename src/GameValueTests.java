@@ -1,10 +1,12 @@
 import org.junit.Test;
 import org.junit.Before;
-
 import java.util.ArrayList;
-
 import static org.junit.Assert.*;
 
+/**
+ * Unit tests used throughout development of the
+ * GameValue class, allowing for testing of its methods.
+ */
 public class GameValueTests {
 
     GameValue zero = new GameValue();

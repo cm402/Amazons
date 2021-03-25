@@ -430,6 +430,8 @@ public class GameEngine {
 
         } else {
 
+            DatabaseFiller databaseFiller = new DatabaseFiller();
+
             if(Args[0].equals("experiments")){
 
                 String AIType1 = "Heuristic";
@@ -441,8 +443,13 @@ public class GameEngine {
 
             } else if(Args[0].equals("fillDatabase")){
 
-                 DatabaseFiller databaseFiller = new DatabaseFiller();
-                 databaseFiller.fillPartitionsDatabase(3);
+                 databaseFiller.fillEndgameDatabase(3, 1);
+
+            } else if(Args[0].equals("databaseSize")){
+
+                int noOfEntries = databaseFiller.getEndgameDatabaseSize();
+                System.out.println("Endgame database has " + noOfEntries + " entries");
+
             }
         }
     }
