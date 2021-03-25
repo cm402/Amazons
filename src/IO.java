@@ -3,12 +3,17 @@ import java.util.Scanner;
 
 public class IO {
 
-    private int getUserInput(String inputPrompt){
+    /**
+     * Asking the user for an input string.
+     * Used in human player
+     * @param userPrompt String message prompt for the user
+     * @return Input received by the user
+     */
+    public String askUser(String userPrompt){
 
         Scanner sc = new Scanner(System.in);
-        System.out.println(inputPrompt);
-        String in = sc.nextLine().trim().toLowerCase();
-        return Integer.parseInt(in);
+        System.out.println(userPrompt);
+        return sc.nextLine().trim().toLowerCase();
     }
 
     private String getUserInputString(){
@@ -170,6 +175,8 @@ public class IO {
 
     }
 
+
+
     public String getTutorialInput(){
 
         String tutorialInput = "";
@@ -219,13 +226,21 @@ public class IO {
 
     }
 
+    private int getUserInputInteger(String inputPrompt){
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println(inputPrompt);
+        String in = sc.nextLine().trim().toLowerCase();
+        return Integer.parseInt(in);
+    }
+
     public int getNoOfPlayers(){
 
         int noOfHumanPlayers = - 1;
 
         while(noOfHumanPlayers < 0 || noOfHumanPlayers > 2){
 
-            noOfHumanPlayers = getUserInput("How many human players would you like for this game? (0, 1 or 2)");
+            noOfHumanPlayers = getUserInputInteger("How many human players would you like for this game? (0, 1 or 2)");
 
             if(noOfHumanPlayers < 0 || noOfHumanPlayers > 2) {
                 System.out.println("Error, please enter a valid number of human players (0, 1 or 2)");
@@ -241,7 +256,7 @@ public class IO {
         int boardSize = -1;
 
         while(boardSize != 6 && boardSize != 10){
-            boardSize = getUserInput("What size of board would you like? (6 or 10)");
+            boardSize = getUserInputInteger("What size of board would you like? (6 or 10)");
 
             if(boardSize != 6 && boardSize != 10) {
                 System.out.println("Error, please enter a valid board size (6 or 10)");
@@ -259,7 +274,7 @@ public class IO {
         // maximum for a partition is 10, as that is the maximum board size
         while(noOfColumns < 0 || noOfColumns > 10){
 
-            noOfColumns = getUserInput("Enter the number of columns you would like the partition to have");
+            noOfColumns = getUserInputInteger("Enter the number of columns you would like the partition to have");
 
             if(noOfColumns < 0 || noOfColumns > 10){
                 System.out.println("Error, please enter a valid number of columns (0-10)");
@@ -268,7 +283,7 @@ public class IO {
 
         while(noOfRows < 0 || noOfRows > 10){
 
-            noOfRows = getUserInput("Enter the number of rows you would like the partition to have");
+            noOfRows = getUserInputInteger("Enter the number of rows you would like the partition to have");
 
             if(noOfRows < 0 || noOfRows > 10){
                 System.out.println("Error, please enter a valid number of rows (0-10)");
@@ -286,7 +301,6 @@ public class IO {
     // or null if the user is finished
     // xcoord = index 0
     // ycoord = index 1
-    // TODO: validate that the square is also empty (doesn't have a piece already or is burnt)
     public ArrayList<Integer> getCoordinates(Board partition, String outputType){
 
         int xCoord = -2;
@@ -297,7 +311,7 @@ public class IO {
         // validating that the x co-ordinate entered is valid, for the board size
         while (xCoord < 0 || xCoord >= partition.getColumnBoardSize()) {
 
-            xCoord = getUserInput("Enter the x co-ordinate " +  outputType + ", or -1 if you are finished");
+            xCoord = getUserInputInteger("Enter the x co-ordinate " +  outputType + ", or -1 if you are finished");
 
             if (xCoord == -1) {
                 return null;
@@ -311,7 +325,7 @@ public class IO {
         // validating that the y co-ordinate entered is valid, for the board size
         while (yCoord < 0 || yCoord >= partition.getRowBoardSize()) {
 
-            yCoord = getUserInput("Enter the y co-ordinate " + outputType + ", or -1 if you are finished");
+            yCoord = getUserInputInteger("Enter the y co-ordinate " + outputType + ", or -1 if you are finished");
 
             if (yCoord == -1) {
                 return null;
@@ -400,7 +414,7 @@ public class IO {
         int firstToMove = -1;
 
         while(firstToMove < 0 || firstToMove > 1){
-            firstToMove = getUserInput("Please enter who is first to move, 0 for white, 1 for black");
+            firstToMove = getUserInputInteger("Please enter who is first to move, 0 for white, 1 for black");
 
             if(firstToMove < 0 || firstToMove > 1) {
                 System.out.println("Error, you must enter a value in the range (0-1)");

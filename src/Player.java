@@ -1,8 +1,10 @@
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-// didn't use interface as it can't extend serializable
+/**
+ * Represents a player for the Amazons game, acting as a
+ * superclass that both the AI and human players inherit from.
+ */
 public class Player implements Serializable {
 
     private static final long serialVersionUID = 4L;
@@ -25,13 +27,24 @@ public class Player implements Serializable {
         return this.pieces;
     }
 
-    // this will be overridden by AI or human player
+    /**
+     * Returns a move, overridden by any player class
+     * that inherits from this class.
+     * @param board
+     * @return
+     */
     public Move getMove(Board board){
 
         Move move = null;
         return move;
     }
 
+    /**
+     * Getting a list of all the possible moves "this" player can
+     * make, on the specified Board object.
+     * @param board The board we are checking moves in
+     * @return List of "valid" moves
+     */
     public ArrayList<Move> getValidMoves(Board board){
 
         ArrayList<Move> validMoves = new ArrayList<Move>();
@@ -52,7 +65,6 @@ public class Player implements Serializable {
                     validMoves.add(new Move(this, piece.getPosition(), endSquare, validShotSquare));
                 }
             }
-
         }
         return validMoves;
     }

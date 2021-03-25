@@ -49,7 +49,6 @@ public class GameValue implements Serializable{
 
             rightGV.invert();
         }
-
     }
 
     /**
@@ -197,13 +196,16 @@ public class GameValue implements Serializable{
     }
 
     /**
-     * TODO- Change this
-     * Getting the simplest form of a fraction,
-     * where top and bottom cannot be any smaller,
-     * while still being whole numbers.
-     * @param a
-     * @param b
-     * @return
+     * Returns the simplest number that fits, according
+     * to the "Simplicity Rule" from chapter 2 of 'Winning Ways".
+     * For options < A, B, C | D, E, F>, x fits if its
+     * - Strictly greater than each of A, B, C
+     * - Strictly less than each of D, E, F
+     * - and x will be the "simplest" number that fits, if
+     * none of its options fit.
+     * @param a Numerical representation of left
+     * @param b Numerical representation of right
+     * @return "Simplest" value that fits
      */
     public double getSimplestForm(double a, double b){
 
@@ -234,7 +236,8 @@ public class GameValue implements Serializable{
     }
 
     /**
-     * Checking if the left and right sides of a GameValue are a "simple" fraction
+     * Checking if the difference between the left and right sides
+     * of a GameValue represent a "simple" fraction.
      * @param left Numerical representation of left side
      * @param right Numerical representation of right side
      * @return true if GameValue is a simple fraction, false otherwise
@@ -275,10 +278,12 @@ public class GameValue implements Serializable{
      */
     public String toString() {
 
+        // Zero position
         if (left.isEmpty() && right.isEmpty()) {
 
             return "0";
 
+        // When one side is empty, other side has essentially "free" moves
         } else if (left.isEmpty()) {
 
             int max = maxDepth("right", this);
@@ -595,9 +600,6 @@ public class GameValue implements Serializable{
 
 
     }
-
-    // Definition from winning ways book:
-    // X + Y = { XL + Y, X + YL | XR + Y, X + YR }
 
     /**
      * Addition of 2 GameValue objects, using definition

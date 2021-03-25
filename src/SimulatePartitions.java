@@ -332,8 +332,8 @@ public class SimulatePartitions {
         partition.setupBoard();
 
         // 3. store burnt squares
-        ArrayList<Integer> xBurntCoordinates = new ArrayList<Integer>();
-        ArrayList<Integer> yBurntCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> xBurntCoordinates = new ArrayList<>();
+        ArrayList<Integer> yBurntCoordinates = new ArrayList<>();
 
         int minCounter = 0;
 

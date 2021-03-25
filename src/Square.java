@@ -1,5 +1,10 @@
 import java.io.Serializable;
 
+/**
+ * Represents a Square on a board, containing
+ * information about its location (x & y co-ordinate),
+ * if it contains an Amazon Piece, as well as if it is burnt
+ */
 public class Square implements Serializable {
 
     private Piece amazon;

@@ -1,8 +1,15 @@
 import java.util.ArrayList;
 
+/**
+ * Used to print examples of aspects of the program
+ * working correctly for the implementation section
+ * of the report.
+ */
 public class ReportExamples {
 
-    // Used to show the printing of a 6 x 6 board
+    /**
+     * Used to show the printing of a 6 x 6 board
+     */
     public void boardPrintExample(){
 
         Board board1 = new Board(6, 6);
@@ -11,8 +18,10 @@ public class ReportExamples {
         board1.printBoard();
     }
 
-    // Used to show an example of recursive simplification
-    // Note- Added print statements in simplify
+    /**
+     * Used to show an example of recursive simplification
+     * Note- Added print statements in simplify to show this working
+     */
     public void boardSimplifyExample(){
 
         Board board1 = new Board(4, 4);
@@ -33,7 +42,9 @@ public class ReportExamples {
 
     }
 
-    // Used to show equality of 2 boards
+    /**
+     * Used to show equality of 2 boards
+     */
     public void boardEqualsExample(){
 
         Board board1 = new Board(3, 4);
@@ -56,10 +67,11 @@ public class ReportExamples {
         board2.printBoard();
 
         System.out.println("board1.equals(board2) returns " + board1.equals(board2));
-
     }
 
-    // Shows a board being split into partitions
+    /**
+     * Shows a board being split into partitions
+     */
     public void boardSplitExample(){
 
         Board board1 = new Board(5, 4);
@@ -98,7 +110,9 @@ public class ReportExamples {
 
     }
 
-    // shows a 3 by 2 board being evaluated into a game value
+    /**
+     * Shows a 3 by 2 board being evaluated into a game value
+     */
     public void boardEvaluateExample(){
 
         Board board = new Board(3, 2);
@@ -124,7 +138,9 @@ public class ReportExamples {
 
     }
 
-    // shows a board and the smallest hash value associated, for endgame database diagram
+    /**
+     * Shows a board and the smallest hash value associated, for endgame database diagram
+     */
     public void endgameDatabaseExample(){
 
         Board board = new Board(3, 3);
@@ -167,11 +183,11 @@ public class ReportExamples {
         board2.burnSquare(2,0);
 
         board2.printBoard();
-
-
     }
 
-    // shows a 3 by 2 board being used to generate a hashcode
+    /**
+     * Shows a 3 by 2 board being used to generate a hashcode
+     */
     public void boardHashCodeExample(){
 
         Board board = new Board(3, 2);

@@ -16,6 +16,37 @@ public class GameValueTests {
     GameValue quarter = new GameValue();
     GameValue minusOne = new GameValue();
 
+    /**
+     * Returns a GameValue object representation of a numeric value
+     * @param value value to translate into a GameValue
+     * @return GameValue representation of value
+     */
+    public GameValue getValue(int value){
+
+        GameValue newGameValue = new GameValue();
+        GameValue oldGameValue = new GameValue();
+
+        while(value != 0){
+
+            newGameValue = new GameValue();
+
+            if(value > 0){
+                newGameValue.left.add(oldGameValue);
+                value--;
+            } else {
+                newGameValue.right.add(oldGameValue);
+                value++;
+            }
+
+            oldGameValue = newGameValue;
+        }
+
+        return newGameValue;
+    }
+
+    /**
+     * A set of GameValues that are used throughout the unit tests
+     */
     @Before
     public void init(){
 
@@ -45,25 +76,25 @@ public class GameValueTests {
         fiveNegativeTwo.left.add(five);
         fiveNegativeTwo.right.add(negativeTwo);
 
-        fiveNegativeTwo.invert();
-
         GameValue negativeFive = getValue(-5);
         GameValue two = getValue(2);
         GameValue twoNegativeFive = new GameValue();
-
         twoNegativeFive.left.add(two);
         twoNegativeFive.right.add(negativeFive);
+
+        assertFalse(fiveNegativeTwo.equals(twoNegativeFive));
+
+        fiveNegativeTwo.invert();
 
         assertTrue(fiveNegativeTwo.equals(twoNegativeFive));
     }
 
-    // This clearly simplifies to 0.25, and this
-    // test shows this, using simplify() and
-    // then the equals() method.
+    /**
+     * Testing simplify() removes redundant "0.5" GameValues,
+     * as well as toString() simplifies < *, 0 | 1 > to 0.5
+     */
+    @Test
     public void testSimplify(){
-
-        // game 1 = < 0 | < *, 0 | 1 >, 0.5 >
-        // game 2 = < 0 | 0.5 >
 
         GameValue game1_1 = new GameValue();
         game1_1.left.add(star);
@@ -75,22 +106,36 @@ public class GameValueTests {
         game1.right.add(game1_1);
         game1.right.add(half);
 
+        assertFalse(game1.equals(quarter));
+
         game1.simplify();
 
-        System.out.println(game1.toString());
-        System.out.println(quarter);
-
-        System.out.println(game1.equals(quarter));
-
+        assertTrue(game1.equals(quarter));
     }
 
-    // This test shows that equals() will return true
-    // when 2 games have the same objects on one side,
-    // but in a different order.
-    public void testGameValueEquals1() {
+    /**
+     * Testing the Equals method with a variety of
+     * different GameValues
+     */
+    @Test
+    public void testGameValueEquals() {
 
-        // game 1 = < 0  |  < 1  |  * >, 0.5 >
-        // game 2 = < 0  |  0.5, < 1  |  * > >
+        assertTrue(star.equals(star));
+        assertFalse(star.equals(zero));
+        assertFalse(star.equals(minusOne));
+        assertFalse(one.equals(zero));
+        assertFalse(quarter.equals(half));
+        assertTrue(zero.equals(zero));
+    }
+
+    /**
+     * Testing equals works with lists that are not
+     * in the same order.
+     * game 1 = < 0  |  < 1  |  * >, 0.5 >
+     * game 2 = < 0  |  0.5, < 1  |  * > >
+     */
+    @Test
+    public void testEqualsOutOfOrder() {
 
         GameValue game1_1 = new GameValue();
         game1_1.left.add(one);
@@ -104,15 +149,22 @@ public class GameValueTests {
         GameValue game2 = new GameValue();
         game2.left.add(zero);
         game2.right.add(half);
+
+        assertFalse(game1.equals(game2));
+
         game2.right.add(game1_1);
 
-        System.out.println(game1.toString());
-        System.out.println(game2.toString());
-
-        System.out.println(game1.equals(game2));
+        assertTrue(game1.equals(game2));
     }
 
-    public void testGameValueEquals2() {
+    /**
+     * Testing equals works with lists that are not
+     * in the same order, at a greater depth.
+     * game 1 = < 0.5, < 0.5, 1  |  * >  |  0 >
+     * game 2 = < < 1, 0.5  |  * >, 0.5  |  0 >
+     */
+    @Test
+    public void testEqualsOutOfOrder2() {
 
         GameValue game1_1 = new GameValue();
         game1_1.left.add(half);
@@ -132,82 +184,49 @@ public class GameValueTests {
         GameValue game2 = new GameValue();
         game2.left.add(game2_1);
         game2.left.add(half);
+
+        assertFalse(game1.equals(game2));
+
         game2.right.add(zero);
 
-        System.out.println(game1.toString());
-        System.out.println(game2.toString());
-
-        System.out.println(game1.equals(game2));
+        assertTrue(game1.equals(game2));
     }
 
-    public void testGameValueEquals3() {
-
-        // true
-        System.out.println(star.toString() + " = " + star.toString() + ", " + star.equals(star));
-
-        // false
-        System.out.println(star.toString() + " = " + zero.toString() + ", " + star.equals(zero));
-
-        // false
-        System.out.println(one.toString() + " = " + minusOne.toString() + ", " + one.equals(minusOne));
-
-        // false
-        System.out.println(one.toString() + " = " + zero.toString() + ", " + one.equals(zero));
-
-        // false
-        System.out.println(quarter.toString() + " = " + half.toString() + ", " + quarter.equals(half));
-
-        // true
-        System.out.println(zero.toString() + " = " + zero.toString() + ", " + zero.equals(zero));
-
-    }
-
+    /**
+     * Testing the method to check the
+     * isSimpleFraction() method works correctly.
+     */
+    @Test
     public void testIsSimpleFraction(){
 
         GameValue gameValue = new GameValue();
 
-        // true (1/2)
-        System.out.println(gameValue.isSimpleFraction(0, 1));
+        // 1/2
+        assertTrue(gameValue.isSimpleFraction(0, 1));
 
-        // true (1/4)
-        System.out.println(gameValue.isSimpleFraction(0, 0.5));
+        // 1/4
+        assertTrue(gameValue.isSimpleFraction(0, 0.5));
 
-        // true (1/8)
-        System.out.println(gameValue.isSimpleFraction(0, 0.25));
+        // 1/8
+        assertTrue(gameValue.isSimpleFraction(0, 0.25));
 
-        // true (1/8)
-        System.out.println(gameValue.isSimpleFraction(-1.75, -1.5));
+        // 1/4
+        assertTrue(gameValue.isSimpleFraction(-1.75, -1.5));
 
-        // false (3/8)
-        System.out.println(gameValue.isSimpleFraction(1.25, 2));
+        // 3/8
+        assertFalse(gameValue.isSimpleFraction(1.25, 2));
 
-        // true (-1 1/2)
-        System.out.println(gameValue.isSimpleFraction(-2, -1));
+        // 1/2
+        assertTrue(gameValue.isSimpleFraction(-2, -1));
     }
 
-    public GameValue getValue(int value){
-
-        GameValue newGameValue = new GameValue();
-        GameValue oldGameValue = new GameValue();
-
-        while(value != 0){
-
-            newGameValue = new GameValue();
-
-            if(value > 0){
-                newGameValue.left.add(oldGameValue);
-                value--;
-            } else {
-                newGameValue.right.add(oldGameValue);
-                value++;
-            }
-
-            oldGameValue = newGameValue;
-        }
-
-        return newGameValue;
-    }
-
+    /**
+     * Testing the getSimplestForm method, which
+     * returns the simplest number that fits, according
+     * to the "Simplicity Rule" from chapter 2 of 'Winning Ways".
+     * < 2.375 | 5 >  = 3, example used in the book.
+     */
+    @Test
     public void testGetSimplestForm(){
 
         GameValue five = getValue(5);
@@ -231,13 +250,7 @@ public class GameValueTests {
         test.left.add(twoAndThreeEighths);
         test.right.add(five);
 
-        System.out.println("The simplest form of < 2.375 | 5 > is " + test.toString());
-
-        GameValue test2 = new GameValue();
-        test2.left.add(twoAndHalf);
-        test2.right.add(three);
-
-        System.out.println("The simplest form of < 2.5 | 3 > is " + test.toString());
+        assertTrue(test.toString().equals("3.0"));
     }
 
     /**
@@ -249,12 +262,12 @@ public class GameValueTests {
         Board board1 = new Board(3, 1);
         board1.setupBoard();
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<>();
         blackPieces.add(new Piece(false));
         blackPieces.get(0).setPosition(board1.getSquare(0,0));
         board1.addPiece(0, 0, blackPieces.get(0));
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
         whitePieces.add(new Piece(true));
         whitePieces.get(0).setPosition(board1.getSquare(2,0));
         board1.addPiece(2, 0, whitePieces.get(0));
@@ -272,12 +285,12 @@ public class GameValueTests {
         Board board1 = new Board(3, 1);
         board1.setupBoard();
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<>();
         blackPieces.add(new Piece(false));
         blackPieces.get(0).setPosition(board1.getSquare(1,0));
         board1.addPiece(1, 0, blackPieces.get(0));
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
         whitePieces.add(new Piece(true));
         whitePieces.get(0).setPosition(board1.getSquare(2,0));
         board1.addPiece(2, 0, whitePieces.get(0));
@@ -295,12 +308,12 @@ public class GameValueTests {
         Board board1 = new Board(3, 1);
         board1.setupBoard();
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<>();
         blackPieces.add(new Piece(false));
         blackPieces.get(0).setPosition(board1.getSquare(0,0));
         board1.addPiece(0, 0, blackPieces.get(0));
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
         whitePieces.add(new Piece(true));
         whitePieces.get(0).setPosition(board1.getSquare(1,0));
         board1.addPiece(1, 0, whitePieces.get(0));
@@ -318,12 +331,12 @@ public class GameValueTests {
         Board board1 = new Board(4, 1);
         board1.setupBoard();
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<>();
         blackPieces.add(new Piece(false));
         blackPieces.get(0).setPosition(board1.getSquare(1,0));
         board1.addPiece(1, 0, blackPieces.get(0));
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
         whitePieces.add(new Piece(true));
         whitePieces.get(0).setPosition(board1.getSquare(2,0));
         board1.addPiece(2, 0, whitePieces.get(0));

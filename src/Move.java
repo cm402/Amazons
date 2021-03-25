@@ -1,5 +1,11 @@
 import java.io.Serializable;
 
+/**
+ * Represents a move that is played in the Amazons game,
+ * containing information about the player who played the
+ * move, as well as the starting square, finishing square,
+ * square that was shot, and the piece that was used.
+ */
 public class Move implements Serializable {
 
     private Player player;
@@ -17,7 +23,12 @@ public class Move implements Serializable {
         this.squareBurned = squareBurned;
     }
 
-    // takes in coordinates in 2-D array and returns their algebraic notation version
+    /**
+     * Translates coordinates into their algebraic notation version.
+     * @param x X co-ordinate
+     * @param y Y co-ordinate
+     * @return Algebraic notation version of co-ordinates
+     */
     private String toAlgebraic(int x, int y){
 
         x += 97;

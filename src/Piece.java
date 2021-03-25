@@ -1,5 +1,10 @@
 import java.io.Serializable;
 
+/**
+ * Represents a piece in the Amazons game, storing
+ * both the colour and the position on the board
+ * that the piece is currently located.
+ */
 public class Piece implements Serializable {
 
     private boolean white;
