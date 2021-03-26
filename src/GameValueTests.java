@@ -65,6 +65,27 @@ public class GameValueTests {
     }
 
     /**
+     * Testing that < 5 | -2 > is deep-copied
+     */
+    @Test
+    public void deepCopy(){
+
+        GameValue five = getValue(5);
+        GameValue negativeTwo = getValue(-2);
+        GameValue fiveNegativeTwo = new GameValue();
+        fiveNegativeTwo.left.add(five);
+        fiveNegativeTwo.right.add(negativeTwo);
+
+        GameValue copy = fiveNegativeTwo.deepCopy();
+
+        assertTrue(fiveNegativeTwo.equals(copy));
+
+        copy.left.add(star);
+
+        assertFalse(fiveNegativeTwo.equals(copy));
+    }
+
+    /**
      * Testing that < 5 | -2 > inverted equals < 2 | -5 >
      */
     @Test

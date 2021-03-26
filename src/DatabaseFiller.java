@@ -189,6 +189,7 @@ public class DatabaseFiller{
         // 2. Retrieving the old Endgame database, from file
         FileInputOutput fio = new FileInputOutput();
         HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+        //HashMap<Integer, GameValue> partitionsDB = null;
 
         int sizeBefore = partitionsDB.size();
         long start = System.currentTimeMillis();
@@ -199,6 +200,7 @@ public class DatabaseFiller{
 
         // 3. Evaluating each board, storing the GameValues in the HashMap
         for(Board board: boards){
+
 
             if(System.currentTimeMillis() >= finishTime){
                 lastBoard = board;
@@ -216,10 +218,12 @@ public class DatabaseFiller{
         // 4. Writing the newly updated Endgame Database
         fio.outputDB(partitionsDB);
 
+
         int sizeAfter = partitionsDB.size();
         System.out.println("Database had " + sizeBefore + " entries.");
         System.out.println("It now has " + sizeAfter + " entries");
         System.out.println("The next board to be evaluated is ");
         lastBoard.printBoard();
+
     }
 }

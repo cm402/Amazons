@@ -31,6 +31,32 @@ public class GameValue implements Serializable{
     }
 
     /**
+     * Returns a deep-copy of the "this" GameValue
+     * @return Duplicate of "this" GameValue object
+     */
+    public GameValue deepCopy(){
+
+        GameValue gameValue = new GameValue(this.move);
+        gameValue.simplified = this.simplified;
+
+        if(!this.left.isEmpty()){
+
+            for(GameValue left: this.left){
+
+                gameValue.left.add(left.deepCopy());
+            }
+        }
+
+        if(!this.right.isEmpty()){
+
+            for(GameValue right: this.right){
+                gameValue.right.add(right.deepCopy());
+            }
+        }
+        return gameValue;
+    }
+
+    /**
      * Invert a GameValue object, swapping left and rights options recursively
      */
     public void invert(){

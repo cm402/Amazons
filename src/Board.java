@@ -298,6 +298,15 @@ public class Board {
 
     /**
      * Rotates current board object 90 degrees anti-clockwise, using a transposition
+     *   -------------        -------------
+     * 2 | X | B | W |      2 | W | X |   |
+     *   -------------        -------------
+     * 1 |   |   | X |      1 | B |   |   |
+     *   -------------        -------------
+     * 0 |   |   |   |      0 | X |   |   |
+     *   -------------        -------------
+     *     A   B   C
+     *  Original board        Rotated Board
      * @return Rotated board object
      */
     public Board rotate(){
@@ -603,6 +612,26 @@ public class Board {
     }
 
     /**
+     * Returns the number of burnt squares, on "this" board
+     * @return number of burnt squares
+     */
+    public int getNumberOfBurntSquares(){
+
+        int burntSquares = 0;
+
+        for(int x = 0; x < this.getColumnBoardSize(); x++){
+            for(int y = 0; y < this.getRowBoardSize(); y++){
+
+                if(this.getSquare(x, y).isBurnt()){
+
+                    burntSquares++;
+                }
+            }
+        }
+        return burntSquares;
+    }
+
+    /**
      * Gets all the pieces of a given colour, on the current board
      * @param isWhite indicates what colour to check, true for white, false for black
      * @return The number of pieces of the colour given, on the current board
@@ -755,13 +784,6 @@ public class Board {
      * Rotates a squares co-ordinates 90 degrees clockwise
      * @param square Square to be rotated
      * @return Rotated Square object
-     *   -------------
-     * 1 |   |   |   |
-     *   -------------
-     * 0 | B | W |   |
-     *   -------------
-     *     A   B   C
-     *  Original board
      */
     public Square rotatePoint(Square square){
 
@@ -847,15 +869,13 @@ public class Board {
         Board board;
     }
 
-    // TODO- after set up JUNIT tests, check if we can remove player parameter, replaced with oldMove.getPlayer()
     /**
      * Transforms a Move objects Squares, given a specific transformation value
      * @param oldMove The Move we want to transform
      * @param transformation An integer indicating the type of transformation required
-     * @param player Player we want to add to the new move
      * @return new Move object, with Squares transformed
      */
-    public Move transformMove(Move oldMove, int transformation, Player player){
+    public Move transformMove(Move oldMove, int transformation){
 
         Square start = oldMove.getStartPosition();
         Square end = oldMove.getEndPosition();
@@ -889,30 +909,30 @@ public class Board {
 
         } else if(transformation == 4){
 
-            newStart = rotatePointAnti(start);
-            newEnd = rotatePointAnti(end);
-            newShoot = rotatePointAnti(shoot);
-
-        } else if(transformation == 5){
-
             newStart = rotatePoint(start);
             newEnd = rotatePoint(end);
             newShoot = rotatePoint(shoot);
 
         } else if(transformation == 5){
 
-            newStart = rotatePointAnti(flipPointVertical(start));
-            newEnd = rotatePointAnti(flipPointVertical(end));
-            newShoot = rotatePointAnti(flipPointVertical(shoot));
+            newStart = rotatePointAnti(start);
+            newEnd = rotatePointAnti(end);
+            newShoot = rotatePointAnti(shoot);
 
-        } else if(transformation == 7){
+        } else if(transformation == 6){
 
             newStart = rotatePoint(flipPointVertical(start));
             newEnd = rotatePoint(flipPointVertical(end));
             newShoot = rotatePoint(flipPointVertical(shoot));
 
+        } else if(transformation == 7){
+
+            newStart = rotatePointAnti(flipPointVertical(start));
+            newEnd = rotatePointAnti(flipPointVertical(end));
+            newShoot = rotatePointAnti(flipPointVertical(shoot));
+
         }
-        return new Move(player, newStart, newEnd, newShoot);
+        return new Move(oldMove.getPlayer(), newStart, newEnd, newShoot);
     }
 
     /**
@@ -923,10 +943,10 @@ public class Board {
      */
     public GameValue transformGameValue(SmallestHashValue smallestHash, GameValue smallestHashGameValue){
 
+        // Using a deep copy of the smallest hash GameValue, to ensure that it isn't
+        // affected by the transformations
+        GameValue transformedGameValue = smallestHashGameValue.deepCopy();
         int transform = smallestHash.transformation;
-        GameValue transformedGameValue = new GameValue();
-        transformedGameValue.left = smallestHashGameValue.left;
-        transformedGameValue.right = smallestHashGameValue.right;
 
         // 1. Transform any moves on left side
         if(smallestHashGameValue.left.size() > 0){
@@ -938,10 +958,12 @@ public class Board {
             // Transforming each of the player moves
             for(GameValue leftOption: transformedGameValue.left){
 
-                Move newMove = transformMove(leftOption.move, transform, left);
+                Move newMove = transformMove(leftOption.move, transform);
 
                 leftOption.move = newMove;
             }
+
+
         }
 
         // 2. Transform any moves on right side
@@ -951,7 +973,7 @@ public class Board {
             right.addPieces(this.getPieces(true));
             for(GameValue rightOption: transformedGameValue.right){
 
-                Move newMove = transformMove(rightOption.move, transform, right);
+                Move newMove = transformMove(rightOption.move, transform);
 
                 rightOption.move = newMove;
             }
@@ -1044,6 +1066,8 @@ public class Board {
 
             // Check if GameValue already stored in partitions DB
             if(gameValue != null){
+
+                System.out.println("Retreived from endgame database");
                 return gameValue;
             }
         }
