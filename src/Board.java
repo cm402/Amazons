@@ -39,7 +39,7 @@ public class Board {
                 // Each square has 4 possible states, so using that
                 // information to generate a hash code value
                 if(squares[x][y].isBurnt()){
-                    result = prime * result + 0;
+                    result = prime * result;
                 } else if(piece == null){
                     result = prime * result + 1;
                 } else if(piece.isWhite()){
@@ -291,8 +291,6 @@ public class Board {
                 return boardsEqual(board1, board2) || boardsEqual(rotatedBoard180, board2)
                         || boardsEqual(horizontalFlippedBoard, board2) || boardsEqual(verticalFlippedBoard, board2);
             }
-
-
         }
     }
 
@@ -347,7 +345,7 @@ public class Board {
      */
     public ArrayList<Board> split() {
 
-        ArrayList<Board> partitions = new ArrayList<Board>();
+        ArrayList<Board> partitions = new ArrayList<>();
 
         // making a copy of the board that we can manipulate
         // simplify board first, to remove any edge rows or columns that aren't needed
@@ -790,8 +788,8 @@ public class Board {
         // x' = y
         int newX = square.getY();
 
-        // y' = maximum y index - x
-        int newY = this.getRowBoardSize() - 1 - square.getX();
+        // y' = maximum x index - x
+        int newY = this.getColumnBoardSize() - 1 - square.getX();
 
         return new Square(newX, newY, null, false);
     }
@@ -903,9 +901,12 @@ public class Board {
 
         } else if(transformation == 3){
 
-            newStart = rotatePoint(rotatePoint(start));
-            newEnd = rotatePoint(rotatePoint(end));
-            newShoot = rotatePoint(rotatePoint(shoot));
+            // Used for second rotation, as board can have a new shape after first rotation
+            Board rotatedBoard = new Board(this.getRowBoardSize(), this.getColumnBoardSize());
+
+            newStart = rotatedBoard.rotatePoint(rotatePoint(start));
+            newEnd = rotatedBoard.rotatePoint(rotatePoint(end));
+            newShoot = rotatedBoard.rotatePoint(rotatePoint(shoot));
 
         } else if(transformation == 4){
 
@@ -921,15 +922,15 @@ public class Board {
 
         } else if(transformation == 6){
 
-            newStart = rotatePoint(flipPointVertical(start));
-            newEnd = rotatePoint(flipPointVertical(end));
-            newShoot = rotatePoint(flipPointVertical(shoot));
+            newStart = flipPointVertical(rotatePoint(start));
+            newEnd = flipPointVertical(rotatePoint(end));
+            newShoot = flipPointVertical(rotatePoint(shoot));
 
         } else if(transformation == 7){
 
-            newStart = rotatePointAnti(flipPointVertical(start));
-            newEnd = rotatePointAnti(flipPointVertical(end));
-            newShoot = rotatePointAnti(flipPointVertical(shoot));
+            newStart = flipPointVertical(rotatePointAnti(start));
+            newEnd = flipPointVertical(rotatePointAnti(end));
+            newShoot = flipPointVertical(rotatePointAnti(shoot));
 
         }
         return new Move(oldMove.getPlayer(), newStart, newEnd, newShoot);
@@ -962,8 +963,6 @@ public class Board {
 
                 leftOption.move = newMove;
             }
-
-
         }
 
         // 2. Transform any moves on right side
@@ -1066,8 +1065,6 @@ public class Board {
 
             // Check if GameValue already stored in partitions DB
             if(gameValue != null){
-
-                System.out.println("Retreived from endgame database");
                 return gameValue;
             }
         }

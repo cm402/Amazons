@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.ArrayList;
 import org.junit.BeforeClass;
@@ -608,6 +607,39 @@ public class BoardTests {
     }
 
     /**
+     * Testing that the rotatePoint() method works correctly
+     */
+    @Test
+    public void testRotateSquare(){
+
+        board = new Board(3, 2);
+        board.setupBoard();
+
+        Piece blackPiece = new Piece(false);
+        ArrayList<Piece> blackPieces = new ArrayList<>();
+        blackPieces.add(blackPiece);
+        blackPiece.setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, blackPiece);
+
+        Piece whitePiece = new Piece(true);
+        ArrayList<Piece> whitePieces = new ArrayList<>();
+        whitePieces.add(whitePiece);
+        whitePiece.setPosition(board.getSquare(2,1));
+        board.addPiece(2, 1, whitePiece);
+
+        Square rotatedSquare = board.rotatePoint(board.getSquare(2,1));
+
+        assertTrue(rotatedSquare.getX() == 1);
+        assertTrue(rotatedSquare.getY() == 0);
+
+        Board rotatedBoard = new Board(board.getRowBoardSize(), board.getColumnBoardSize());
+
+        Square rotatedTwiceSquare = rotatedBoard.rotatePoint(rotatedSquare);
+        assertTrue(rotatedTwiceSquare.getX() == 0);
+        assertTrue(rotatedTwiceSquare.getY() == 0);
+    }
+
+    /**
      * Checking if a list of valid moves contains a specific move
      * @param move move we are looking for
      * @param validMoves list of moves to check
@@ -615,10 +647,8 @@ public class BoardTests {
      */
     public boolean containsMove(Move move, ArrayList<Move> validMoves){
 
-        System.out.println("move = " + move.toString());
         for(Move validMove: validMoves){
 
-            System.out.println("valid move = " + validMove.toString());
             if(move.toString().equals(validMove.toString())){
                 return true;
             }
@@ -1024,7 +1054,6 @@ public class BoardTests {
         board.burnSquare(2, 3);
 
         GameValue gameValue = board.evaluate(null);
-        System.out.println("test");
     }
 
 }
