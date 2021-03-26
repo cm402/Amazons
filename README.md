@@ -4,4 +4,4 @@ Amazons (or Game of the Amazons) is a combinatorial game that was invented in 19
 https://en.wikipedia.org/wiki/Game_of_the_Amazons
 
 # Run Instructions
-In order to compile and run the program, you must be within the "src" folder. First, compile with "javac *.java" and run the program using "Java GameEngine"
+In order to compile and run the program, you must be within the "src" folder. First, compile with "javac -cp ".:../lib/junit-4.13.2.jar" *.java" and run the program using "Java GameEngine"
