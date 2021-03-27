@@ -305,6 +305,95 @@ public class IO {
         return boardSize;
     }
 
+    /**
+     * Asking the user if they want to use the endgame database
+     * optimisation for the CGT strategy
+     * @return true if answer was "yes", false if answer was "no"
+     */
+    public boolean getEndgameDatabasePreference(){
+
+        boolean endgameDatabase;
+
+        while(true){
+
+            System.out.println("Would you like to use the endgame database optimisation? (\"yes\" or \"no\")");
+
+            String response = getUserInputString();
+
+            if(response.equals("yes")){
+
+                endgameDatabase = true;
+                break;
+
+            } else if(response.equals("no")){
+
+                endgameDatabase = false;
+                break;
+
+            } else {
+
+                System.out.println("Error, please enter yes or no");
+            }
+        }
+
+        return endgameDatabase;
+    }
+
+    /**
+     * Getting an AI type from the user, and validating it, before returning it
+     * @param prompt message to the user, requesting the AI type
+     * @return validated AI type, from the user
+     */
+    public String getAIType(String prompt){
+
+        String AIType;
+
+        while(true){
+
+            System.out.println(prompt);
+
+            AIType = getUserInputString();
+
+            if(AIType.equals("mcts") || AIType.equals("random") ||
+                    AIType.equals("heuristic") || AIType.equals("cgt")){
+
+                break;
+
+            } else {
+
+                System.out.println("Error, please enter a valid AI type");
+            }
+
+        }
+        return AIType;
+    }
+
+
+    /**
+     * Getting the type of AI players for a game, from the user
+     * @param noOfAIPlayers The number of AI players
+     * @return ArrayList containing the types of AI playes required
+     */
+    public ArrayList<String> getAITypes(int noOfAIPlayers){
+
+        ArrayList<String> AITypes = new ArrayList<>();
+
+        if(noOfAIPlayers > 0){
+
+            AITypes.add(getAIType("Please enter an AI type for the first AI player" +
+                    " (\"MCTS\", \"Heurisitc\", \"CGT\", or \"Random\")"));
+
+        }
+
+        if(noOfAIPlayers > 1){
+
+            AITypes.add(getAIType("Please enter an AI type for the second AI player" +
+                    " (\"MCTS\", \"Heurisitc\", \"CGT\", or \"Random\")"));
+        }
+
+        return AITypes;
+    }
+
     // getting the dimensions of the partition board
 
     /**

@@ -19,7 +19,13 @@ public class AIPlayer extends Player implements Serializable {
 
     public AIPlayer(boolean white){
         super(white, false);
-        AIType = "Heuristic";
+        this.AIType = "Heuristic";
+    }
+
+    public AIPlayer(boolean white, String AIType, HashMap<Integer, GameValue> partitionsDB){
+        super(white, false);
+        this.AIType = AIType;
+        this.partitionsDB = partitionsDB;
     }
 
     public AIPlayer(boolean white, HashMap<Integer, GameValue> partitionsDB) {
@@ -129,19 +135,19 @@ public class AIPlayer extends Player implements Serializable {
 
             System.out.println("AI is thinking");
 
-            if(AIType.equals("MCTS")){
+            if(AIType.equals("mcts")){
 
                 return getMonteCarloMove(board);
 
-            } else if(AIType.equals("Heuristic")){
+            } else if(AIType.equals("heuristic")){
 
                 return getHeuristicMove(board);
 
-            } else if(AIType.equals("CGT")){
+            } else if(AIType.equals("cgt")){
 
                 return getCGTMove(board);
 
-            } else if(AIType.equals("Random")) {
+            } else if(AIType.equals("random")) {
 
                 return getRandomMove(validMoves);
 

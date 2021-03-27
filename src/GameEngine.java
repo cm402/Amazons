@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Used to run the Amazons program, containing methods to play the game,
@@ -15,16 +16,44 @@ public class GameEngine {
     public static ArrayList<Player> setupPlayers(int noOfHumanPlayers){
 
         ArrayList<Player> players = new ArrayList<>();
+        ArrayList<String> AITypes = new ArrayList<>();
+        HashMap<Integer, GameValue> partitionsDB = null;
+        IO io = new IO();
+
+        // if we have AI players, ask what type of AI to use
+        if(noOfHumanPlayers < 2){
+
+            // Passing the number of AI players
+            AITypes = io.getAITypes(2 - noOfHumanPlayers);
+
+        }
+
+        // if any of the AI players are "CGT" type, ask if the user
+        // want to use the endgame database optimisation
+        for(String AIType: AITypes){
+
+            if(AIType.equals("CGT")){
+
+                // if "yes", then retrieve endgame database from file
+                if(io.getEndgameDatabasePreference()){
+
+                    FileInputOutput fio = new FileInputOutput();
+                    partitionsDB = fio.getPartitionsDB();
+
+                }
+                break;
+            }
+        }
 
         if(noOfHumanPlayers == 0){
 
-            players.add(new AIPlayer(true));
-            players.add(new AIPlayer(false));
+            players.add(new AIPlayer(true, AITypes.get(0), partitionsDB));
+            players.add(new AIPlayer(false, AITypes.get(1), partitionsDB));
 
         } else if(noOfHumanPlayers == 1){
 
             players.add(new HumanPlayer(true));
-            players.add(new AIPlayer(false));
+            players.add(new AIPlayer(false, AITypes.get(0), partitionsDB));
 
         } else {
 
@@ -158,7 +187,7 @@ public class GameEngine {
     }
 
     /**
-     * Used to play a game
+     * Setup the game, play through it and output the gameFile to file
      * @param io Input/Output object, used for console I/O
      * @param engine GameEngine, providing essential game methods
      */
@@ -168,10 +197,9 @@ public class GameEngine {
         Player currentPlayer;
         ArrayList<Move> movesPlayed = new ArrayList<>();
 
+        // game setup
         ArrayList<Player> players = setupPlayers(io.getNoOfPlayers());
-
         board = engine.setupBoard(io.getBoardSize(), players);
-
         currentPlayer = engine.chooseFirstPlayer(players.get(0), players.get(1));
 
         engine.startGame(board, movesPlayed, currentPlayer, players);
