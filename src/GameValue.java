@@ -431,7 +431,7 @@ public class GameValue implements Serializable{
 
         if(lessThanOrEqualTo(this, zero)){
 
-            // x <= 0 and 0 <= 0 only true when x = 0, meaning its a zero position
+            // x <= 0 and 0 <= x only true when x = 0, meaning its a zero position
             if(lessThanOrEqualTo(zero, this)){
 
                 return "Second";
@@ -446,7 +446,7 @@ public class GameValue implements Serializable{
         if(lessThanOrEqualTo(zero, this)){
 
             // meaning x > 0, this is a positive game
-            if (!lessThanOrEqualTo(this, zero)) { // is this needed?
+            if (!lessThanOrEqualTo(this, zero)) {
 
                 return "Left";
             }

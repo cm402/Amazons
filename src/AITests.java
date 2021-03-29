@@ -1,7 +1,5 @@
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -52,7 +50,7 @@ public class AITests {
     public void testMonteCarloMove(){
 
         AIPlayer player = new AIPlayer(false);
-        player.setAIType("MCTS");
+        player.setAIType("mcts");
         player.addPieces(blackPieces);
 
         Move move = player.getMove(board);
@@ -67,7 +65,7 @@ public class AITests {
     public void testHeuristicMove(){
 
         AIPlayer player = new AIPlayer(false);
-        player.setAIType("Heuristic");
+        player.setAIType("heuristic");
         player.addPieces(blackPieces);
 
         Move move = player.getMove(board);
@@ -76,12 +74,15 @@ public class AITests {
 
     /**
      * Testing that the CGT AI returns one of the best moves.
+     * This test shows the evaluate() method returning before
+     * the 5 seconds, and so the GameValue is then used to return
+     * a move.
      */
     @Test
     public void testCGTMove(){
 
         AIPlayer player = new AIPlayer(false);
-        player.setAIType("CGT");
+        player.setAIType("cgt");
         player.addPieces(blackPieces);
 
         Move move = player.getMove(board);
@@ -95,11 +96,10 @@ public class AITests {
     public void testRandomMove(){
 
         AIPlayer player = new AIPlayer(false);
-        player.setAIType("Random");
+        player.setAIType("random");
         player.addPieces(blackPieces);
 
         Move move = player.getMove(board);
         //System.out.println(move);
     }
-
 }

@@ -282,10 +282,12 @@ public class MCTS {
          */
         public double getUCB() {
 
+            /*
             // used to ensure that nodes that haven't been visited yet get priority
             if (this.state.visitCount == 0) {
                 return Integer.MAX_VALUE;
             }
+            */
 
             // don't ever want to divide by 0, so this is added
             if(this.state.winScore == 0){
@@ -293,7 +295,7 @@ public class MCTS {
             }
 
             return ((double) this.state.winScore / (double) this.state.visitCount)
-                    + 2 * Math.sqrt(Math.log(this.parent.state.visitCount) / (double) this.state.visitCount);
+                    + 0.8 * Math.sqrt(Math.log(this.parent.state.visitCount) / (double) this.state.visitCount);
         }
     }
 

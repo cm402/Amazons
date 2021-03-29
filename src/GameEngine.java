@@ -29,7 +29,7 @@ public class GameEngine {
         }
 
         // if any of the AI players are "CGT" type, ask if the user
-        // want to use the endgame database optimisation
+        // wants to use the endgame database optimisation
         for(String AIType: AITypes){
 
             if(AIType.equals("CGT")){
@@ -229,6 +229,12 @@ public class GameEngine {
 
         GameFile gf = engine.inputGameFile();
 
+        if(gf == null){
+
+            System.out.println("Error, previous game file not found, please play a game and then try again");
+            System.exit(0);
+        }
+
         ArrayList<Move> moves = gf.getMovesPlayed();
         int boardSize = gf.getBoardSize();
 
@@ -409,6 +415,8 @@ public class GameEngine {
                 // when game is over
                 if(nextMove == null){
 
+                    System.out.println("game " + i + " finished");
+
                     // if 2nd player can't move, add 1 to first players wins
                     if(currentPlayer.equals(p2)){
 
@@ -462,8 +470,8 @@ public class GameEngine {
 
             if(Args[0].equals("experiments")){
 
-                String AIType1 = "Heuristic";
-                String AIType2 = "Random";
+                String AIType1 = "mcts";
+                String AIType2 = "heuristic";
                 int noOfSimulations = 50;
 
                 int firstPlayerWins = engine.simulateGames(noOfSimulations, AIType1, AIType2);

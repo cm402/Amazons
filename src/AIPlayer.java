@@ -90,20 +90,52 @@ public class AIPlayer extends Player implements Serializable {
      */
     public Move getCGTMove(Board board){
 
-        GameValue gameValue = board.evaluate(partitionsDB);
-        gameValue.simplify();
+        final boolean isWhite = this.isWhite();
+        final Move[] gameValueMove = new Move[1];
 
-        // TODO- Change this to select a move from the list, by comparing?
-        // Or, could choose a random element in list?
+        // Creating a new thread that executes a lambda function to
+        // evaluate the board object, into a GameValue
+        Thread evaluateThread = new Thread(() -> {
 
-        if(this.isWhite()){
+            GameValue gameValue = board.evaluate(partitionsDB);
+            gameValue.simplify();
 
-            return gameValue.right.get(0).move;
+            if(isWhite){
 
-        } else {
+                gameValueMove[0] = gameValue.right.get(0).move;
 
-            return gameValue.left.get(0).move;
+            } else {
+
+                gameValueMove[0] = gameValue.left.get(0).move;
+            }
+        });
+
+        // Spawning a new thread, to try and evaluate board to a GameValue
+        evaluateThread.start();
+
+        try{
+
+            // Waiting 5 seconds
+            Thread.sleep(5000);
+
+            // if other thread still evaluating, return a heuristic move
+            if(evaluateThread.isAlive()){
+
+                evaluateThread.interrupt();
+                return getHeuristicMove(board);
+
+            // otherwise, return evaluated move
+            } else {
+
+                return gameValueMove[0];
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
         }
+
+        // in case of an exception, just return a heuristic move
+        return getHeuristicMove(board);
     }
 
     /**
