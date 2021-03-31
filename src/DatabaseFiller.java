@@ -145,7 +145,7 @@ public class DatabaseFiller{
                     // - no pieces of any colour
                     // - only 1 square
                     // - no empty squares
-                    // - more than 5 empty squares
+                    // - more than 7 empty squares
                     if(whitePieces.size() > 2 || blackPieces.size() > 2
                             || (whitePieces.size() == 0 && blackPieces.size() == 0)
                             || board.getRowBoardSize() == 1 && board.getColumnBoardSize() == 1

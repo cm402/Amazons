@@ -1,10 +1,4 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.sql.*;
 
@@ -63,6 +57,51 @@ public class FileInputOutput {
         } catch(IOException e){
             System.out.println(e);
         } catch (ClassNotFoundException e){
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    /**
+     * Retrieving the partitions Database, before converting it into a HashMap
+     * @return HashMap of evaluated boards GameValues
+     */
+    public HashMap<Integer, GameValue> retrievePartitionsDB(){
+
+        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+
+        try{
+
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM endgameDatabase");
+
+            while(resultSet.next()){
+
+                Blob blob = resultSet.getBlob("value");
+
+                int blobLength = (int) blob.length();
+                byte[] blobAsBytes = blob.getBytes(1, blobLength);
+                blob.free();
+
+                ByteArrayInputStream baip = new ByteArrayInputStream(blobAsBytes);
+                ObjectInputStream ois = new ObjectInputStream(baip);
+
+                GameValue gameValue = (GameValue) ois.readObject();
+
+                int key = resultSet.getInt("key");
+
+                partitionsDB.put(key, gameValue);
+            }
+
+            statement.close();
+            resultSet.close();
+            connection.close();
+
+        } catch (Exception e ){
             System.out.println(e);
         }
         return null;
