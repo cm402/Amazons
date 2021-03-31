@@ -4,10 +4,12 @@ import java.util.*;
 /**
  * Monte-Carlo Tree Search algorithm implementation
  * Adapted from https://www.baeldung.com/java-monte-carlo-tree-search
+ * https://www.cs.swarthmore.edu/~bryce/cs63/s16/reading/mcts.html
  */
 public class MCTS {
 
     boolean opponent; // stores the colour of the opponent
+    boolean heuristicOptimisation;
 
     /**
      * Getting a move choice, using the MCTS algorithm
@@ -21,6 +23,8 @@ public class MCTS {
         Node root = new Node();
         root.state.board = board;
         root.state.nextPlayer = nextPlayer;
+
+        heuristicOptimisation = false;
 
         // storing the opponents colour
         opponent = !nextPlayer;
@@ -150,7 +154,7 @@ public class MCTS {
         players.add(new AIPlayer(!nextPlayer));
         players.get(0).addPieces(simulBoard.getPieces(nextPlayer));
         players.get(1).addPieces(simulBoard.getPieces(!nextPlayer));
-        Player currentPlayer = players.get(0);
+        AIPlayer currentPlayer = players.get(0);
 
         // if game is over, return previous player to move
         if(players.get(0).getValidMoves(simulBoard).size() == 0){
@@ -169,9 +173,22 @@ public class MCTS {
                 return !currentPlayer.isWhite();
             }
 
-            // random move choice
-            Random rand = new Random();
-            Move nextMove = validMoves.get(rand.nextInt(validMoves.size()));
+            Move nextMove;
+
+            if(heuristicOptimisation){
+
+                nextMove = currentPlayer.getHeuristicMove(simulBoard);
+
+            } else {
+
+                nextMove = currentPlayer.getRandomMove(validMoves);
+
+                // random move choice
+                //Random rand = new Random();
+                //nextMove = validMoves.get(rand.nextInt(validMoves.size()));
+            }
+
+
 
             gameEngine.updateBoard(nextMove, simulBoard, false);
 

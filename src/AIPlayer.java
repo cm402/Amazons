@@ -47,6 +47,7 @@ public class AIPlayer extends Player implements Serializable {
     public Move getMonteCarloMove(Board board){
 
         MCTS mcts = new MCTS();
+        //mcts.heuristicOptimisation = true;
 
         return mcts.getNextMove(board, this.isWhite(), 5);
     }

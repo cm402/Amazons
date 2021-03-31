@@ -394,7 +394,71 @@ public class IO {
         return AITypes;
     }
 
-    // getting the dimensions of the partition board
+    /**
+     * Getting the number of simulations to run, from the user
+     * @return the number of simulations to run
+     */
+    public int getNoOfSimulations(){
+
+        while(true){
+
+            int noOfSimulations = getUserInputInteger("Please enter the number of simulations you would like to run");
+
+            if(noOfSimulations < 0 || noOfSimulations > 100000){
+
+                System.out.println("Please enter a valid number of simulations (0 - 100,000)");
+                continue;
+
+            } else {
+
+                return noOfSimulations;
+            }
+        }
+    }
+
+    /**
+     * Getting how long the user wants to run the database filler for
+     * @return the number of minutes the user wants to run the database filler for
+     */
+    public int getRunTime(){
+
+        while(true){
+
+            int runTime = getUserInputInteger("Please enter how long you want to run the database filler for");
+
+            if(runTime < 0 || runTime > 600){
+
+                System.out.println("Please enter a valid number of simulations (0 - 600)");
+                continue;
+
+            } else {
+
+                return runTime;
+            }
+        }
+    }
+
+    /**
+     * Getting how maximum board size to fill the endgame database with
+     * @return maximum board size
+     */
+    public int getMaxBoardSize(){
+
+        while(true){
+
+            int maxBoardSize = getUserInputInteger("Please enter how the maximum size of partition you want to fill the endgame database with");
+
+            if(maxBoardSize < 2 || maxBoardSize > 10){
+
+                System.out.println("Please enter a valid number of simulations (2 - 10)");
+                continue;
+
+            } else {
+
+                return maxBoardSize;
+            }
+        }
+    }
 
     /**
      * Getting the dimensions for a partition board, from the user

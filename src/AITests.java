@@ -1,6 +1,7 @@
 import org.junit.Before;
 import org.junit.Test;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Unit tests used throughout development of the
@@ -90,6 +91,40 @@ public class AITests {
     }
 
     /**
+     * Testing that the CGT AI returns one of the best moves,
+     * using the endgame database optimisation.
+     */
+    @Test
+    public void testCGTMoveDatabase(){
+
+        Board biggerBoard = new Board(3, 3);
+        biggerBoard.setupBoard();
+
+        biggerBoard.burnSquare(2, 0);
+        biggerBoard.burnSquare(2, 2);
+
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(biggerBoard.getSquare(0,1));
+        biggerBoard.addPiece(0, 1, blackPiece);
+
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(biggerBoard.getSquare(1,0));
+        biggerBoard.addPiece(1, 0, whitePiece);
+
+        ArrayList<Piece> blackPiecesNew = new ArrayList<>();
+        blackPiecesNew.add(blackPiece);
+
+        FileInputOutput fio = new FileInputOutput();
+        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+
+        AIPlayer player = new AIPlayer(false, "cgt", partitionsDB);
+        player.addPieces(blackPiecesNew);
+
+        Move move = player.getMove(biggerBoard);
+        System.out.println(move);
+    }
+
+    /**
      * Testing that the random AI returns a valid move
      */
     @Test
@@ -100,6 +135,6 @@ public class AITests {
         player.addPieces(blackPieces);
 
         Move move = player.getMove(board);
-        //System.out.println(move);
+        System.out.println(move);
     }
 }

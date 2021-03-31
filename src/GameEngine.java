@@ -426,7 +426,7 @@ public class GameEngine {
                     break;
                 }
 
-                updateBoard(nextMove, board, false);
+                updateBoard(nextMove, board, true);
 
                 // Swapping players
                 if(currentPlayer.equals(p1)){
@@ -443,11 +443,10 @@ public class GameEngine {
     public static void main(String Args[]){
 
         GameEngine engine = new GameEngine();
+        IO io = new IO();
 
         // if no arguments are given, we just run the main program
         if(Args.length == 0){
-
-            IO io = new IO();
 
             int introValue = io.getIntroduction();
 
@@ -470,16 +469,18 @@ public class GameEngine {
 
             if(Args[0].equals("experiments")){
 
-                String AIType1 = "mcts";
-                String AIType2 = "heuristic";
-                int noOfSimulations = 50;
+                ArrayList<String> AITypes = io.getAITypes(2);
+                int noOfSimulations = io.getNoOfSimulations();
 
-                int firstPlayerWins = engine.simulateGames(noOfSimulations, AIType1, AIType2);
-                System.out.println(AIType1 + " won " + firstPlayerWins + " games out of " + noOfSimulations + " against " + AIType2);
+                int firstPlayerWins = engine.simulateGames(noOfSimulations, AITypes.get(0), AITypes.get(1));
+                System.out.println(AITypes.get(0) + " won " + firstPlayerWins + " games out of " + noOfSimulations + " against " + AITypes.get(1));
 
             } else if(Args[0].equals("fillDatabase")){
 
-                 databaseFiller.fillEndgameDatabase(3, 1);
+                int runTime = io.getRunTime();
+                int maxBoardSize = io.getMaxBoardSize();
+
+                databaseFiller.fillEndgameDatabase(maxBoardSize, runTime);
 
             } else if(Args[0].equals("databaseSize")){
 

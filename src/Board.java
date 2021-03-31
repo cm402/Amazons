@@ -630,6 +630,26 @@ public class Board {
     }
 
     /**
+     * Returns the number of empty squares, on "this" board
+     * @return number of burnt squares
+     */
+    public int getNumberOfEmptySquares(){
+
+        int emptySquares = 0;
+
+        for(int x = 0; x < this.getColumnBoardSize(); x++){
+            for(int y = 0; y < this.getRowBoardSize(); y++){
+
+                if(this.isSquareEmpty(this.getSquare(x, y))){
+
+                    emptySquares++;
+                }
+            }
+        }
+        return emptySquares;
+    }
+
+    /**
      * Gets all the pieces of a given colour, on the current board
      * @param isWhite indicates what colour to check, true for white, false for black
      * @return The number of pieces of the colour given, on the current board
@@ -1083,6 +1103,8 @@ public class Board {
 
             if(partitionsDB != null){
 
+                //smallestHashGameValue.removeDepth();
+
                 // storing the GameValue in the database, so don't have to evaluate it next time
                 partitionsDB.put(smallestHash.hashValue, smallestHashGameValue);
             }
@@ -1113,6 +1135,8 @@ public class Board {
 
             // Storing the GameValue in the endgame database
             if(partitionsDB != null){
+
+                //gameValueTotal.removeDepth();
 
                 partitionsDB.put(this.hashCode(), gameValueTotal);
             }

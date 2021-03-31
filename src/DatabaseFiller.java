@@ -145,10 +145,12 @@ public class DatabaseFiller{
                     // - no pieces of any colour
                     // - only 1 square
                     // - no empty squares
+                    // - more than 5 empty squares
                     if(whitePieces.size() > 2 || blackPieces.size() > 2
                             || (whitePieces.size() == 0 && blackPieces.size() == 0)
                             || board.getRowBoardSize() == 1 && board.getColumnBoardSize() == 1
-                            || !board.containsEmptySquares()){
+                            || !board.containsEmptySquares()
+                            || board.getNumberOfEmptySquares() > 7){
                         continue;
                     }
                     boards.add(board);
@@ -189,21 +191,18 @@ public class DatabaseFiller{
         // 2. Retrieving the old Endgame database, from file
         FileInputOutput fio = new FileInputOutput();
         HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
-        //HashMap<Integer, GameValue> partitionsDB = null;
+        //HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
 
         int sizeBefore = partitionsDB.size();
         long start = System.currentTimeMillis();
         long finishTime = start + 1000 * 60 * runTime;
-        Board lastBoard = new Board(3, 3);
         int boardCounter = 0;
-
 
         // 3. Evaluating each board, storing the GameValues in the HashMap
         for(Board board: boards){
 
 
             if(System.currentTimeMillis() >= finishTime){
-                lastBoard = board;
                 break;
             }
 
@@ -218,12 +217,8 @@ public class DatabaseFiller{
         // 4. Writing the newly updated Endgame Database
         fio.outputDB(partitionsDB);
 
-
         int sizeAfter = partitionsDB.size();
         System.out.println("Database had " + sizeBefore + " entries.");
         System.out.println("It now has " + sizeAfter + " entries");
-        System.out.println("The next board to be evaluated is ");
-        lastBoard.printBoard();
-
     }
 }

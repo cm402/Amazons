@@ -96,6 +96,26 @@ public class GameValue implements Serializable{
     }
 
     /**
+     * Removes all the GameValue objects stored deeper than the left and right lists
+     * of "this" GameValue object
+     */
+    public void removeDepth(){
+
+        for(GameValue leftGameValue: this.left){
+
+            leftGameValue.left.clear();
+            leftGameValue.right.clear();
+        }
+
+        for(GameValue rightGameValue: this.right){
+
+            rightGameValue.left.clear();
+            rightGameValue.right.clear();
+        }
+
+    }
+
+    /**
      * Checking the equality of "this" GameValue, with another.
      * This relates to the toString() content of both, and accepts
      * lists on the left and right side which are not in the same order.
