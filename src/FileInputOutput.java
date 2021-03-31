@@ -63,10 +63,53 @@ public class FileInputOutput {
     }
 
     /**
-     * Retrieving the partitions Database, before converting it into a HashMap
-     * @return HashMap of evaluated boards GameValues
+     * Filling the test database with the HashMap of partitions
+     * @param partitionsDB HashMap of partitions
      */
-    public HashMap<Integer, GameValue> retrievePartitionsDB(){
+    public void fillDatabase(HashMap<Integer, GameValue> partitionsDB){
+
+        try{
+
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+
+            // This has to be done, as INSERT ... ON DUPLICATE REPLACE isn't working
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("DELETE FROM testDatabase");
+
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO testDatabase (key, value) VALUES (?, ?)");
+
+            for(int key: partitionsDB.keySet()){
+
+                GameValue gameValue = partitionsDB.get(key);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                oos.writeObject(gameValue);
+
+                byte[] gameValueAsBytes = baos.toByteArray();
+                ByteArrayInputStream bais = new ByteArrayInputStream(gameValueAsBytes);
+
+                preparedStatement.setInt(1, key);
+
+                preparedStatement.setBinaryStream(2, bais, gameValueAsBytes.length);
+                preparedStatement.executeUpdate();
+            }
+            connection.commit();
+            connection.close();
+
+        } catch (Exception e ){
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Retrieving the test database and filling the HashMap with
+     * its values
+     * @return retrieved partitions HashMap
+     */
+    public HashMap<Integer, GameValue> retrievePartitionsDatabase(){
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
 
@@ -77,7 +120,7 @@ public class FileInputOutput {
 
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM endgameDatabase");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM testDatabase");
 
             while(resultSet.next()){
 
@@ -94,6 +137,8 @@ public class FileInputOutput {
 
                 int key = resultSet.getInt("key");
 
+                //System.out.println(key + " " + gameValue);
+
                 partitionsDB.put(key, gameValue);
             }
 
@@ -104,7 +149,8 @@ public class FileInputOutput {
         } catch (Exception e ){
             System.out.println(e);
         }
-        return null;
+
+        return partitionsDB;
     }
 
     /**

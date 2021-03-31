@@ -19,6 +19,7 @@ public class DatabaseTests {
     /* CREATE TABLE endgameDatabase (
             key  INT,
             value MEDIUMBLOB
+            PRIMARY KEY (key)
        );
 
        SELECT * FROM endgameDatabase
@@ -57,11 +58,14 @@ public class DatabaseTests {
                     "jdbc:h2:~/test", "connorMacfarlane", "password");
 
             String createTable = "CREATE TABLE testDatabase (" +
-                                "key  INT," +
-                                "value MEDIUMBLOB" +
-                            ");";
+                                    "key  INT," +
+                                    "value MEDIUMBLOB," +
+                                    "PRIMARY KEY (key)" +
+                                 ");";
 
             Statement statement = connection.createStatement();
+
+            statement.executeUpdate("DROP TABLE IF EXISTS testDatabase");
             statement.executeUpdate(createTable);
 
             connection.close();
@@ -105,10 +109,8 @@ public class DatabaseTests {
             Connection connection = DriverManager.getConnection(
                     "jdbc:h2:~/test", "connorMacfarlane", "password");
 
-            String insertStatement = "DELETE FROM testDatabase";
-
             Statement statement = connection.createStatement();
-            int result = statement.executeUpdate(insertStatement);
+            int result = statement.executeUpdate("DELETE FROM testDatabase");
 
             connection.close();
 
@@ -223,92 +225,6 @@ public class DatabaseTests {
         }
     }
 
-    /**
-     * Filling the test database with the HashMap of partitions
-     * @param partitionsDB HashMap of partitions
-     */
-    public void fillDatabase(HashMap<Integer, GameValue> partitionsDB){
-
-        try{
-
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
-
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO testDatabase (key, value) VALUES (?, ?)");
-
-            for(int key: partitionsDB.keySet()){
-
-                GameValue gameValue = partitionsDB.get(key);
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
-                oos.writeObject(gameValue);
-
-                byte[] gameValueAsBytes = baos.toByteArray();
-                ByteArrayInputStream bais = new ByteArrayInputStream(gameValueAsBytes);
-
-                preparedStatement.setInt(1, key);
-
-                preparedStatement.setBinaryStream(2, bais, gameValueAsBytes.length);
-                preparedStatement.executeUpdate();
-            }
-            connection.commit();
-            connection.close();
-
-        } catch (Exception e ){
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * Retrieving the test database and filling the HashMap with
-     * its values
-     * @return retrieved partitions HashMap
-     */
-    public HashMap<Integer, GameValue> retrieveDatabase(){
-
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-
-        try{
-
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
-
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM testDatabase");
-
-            while(resultSet.next()){
-
-                Blob blob = resultSet.getBlob("value");
-
-                int blobLength = (int) blob.length();
-                byte[] blobAsBytes = blob.getBytes(1, blobLength);
-                blob.free();
-
-                ByteArrayInputStream baip = new ByteArrayInputStream(blobAsBytes);
-                ObjectInputStream ois = new ObjectInputStream(baip);
-
-                GameValue gameValue = (GameValue) ois.readObject();
-
-                int key = resultSet.getInt("key");
-
-                //System.out.println(key + " " + gameValue);
-
-                partitionsDB.put(key, gameValue);
-            }
-
-            statement.close();
-            resultSet.close();
-            connection.close();
-
-        } catch (Exception e ){
-            System.out.println(e);
-        }
-
-        return partitionsDB;
-    }
 
     /**
      * Testing that filling the endgame database with
@@ -330,9 +246,11 @@ public class DatabaseTests {
             board.evaluate(partitionsDB);
         }
 
-        fillDatabase(partitionsDB);
+        FileInputOutput fio = new FileInputOutput();
 
-        HashMap<Integer, GameValue> retrievedPartitionsDB = retrieveDatabase();
+        fio.fillDatabase(partitionsDB);
+
+        HashMap<Integer, GameValue> retrievedPartitionsDB = fio.retrievePartitionsDatabase();
 
         // Checking that the partitions HashMap is the same before and
         // after it goes into the Database
