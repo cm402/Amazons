@@ -1,3 +1,4 @@
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
@@ -16,6 +17,8 @@ import java.io.*;
  */
 public class DatabaseTests {
 
+    String url = "jdbc:h2:file:" + "./testDatabase";
+
     /* CREATE TABLE endgameDatabase (
             key  INT,
             value MEDIUMBLOB
@@ -26,7 +29,6 @@ public class DatabaseTests {
 
        java -jar h2*.jar to open console window
     */
-
 
     /**
      * Testing that we can connect to the database successfully.
@@ -47,6 +49,54 @@ public class DatabaseTests {
     }
 
     /**
+     * Testing that we can connect to the database on file successfully.
+     */
+    @Test
+    public void testConnectionFile(){
+
+        try{
+
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
+
+            connection.close();
+
+        } catch (SQLException e ){
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Creating the endgame database file and adding a table
+     * TODO- move this to FileInputOutput, allowing the user to reset the database
+     */
+    @Test
+    public void createEndgameDatabase(){
+
+        String databaseURL = "jdbc:h2:file:" + "./src/endgameDatabase";
+
+        try{
+
+            Connection connection = DriverManager.getConnection(databaseURL, "connorMacfarlane", "password");
+
+            String createTable = "CREATE TABLE testDatabase (" +
+                    "key  INT," +
+                    "value MEDIUMBLOB," +
+                    "PRIMARY KEY (key)" +
+                    ");";
+
+            Statement statement = connection.createStatement();
+
+            statement.executeUpdate("DROP TABLE IF EXISTS testDatabase");
+            statement.executeUpdate(createTable);
+
+            connection.close();
+
+        } catch (SQLException e ){
+            System.out.println(e);
+        }
+    }
+
+    /**
      * Testing that we can create a table in the database
      */
     @Test
@@ -55,7 +105,7 @@ public class DatabaseTests {
         try{
 
             Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+                    url, "connorMacfarlane", "password");
 
             String createTable = "CREATE TABLE testDatabase (" +
                                     "key  INT," +

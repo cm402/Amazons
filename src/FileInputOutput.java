@@ -62,6 +62,8 @@ public class FileInputOutput {
         return null;
     }
 
+    String databaseURL = "jdbc:h2:file:" + "./endgameDatabase";
+
     /**
      * Filling the test database with the HashMap of partitions
      * @param partitionsDB HashMap of partitions
@@ -70,8 +72,7 @@ public class FileInputOutput {
 
         try{
 
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+            Connection connection = DriverManager.getConnection(databaseURL, "connorMacfarlane", "password");
 
             // This has to be done, as INSERT ... ON DUPLICATE REPLACE isn't working
             Statement statement = connection.createStatement();
@@ -116,7 +117,7 @@ public class FileInputOutput {
         try{
 
             Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+                    databaseURL, "connorMacfarlane", "password");
 
             Statement statement = connection.createStatement();
 
