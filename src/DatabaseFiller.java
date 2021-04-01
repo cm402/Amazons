@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  *  Used to fill the Endgame Database with GameValues for all possible boards
@@ -42,72 +41,6 @@ public class DatabaseFiller{
             y = y - 1;
         }
         return y;
-    }
-
-    /**
-     * Given a range of values (0 to maxValue), returns all possible combinations
-     * of a list of values of size n.
-     * @param n size of the list of values
-     * @param maxValue maximum value that an integer in the list can take
-     * @return ArrayList of lists of integers, Size = (maxValue + 1) ^ n
-     */
-    public void evaluateCombinations(int n, int maxValue, HashMap<Integer, GameValue> partitionsDB,
-                                     int rows, int columns, int maxEmptySquares, long finishTime){
-
-        int[] combination = new int[n];
-
-        for(int i = 0; i <= maxValue; i++){
-            combinationsHelper(n, 0, i, maxValue, combination, partitionsDB, rows, columns, maxEmptySquares, finishTime);
-        }
-
-    }
-
-    /**
-     * Helper method for generateCombinations(), recursively generating the combinations.
-     * @param n size of the list
-     * @param position index to add a number to the list
-     * @param value integer value to add to the list, at given position
-     * @param maxValue maximum value that an integer in the list can take
-     * @param combination list to add the value to
-     */
-    public void combinationsHelper(int n, int position, int value, int maxValue, int[] combination,
-                                HashMap<Integer, GameValue> partitionsDB, int rows, int columns, int maxEmptySquares, long finishTime){
-
-        combination[position] = value;
-
-        // Base case: we can now have enough values to generate & evaluate the board
-        if(position == n - 1){
-
-            if(System.currentTimeMillis() >= finishTime){
-
-                // Storing all evaluated partitions in Database
-                FileInputOutput fio = new FileInputOutput();
-                fio.fillDatabase(partitionsDB);
-
-                int sizeAfter = partitionsDB.size();
-                System.out.println("Database now has " + sizeAfter + " entries");
-                System.exit(0);
-            }
-
-            // Generating current board
-            Board board = generateBoard(combination, rows, columns, maxEmptySquares);
-
-            // Checking the board meets the specified criteria to evaluate
-            if(board != null){
-
-                // Evaluating current board, adding it to endgame database
-                board.printBoard();
-
-                GameValue gameValue = board.evaluate(partitionsDB);
-            }
-
-        } else {
-
-            for(int i = 0; i <= maxValue; i++){
-                combinationsHelper(n, position + 1, i, maxValue, combination, partitionsDB, rows, columns, maxEmptySquares, finishTime);
-            }
-        }
-
     }
 
     /**
@@ -168,6 +101,74 @@ public class DatabaseFiller{
     }
 
     /**
+     * Helper method for generateCombinations(), recursively generating the combinations.
+     * @param n size of the list
+     * @param position index to add a number to the list
+     * @param value integer value to add to the list, at given position
+     * @param maxValue maximum value that an integer in the list can take
+     * @param combination list to add the value to
+     */
+    public void combinationsHelper(int n, int position, int value, int maxValue, int[] combination,
+                                   int rows, int columns, int maxEmptySquares, long finishTime){
+
+        combination[position] = value;
+
+        // Base case: we can now have enough values to generate & evaluate the board
+        if(position == n - 1){
+
+
+            // once we reach finish time, output all game values to database
+            if(System.currentTimeMillis() >= finishTime){
+
+                FileInputOutput fio = new FileInputOutput();
+                int sizeAfter = fio.getEndgameDatabaseSize();
+                System.out.println("Database now has " + sizeAfter + " entries");
+                System.exit(0);
+            }
+
+            // Generating current board
+            Board board = generateBoard(combination, rows, columns, maxEmptySquares);
+
+            // Checking the board meets the specified criteria to evaluate
+            if(board != null){
+
+                // Evaluating current board, adding it to endgame database
+                board.printBoard();
+
+                // If board not already stored in database, evaluate and store it
+                if(!board.isInDatabase()){
+
+                    board.addToDatabase();
+                }
+            }
+
+        } else {
+
+            for(int i = 0; i <= maxValue; i++){
+                combinationsHelper(n, position + 1, i, maxValue, combination, rows, columns, maxEmptySquares, finishTime);
+            }
+        }
+
+    }
+
+    /**
+     * Given a range of values (0 to maxValue), returns all possible combinations
+     * of a list of values of size n.
+     * @param n size of the list of values
+     * @param maxValue maximum value that an integer in the list can take
+     * @return ArrayList of lists of integers, Size = (maxValue + 1) ^ n
+     */
+    public void evaluateCombinations(int n, int maxValue, int rows, int columns, int maxEmptySquares, long finishTime){
+
+        int[] combination = new int[n];
+
+        for(int i = 0; i <= maxValue; i++){
+            combinationsHelper(n, 0, i, maxValue, combination, rows, columns, maxEmptySquares, finishTime);
+        }
+
+    }
+
+    /**
      * Filling the endgame Database, generating all the combinations
      * and evaluating them one by one, rather than finding a list
      * of all possible boards.
@@ -175,13 +176,8 @@ public class DatabaseFiller{
      * @param runTime number of minutes to evaluate for
      * @param maxEmptySquares
      */
-    public void fillEndgameDatabaseOptimisation(int maxSize, int runTime, int maxEmptySquares){
+    public void fillEndgameDatabase(int maxSize, int runTime, int maxEmptySquares){
 
-        // Retrieving the old Endgame database, from file
-        FileInputOutput fio = new FileInputOutput();
-        HashMap<Integer, GameValue> partitionsDB = fio.retrievePartitionsDatabase();
-
-        int sizeBefore = partitionsDB.size();
         long start = System.currentTimeMillis();
         long finishTime = start + 1000 * 60 * runTime;
 
@@ -192,16 +188,9 @@ public class DatabaseFiller{
                 // Generating all the combinations of values 0-3 for the number of squares
                 // in order to use these combinations to generate a board to evaluate
                 int numberOfSquares = rows * columns;
-                evaluateCombinations(numberOfSquares, 3, partitionsDB, rows, columns, maxEmptySquares, finishTime);
+                evaluateCombinations(numberOfSquares, 3, rows, columns, maxEmptySquares, finishTime);
 
             }
         }
-
-        fio.fillDatabase(partitionsDB);
-
-        int sizeAfter = partitionsDB.size();
-        System.out.println("Database had " + sizeBefore + " entries.");
-        System.out.println("It now has " + sizeAfter + " entries");
     }
-
 }

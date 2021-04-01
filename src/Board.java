@@ -1001,28 +1001,6 @@ public class Board {
     }
 
     /**
-     * Queries the partitions DB for the current boards GameValue object
-     * @return Either the current boards GameValue object, or null
-     */
-    public GameValue checkDatabase(){
-
-        SmallestHashValue smallestHash = getSmallestHashValue();
-        //GameValue smallestHashGameValue = partitionsDB.get(smallestHash.hashValue);
-        FileInputOutput fio = new FileInputOutput();
-        GameValue smallestHashGameValue = fio.queryDatabase(smallestHash.hashValue);
-
-        // if some variation of the board has been evaluated before
-        if(smallestHashGameValue != null){
-
-            // Transforming the smallest hash GameValue, to the current boards GameValue
-            return transformGameValue(smallestHash, smallestHashGameValue);
-        }
-
-        // if board not in database, return null
-        return null;
-    }
-
-    /**
      * Used to evaluate the current board object into a GameValue object, at run-time
      * @param depth Depth of current recursive call, used for testing purposes
      * @return GameValue object for the current board object
@@ -1073,70 +1051,107 @@ public class Board {
     }
 
     /**
-     * Returns a GameValue object for the current board object, possibly using the endgame database
-     * @param partitionsDB HashMap of partitions gamevalues, used for filling the database, null if called by a player
-     * @return GameValue object for the current board object
+     * Checking if "this" board object is currently stored in database
+     * @return true if stored, false otherwise
      */
-    public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
+    public boolean isInDatabase(){
 
-        // First optimisation, check endgame database
-        GameValue gameValue = checkDatabase();
+        SmallestHashValue smallestHash = getSmallestHashValue();
+        FileInputOutput fio = new FileInputOutput();
 
-        // If found in database, just return
+        if(fio.queryDatabase(smallestHash.hashValue) != null){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Adds "this" board object to the endgame database.
+     */
+    public void addToDatabase(){
+
+        // Getting the smallest hash board, its hash value and the transformation required
+        SmallestHashValue smallestHash = getSmallestHashValue();
+
+        // Evaluating the smallest hash board, to get its GameValue
+        GameValue smallestHashGameValue = smallestHash.board.evaluate(0);
+        smallestHashGameValue.simplify();
+
+        System.out.println("Adding to database");
+
+        // Storing the smallest hash game value in the endgame database
+        FileInputOutput fio = new FileInputOutput();
+        fio.addGameValueToDatabase(smallestHash.hashValue, smallestHashGameValue);
+    }
+
+    /**
+     * Queries the partitions DB for the current boards GameValue object
+     * @return Either the current boards GameValue object, or null
+     */
+    public GameValue getFromDatabase(){
+
+        SmallestHashValue smallestHash = getSmallestHashValue();
+        FileInputOutput fio = new FileInputOutput();
+        GameValue smallestHashGameValue = fio.queryDatabase(smallestHash.hashValue);
+
+        // if some variation of the board has been evaluated before
+        if(smallestHashGameValue != null){
+
+            // Transforming the smallest hash GameValue, to the current boards GameValue
+            return transformGameValue(smallestHash, smallestHashGameValue);
+        }
+
+        // if board not in database, return null
+        return null;
+    }
+
+    /**
+     * Returns a GameValue object for the current board object using the endgame database, or null
+     * @return GameValue object for the current board object, or null
+     */
+    public GameValue evaluate(){
+
+        // Checking if it's stored in the endgame database
+        GameValue gameValue = this.getFromDatabase();
+
+        // Found in database, so return
         if(gameValue != null){
             return gameValue;
         }
 
         ArrayList<Board> partitions = this.split();
 
-        // game isn't split into partitions, just evaluate the board
-        if(partitions.size() == 1){
+        // Game can be split into partitions, so check if the partitions are stored in the database
+        if(partitions.size() > 1){
 
-            // Second optimisation, using smallest hash value board w/ transformation
-            SmallestHashValue smallestHash = getSmallestHashValue();
-
-            // Storing the GameValue object for the smallest hash variation of our current Board
-            GameValue smallestHashGameValue = smallestHash.board.evaluate(0);
-            smallestHashGameValue.simplify();
-
-            // if filling database, store smallest hash game value in HashMap, to be stored at end
-            if(partitionsDB != null){
-
-                partitionsDB.put(smallestHash.hashValue, smallestHashGameValue);
-            }
-
-            // Transforming our smallestHash GameValue, to the current board GameValue
-            GameValue currentBoardGameValue = transformGameValue(smallestHash, smallestHashGameValue);
-
-            return currentBoardGameValue;
-
-        // board can be split into partitions, must evaluate partitions separately, and add them
-        } else {
-
-            // Idea, evaluate each of the sub-game partitions, to get the "best" moves in each
-            // Create a GameValue object to store the left and right values of all of the partitions
             GameValue gameValueTotal = new GameValue();
 
             for(Board partition: partitions){
 
-                GameValue partitionGameValue = partition.evaluate(partitionsDB);
-                partitionGameValue.simplify();
+                GameValue partitionGameValue = partition.getFromDatabase();
 
-                gameValueTotal.left.addAll(partitionGameValue.left);
-                gameValueTotal.right.addAll(partitionGameValue.right);
+                // Partition not found in database, return null as we can't form a gameValue for whole board
+                if(partitionGameValue == null){
+
+                    return null;
+
+                // GameValue is stored, add it to the total
+                } else {
+
+                    gameValueTotal.left.addAll(partitionGameValue.left);
+                    gameValueTotal.right.addAll(partitionGameValue.right);
+                }
             }
 
             // Simplifying to remove "dominated" options
             gameValueTotal.simplify();
 
-            // Storing the GameValue in the endgame database
-            if(partitionsDB != null){
-
-                // TODO- Decide how to store partitioned gameboards in
-                //partitionsDB.put(this.hashCode(), gameValueTotal);
-            }
             return gameValueTotal;
         }
+
+        // Not found in database, and isn't split into partitions, therefore can't evaluate so returning null
+        return null;
     }
 
     /**

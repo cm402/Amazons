@@ -133,7 +133,7 @@ public class ReportExamples {
 
         board.printBoard();
 
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate();
         System.out.println(gameValue.toString());
 
     }

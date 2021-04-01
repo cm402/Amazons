@@ -463,7 +463,12 @@ public class GameEngine {
                 int maxBoardSize = io.getMaxBoardSize();
                 int maxEmptySquares = io.getMaxEmptySquares();
 
-                databaseFiller.fillEndgameDatabaseOptimisation(maxBoardSize, runTime, maxEmptySquares);
+                databaseFiller.fillEndgameDatabase(maxBoardSize, runTime, maxEmptySquares);
+
+            }  else if(Args[0].equals("resetDatabase")){
+
+                FileInputOutput fio = new FileInputOutput();
+                fio.resetEndgameDatabase();
 
             } else if(Args[0].equals("databaseSize")){
 

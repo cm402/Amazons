@@ -90,7 +90,7 @@ public class AIPlayer extends Player implements Serializable {
         // evaluate the board object, into a GameValue
         Thread evaluateThread = new Thread(() -> {
 
-            GameValue gameValue = board.evaluate(null);
+            GameValue gameValue = board.evaluate();
             gameValue.simplify();
 
             if(isWhite){

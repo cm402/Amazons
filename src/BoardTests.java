@@ -354,7 +354,7 @@ public class BoardTests {
         minusOneStar.left.add(minusOne);
         minusOneStar.right.add(minusOne);
 
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate();
         assertTrue(gameValue.equals(minusOneStar));
     }
 
@@ -389,7 +389,7 @@ public class BoardTests {
         starMinus1.left.add(star);
         starMinus1.right.add(minusOne);
 
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate();
         assertTrue(gameValue.equals(starMinus1));
     }
 
@@ -413,7 +413,7 @@ public class BoardTests {
         whitePieces.get(0).setPosition(board.getSquare(1,0));
         board.addPiece(1, 0, whitePieces.get(0));
 
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate();
 
     }
 
@@ -428,7 +428,7 @@ public class BoardTests {
 
         GameValue zero = new GameValue();
 
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate();
 
         // testing empty board, should return "0"
         assertTrue(gameValue.equals(zero));
@@ -475,7 +475,7 @@ public class BoardTests {
         blackPieces.get(0).setPosition(board.getSquare(0, 1));
         board.addPiece(0, 1, blackPieces.get(0));
 
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate();
         GameValue five = getValue(5);
         assertTrue(gameValue.equals(five));
     }
@@ -561,13 +561,13 @@ public class BoardTests {
 
         // first evaluation, will actually evaluate the board
         long start = System.currentTimeMillis();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
         long end = System.currentTimeMillis();
         long firstEvaluationTime = end - start;
 
         // second evaluation, will retrieve from the partitions DB
         start = System.currentTimeMillis();
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue retrievedGameValue = board.evaluate();
         end = System.currentTimeMillis();
         long secondEvaluationTime = end - start;
 
@@ -695,8 +695,8 @@ public class BoardTests {
         board.burnSquare(2, 0);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
     }
@@ -732,8 +732,8 @@ public class BoardTests {
         board.addPiece(2, 0, whitePiece);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
     }
@@ -769,8 +769,8 @@ public class BoardTests {
         board.addPiece(1, 0, whitePiece);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
     }
@@ -806,8 +806,8 @@ public class BoardTests {
         board.addPiece(2, 1, whitePiece);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
     }
@@ -848,8 +848,8 @@ public class BoardTests {
         board.burnSquare(2, 1);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
 
@@ -891,8 +891,8 @@ public class BoardTests {
         board.burnSquare(1, 2);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
 
@@ -934,8 +934,8 @@ public class BoardTests {
         board.burnSquare(1, 1);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
     }
@@ -976,8 +976,8 @@ public class BoardTests {
         board.burnSquare(1, 1);
 
         HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        GameValue retrievedGameValue = board.evaluate(partitionsDB);
+        GameValue evaluatedGameValue = board.evaluate();
+        GameValue retrievedGameValue = board.evaluate();
 
         checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
 
@@ -1024,7 +1024,7 @@ public class BoardTests {
         board.burnSquare(1, 3);
         board.burnSquare(2, 3);
 
-        GameValue gameValue = board.evaluate(null);
+        GameValue gameValue = board.evaluate();
     }
 
 }

@@ -293,7 +293,7 @@ public class GameValueTests {
         whitePieces.get(0).setPosition(board1.getSquare(2,0));
         board1.addPiece(2, 0, whitePieces.get(0));
 
-        GameValue gameValue = board1.evaluate(null);
+        GameValue gameValue = board1.evaluate();
         assertEquals(gameValue.getOutcomeClass(), "First");
     }
 
@@ -316,7 +316,7 @@ public class GameValueTests {
         whitePieces.get(0).setPosition(board1.getSquare(2,0));
         board1.addPiece(2, 0, whitePieces.get(0));
 
-        GameValue gameValue = board1.evaluate(null);
+        GameValue gameValue = board1.evaluate();
         assertEquals(gameValue.getOutcomeClass(), "Left");
     }
 
@@ -339,7 +339,7 @@ public class GameValueTests {
         whitePieces.get(0).setPosition(board1.getSquare(1,0));
         board1.addPiece(1, 0, whitePieces.get(0));
 
-        GameValue gameValue = board1.evaluate(null);
+        GameValue gameValue = board1.evaluate();
         assertEquals(gameValue.getOutcomeClass(), "Right");
     }
 
@@ -362,7 +362,7 @@ public class GameValueTests {
         whitePieces.get(0).setPosition(board1.getSquare(2,0));
         board1.addPiece(2, 0, whitePieces.get(0));
 
-        GameValue gameValue = board1.evaluate(null);
+        GameValue gameValue = board1.evaluate();
         assertEquals(gameValue.getOutcomeClass(), "Second");
     }
 }
