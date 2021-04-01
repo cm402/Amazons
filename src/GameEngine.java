@@ -17,7 +17,6 @@ public class GameEngine {
 
         ArrayList<Player> players = new ArrayList<>();
         ArrayList<String> AITypes = new ArrayList<>();
-        HashMap<Integer, GameValue> partitionsDB = null;
         IO io = new IO();
 
         // if we have AI players, ask what type of AI to use
@@ -28,32 +27,15 @@ public class GameEngine {
 
         }
 
-        // if any of the AI players are "CGT" type, ask if the user
-        // wants to use the endgame database optimisation
-        for(String AIType: AITypes){
-
-            if(AIType.equals("CGT")){
-
-                // if "yes", then retrieve endgame database from file
-                if(io.getEndgameDatabasePreference()){
-
-                    FileInputOutput fio = new FileInputOutput();
-                    partitionsDB = fio.getPartitionsDB();
-
-                }
-                break;
-            }
-        }
-
         if(noOfHumanPlayers == 0){
 
-            players.add(new AIPlayer(true, AITypes.get(0), partitionsDB));
-            players.add(new AIPlayer(false, AITypes.get(1), partitionsDB));
+            players.add(new AIPlayer(true, AITypes.get(0)));
+            players.add(new AIPlayer(false, AITypes.get(1)));
 
         } else if(noOfHumanPlayers == 1){
 
             players.add(new HumanPlayer(true));
-            players.add(new AIPlayer(false, AITypes.get(0), partitionsDB));
+            players.add(new AIPlayer(false, AITypes.get(0)));
 
         } else {
 
@@ -479,12 +461,15 @@ public class GameEngine {
 
                 int runTime = io.getRunTime();
                 int maxBoardSize = io.getMaxBoardSize();
+                int maxEmptySquares = io.getMaxEmptySquares();
 
-                databaseFiller.fillEndgameDatabase(maxBoardSize, runTime);
+                databaseFiller.fillEndgameDatabaseOptimisation(maxBoardSize, runTime, maxEmptySquares);
 
             } else if(Args[0].equals("databaseSize")){
 
-                int noOfEntries = databaseFiller.getEndgameDatabaseSize();
+                FileInputOutput fio = new FileInputOutput();
+
+                int noOfEntries = fio.getEndgameDatabaseSize();
                 System.out.println("Endgame database has " + noOfEntries + " entries");
 
             } else if(Args[0].equals("reportExamples")){

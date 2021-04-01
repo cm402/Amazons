@@ -51,16 +51,15 @@ public class DatabaseFiller{
      * @param maxValue maximum value that an integer in the list can take
      * @return ArrayList of lists of integers, Size = (maxValue + 1) ^ n
      */
-    public ArrayList<int[]> generateCombinations(int n, int maxValue){
-
-        ArrayList<int[]> combinations = new ArrayList<>();
+    public void evaluateCombinations(int n, int maxValue, HashMap<Integer, GameValue> partitionsDB,
+                                     int rows, int columns, int maxEmptySquares, long finishTime){
 
         int[] combination = new int[n];
 
         for(int i = 0; i <= maxValue; i++){
-            generatorHelper(n, 0, i, maxValue, combination, combinations);
+            combinationsHelper(n, 0, i, maxValue, combination, partitionsDB, rows, columns, maxEmptySquares, finishTime);
         }
-        return combinations;
+
     }
 
     /**
@@ -70,155 +69,139 @@ public class DatabaseFiller{
      * @param value integer value to add to the list, at given position
      * @param maxValue maximum value that an integer in the list can take
      * @param combination list to add the value to
-     * @param combinations ArrayList of integer lists
      */
-    public void generatorHelper(int n, int position, int value, int maxValue, int[] combination, ArrayList<int[]> combinations){
+    public void combinationsHelper(int n, int position, int value, int maxValue, int[] combination,
+                                HashMap<Integer, GameValue> partitionsDB, int rows, int columns, int maxEmptySquares, long finishTime){
 
         combination[position] = value;
 
+        // Base case: we can now have enough values to generate & evaluate the board
         if(position == n - 1){
-            combinations.add(combination.clone());
+
+            if(System.currentTimeMillis() >= finishTime){
+
+                // Storing all evaluated partitions in Database
+                FileInputOutput fio = new FileInputOutput();
+                fio.fillDatabase(partitionsDB);
+
+                int sizeAfter = partitionsDB.size();
+                System.out.println("Database now has " + sizeAfter + " entries");
+                System.exit(0);
+            }
+
+            // Generating current board
+            Board board = generateBoard(combination, rows, columns, maxEmptySquares);
+
+            // Checking the board meets the specified criteria to evaluate
+            if(board != null){
+
+                // Evaluating current board, adding it to endgame database
+                board.printBoard();
+
+                GameValue gameValue = board.evaluate(partitionsDB);
+            }
 
         } else {
 
             for(int i = 0; i <= maxValue; i++){
-                generatorHelper(n, position + 1, i, maxValue, combination, combinations);
+                combinationsHelper(n, position + 1, i, maxValue, combination, partitionsDB, rows, columns, maxEmptySquares, finishTime);
             }
         }
 
     }
 
     /**
-     * Generating all possible board combinations, up to a specified size
-     * @param maxSize the maximum size of board
-     * @return ArrayList of board objects
+     * Generating a board object, given a list of integers
+     * which store information about the squares states.
+     * Returns null if we not a board that we want to evaluate
+     * e.g. over 2 pieces of 1 colour, only 1 square etc.
+     * @param combination list of integers indicating square states.
+     * @return Generated Board object, or null
      */
-    public ArrayList<Board> generateAllBoardCombinations(int maxSize){
+    public Board generateBoard(int[] combination, int rows, int columns, int maxEmptySquares){
 
-        ArrayList<Board> boards = new ArrayList<Board>();
+        Board board = new Board(columns, rows);
+        board.setupBoard();
 
-        // looping through all board size combinations, up to maximum size
-        for(int rows = 1; rows <= maxSize; rows++){
-            for(int columns = 1; columns <= maxSize; columns++){
+        // looping through each of the squares individual state values
+        for(int i = 0; i < combination.length; i++) {
 
-                // 1. Generate all the combinations of values 0-3 for the number of squares
-                int numberOfSquares = rows * columns;
-                ArrayList<int[]> combinations = generateCombinations(numberOfSquares, 3);
+            // using the array index, generating associated x & y co-ordinate values
+            int x = getXCoordinate(i + 1, columns);
+            int y = getYCoordinate(i + 1, columns);
 
-                // 2. Use these values to set squares for boards
+            int squareState = combination[i];
 
-                // looping through each of the square state combinations possible
-                for(int[] combination: combinations){
-
-                    Board board = new Board(columns, rows);
-                    board.setupBoard();
-
-                    // looping through each of the squares individual state values
-                    for(int i = 0; i < combination.length; i++) {
-
-                        // using the array index, generating associated x & y co-ordinate values
-                        int x = getXCoordinate(i + 1, columns);
-                        int y = getYCoordinate(i + 1, columns);
-
-                        int squareState = combination[i];
-
-                        // using square state value to set squares
-                        if (squareState == 1) {
-                            board.getSquare(x, y).burnSquare();
-                        } else if (squareState == 2) {
-                            Piece whitePiece = new Piece(true);
-                            whitePiece.setPosition(board.getSquare(x, y));
-                            board.getSquare(x, y).setAmazon(whitePiece);
-                        } else if (squareState == 3) {
-                            Piece blackPiece = new Piece(false);
-                            blackPiece.setPosition(board.getSquare(x, y));
-                            board.getSquare(x, y).setAmazon(blackPiece);
-                        }
-
-                    }
-
-                    ArrayList<Piece> whitePieces = board.getPieces(true);
-                    ArrayList<Piece> blackPieces = board.getPieces(false);
-
-                    // not storing partitions with
-                    // - over 2 pieces of either colour
-                    // - no pieces of any colour
-                    // - only 1 square
-                    // - no empty squares
-                    // - more than 7 empty squares
-                    if(whitePieces.size() > 2 || blackPieces.size() > 2
-                            || (whitePieces.size() == 0 && blackPieces.size() == 0)
-                            || board.getRowBoardSize() == 1 && board.getColumnBoardSize() == 1
-                            || !board.containsEmptySquares()
-                            || board.getNumberOfEmptySquares() > 7){
-                        continue;
-                    }
-                    boards.add(board);
-                }
+            // using square state value to set squares
+            if (squareState == 1) {
+                board.getSquare(x, y).burnSquare();
+            } else if (squareState == 2) {
+                Piece whitePiece = new Piece(true);
+                whitePiece.setPosition(board.getSquare(x, y));
+                board.getSquare(x, y).setAmazon(whitePiece);
+            } else if (squareState == 3) {
+                Piece blackPiece = new Piece(false);
+                blackPiece.setPosition(board.getSquare(x, y));
+                board.getSquare(x, y).setAmazon(blackPiece);
             }
+
         }
-        return boards;
+
+        ArrayList<Piece> whitePieces = board.getPieces(true);
+        ArrayList<Piece> blackPieces = board.getPieces(false);
+
+        // not storing partitions with
+        // - over 2 pieces of either colour
+        // - no pieces of any colour
+        // - only 1 square
+        // - no empty squares
+        // - more than specified maximum number of empty squares
+        if(whitePieces.size() > 2 || blackPieces.size() > 2
+                || (whitePieces.size() == 0 && blackPieces.size() == 0)
+                || board.getRowBoardSize() == 1 && board.getColumnBoardSize() == 1
+                || !board.containsEmptySquares()
+                || board.getNumberOfEmptySquares() > maxEmptySquares){
+            return null;
+        }
+
+        return board;
     }
 
     /**
-     * Gets the number of entries in the Endgame Database
-     * @return size of Endgame Database
+     * Filling the endgame Database, generating all the combinations
+     * and evaluating them one by one, rather than finding a list
+     * of all possible boards.
+     * @param maxSize maximum board size
+     * @param runTime number of minutes to evaluate for
+     * @param maxEmptySquares
      */
-    public int getEndgameDatabaseSize(){
+    public void fillEndgameDatabaseOptimisation(int maxSize, int runTime, int maxEmptySquares){
 
         // Retrieving the old Endgame database, from file
         FileInputOutput fio = new FileInputOutput();
-        HashMap<Integer, GameValue> endgameDB = fio.getPartitionsDB();
-
-        int noOfEntries = endgameDB.size();
-
-        return noOfEntries;
-    }
-
-
-
-    /**
-     * Filling the Endgame database with all possible GameValue objects for boards
-     * up to a specified size
-     * @param maxSize maximum board size
-     * @param runTime number of minutes to evaluate for
-     */
-    public void fillEndgameDatabase(int maxSize, int runTime){
-
-        // 1. Getting all possible board variations, up to specified size
-        ArrayList<Board> boards = generateAllBoardCombinations(maxSize);
-
-        // 2. Retrieving the old Endgame database, from file
-        FileInputOutput fio = new FileInputOutput();
-        //HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
         HashMap<Integer, GameValue> partitionsDB = fio.retrievePartitionsDatabase();
 
         int sizeBefore = partitionsDB.size();
         long start = System.currentTimeMillis();
         long finishTime = start + 1000 * 60 * runTime;
-        int boardCounter = 0;
 
-        // 3. Evaluating each board, storing the GameValues in the HashMap
-        for(Board board: boards){
+        // Looping through all board shapes, up to maximum size
+        for(int rows = 1; rows <= maxSize; rows++){
+            for(int columns = 1; columns <= maxSize; columns++){
 
+                // Generating all the combinations of values 0-3 for the number of squares
+                // in order to use these combinations to generate a board to evaluate
+                int numberOfSquares = rows * columns;
+                evaluateCombinations(numberOfSquares, 3, partitionsDB, rows, columns, maxEmptySquares, finishTime);
 
-            if(System.currentTimeMillis() >= finishTime){
-                break;
             }
-
-            // Note- if any variation already evaluated, will just retrieve
-            // from the HashMap, and won't re-evaluate the same board
-            System.out.println(boardCounter++);
-            board.printBoard();
-            board.evaluate(partitionsDB);
         }
 
-        // 4. Writing the newly updated Endgame Database
-        //fio.outputDB(partitionsDB);
         fio.fillDatabase(partitionsDB);
 
         int sizeAfter = partitionsDB.size();
         System.out.println("Database had " + sizeBefore + " entries.");
         System.out.println("It now has " + sizeAfter + " entries");
     }
+
 }

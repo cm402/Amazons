@@ -114,10 +114,10 @@ public class AITests {
         ArrayList<Piece> blackPiecesNew = new ArrayList<>();
         blackPiecesNew.add(blackPiece);
 
-        FileInputOutput fio = new FileInputOutput();
-        HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
+        //FileInputOutput fio = new FileInputOutput();
+        //HashMap<Integer, GameValue> partitionsDB = fio.getPartitionsDB();
 
-        AIPlayer player = new AIPlayer(false, "cgt", partitionsDB);
+        AIPlayer player = new AIPlayer(false, "cgt");
         player.addPieces(blackPiecesNew);
 
         Move move = player.getMove(biggerBoard);

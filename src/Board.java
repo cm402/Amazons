@@ -1002,13 +1002,14 @@ public class Board {
 
     /**
      * Queries the partitions DB for the current boards GameValue object
-     * @param partitionsDB HashMap of boards hashcodes to their associated GameValue objects
      * @return Either the current boards GameValue object, or null
      */
-    public GameValue getGameValue(HashMap<Integer, GameValue> partitionsDB){
+    public GameValue checkDatabase(){
 
         SmallestHashValue smallestHash = getSmallestHashValue();
-        GameValue smallestHashGameValue = partitionsDB.get(smallestHash.hashValue);
+        //GameValue smallestHashGameValue = partitionsDB.get(smallestHash.hashValue);
+        FileInputOutput fio = new FileInputOutput();
+        GameValue smallestHashGameValue = fio.queryDatabase(smallestHash.hashValue);
 
         // if some variation of the board has been evaluated before
         if(smallestHashGameValue != null){
@@ -1073,20 +1074,17 @@ public class Board {
 
     /**
      * Returns a GameValue object for the current board object, possibly using the endgame database
-     * @param partitionsDB HashMap used as the Endgame Database
+     * @param partitionsDB HashMap of partitions gamevalues, used for filling the database, null if called by a player
      * @return GameValue object for the current board object
      */
     public GameValue evaluate(HashMap<Integer, GameValue> partitionsDB){
 
         // First optimisation, check endgame database
-        if(partitionsDB != null){
+        GameValue gameValue = checkDatabase();
 
-            GameValue gameValue = getGameValue(partitionsDB);
-
-            // Check if GameValue already stored in partitions DB
-            if(gameValue != null){
-                return gameValue;
-            }
+        // If found in database, just return
+        if(gameValue != null){
+            return gameValue;
         }
 
         ArrayList<Board> partitions = this.split();
@@ -1101,11 +1099,9 @@ public class Board {
             GameValue smallestHashGameValue = smallestHash.board.evaluate(0);
             smallestHashGameValue.simplify();
 
+            // if filling database, store smallest hash game value in HashMap, to be stored at end
             if(partitionsDB != null){
 
-                //smallestHashGameValue.removeDepth();
-
-                // storing the GameValue in the database, so don't have to evaluate it next time
                 partitionsDB.put(smallestHash.hashValue, smallestHashGameValue);
             }
 
@@ -1136,9 +1132,8 @@ public class Board {
             // Storing the GameValue in the endgame database
             if(partitionsDB != null){
 
-                //gameValueTotal.removeDepth();
-
-                partitionsDB.put(this.hashCode(), gameValueTotal);
+                // TODO- Decide how to store partitioned gameboards in
+                //partitionsDB.put(this.hashCode(), gameValueTotal);
             }
             return gameValueTotal;
         }

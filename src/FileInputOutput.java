@@ -9,59 +9,6 @@ import java.sql.*;
  */
 public class FileInputOutput {
 
-    /**
-     * Outputting the Endgame Database to file
-     * @param partitionsDB Endgame Database, HashMap of evaluated boards GameValues
-     */
-    public void outputDB(HashMap<Integer, GameValue> partitionsDB){
-
-        try {
-
-            FileOutputStream fileOutputStream = new FileOutputStream(new File("partitionsDB.txt"));
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
-            objectOutputStream.writeObject(partitionsDB);
-
-            objectOutputStream.close();
-            fileOutputStream.close();
-
-        } catch(FileNotFoundException e){
-            System.out.println(e);
-        } catch(IOException e){
-            System.out.println(e);
-        }
-
-    }
-
-    /**
-     * Retrieving the Endgame Database from file
-     * @return HashMap of evaluated boards GameValues
-     */
-    public HashMap<Integer, GameValue> getPartitionsDB(){
-
-        try{
-            FileInputStream fileInputStream = new FileInputStream(new File("partitionsDB.txt"));
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-            // Suppressing "unchecked" warning from casting the object read in at run-time, to the correct type
-            @SuppressWarnings("unchecked")
-            HashMap<Integer, GameValue> partitionsDB = (HashMap<Integer, GameValue>) objectInputStream.readObject();
-
-            objectInputStream.close();
-            fileInputStream.close();
-
-            return partitionsDB;
-
-        } catch(FileNotFoundException e){
-            System.out.println(e);
-        } catch(IOException e){
-            System.out.println(e);
-        } catch (ClassNotFoundException e){
-            System.out.println(e);
-        }
-        return null;
-    }
-
     String databaseURL = "jdbc:h2:file:" + "./endgameDatabase";
 
     /**
@@ -152,6 +99,123 @@ public class FileInputOutput {
         }
 
         return partitionsDB;
+    }
+
+    /**
+     * Getting the number of entries in the endgame database
+     * @return
+     */
+    public int getEndgameDatabaseSize(){
+
+        try{
+
+            Connection connection = DriverManager.getConnection(
+                    databaseURL, "connorMacfarlane", "password");
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM testDatabase");
+
+            int rowCount = 0;
+
+            while(resultSet.next()){
+
+                rowCount++;
+            }
+
+            return rowCount;
+
+        } catch (Exception e ){
+            System.out.println(e);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Queries the database for a GameValue associated with the
+     * specified key. If found, returns GameValue, otherwise null
+     * @param key key to check database for
+     * @return Either GameValue associated with key, or null
+     */
+    public GameValue queryDatabase(int key){
+
+        try{
+
+            Connection connection = DriverManager.getConnection(databaseURL, "connorMacfarlane", "password");
+
+            Statement statement = connection.createStatement();
+            String query = "SELECT * FROM testDatabase WHERE key = " + String.valueOf(key);
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            // Check if value found
+            if(resultSet.next()){
+
+                Blob blob = resultSet.getBlob("value");
+
+                int blobLength = (int) blob.length();
+                byte[] blobAsBytes = blob.getBytes(1, blobLength);
+                blob.free();
+
+                ByteArrayInputStream baip = new ByteArrayInputStream(blobAsBytes);
+                ObjectInputStream ois = new ObjectInputStream(baip);
+
+                GameValue gameValue = (GameValue) ois.readObject();
+
+                resultSet.close();
+                connection.close();
+                return gameValue;
+
+            } else {
+
+                resultSet.close();
+                connection.close();
+                return null;
+            }
+
+        } catch (Exception e ){
+            System.out.println(e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Queries the database for a GameValue associated with the
+     * specified key. If found, returns GameValue, otherwise null
+     * @param key key to check database for
+     * @return Either GameValue associated with key, or null
+     */
+    public GameValue addGameValueToDatabase(int key, GameValue value){
+
+        try{
+
+            Connection connection = DriverManager.getConnection(databaseURL, "connorMacfarlane", "password");
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("DELETE FROM testDatabase");
+
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO testDatabase (key, value) VALUES (?, ?)");
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(value);
+
+            byte[] gameValueAsBytes = baos.toByteArray();
+            ByteArrayInputStream bais = new ByteArrayInputStream(gameValueAsBytes);
+
+            preparedStatement.setInt(1, key);
+
+            preparedStatement.setBinaryStream(2, bais, gameValueAsBytes.length);
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e ){
+            System.out.println(e);
+        }
+
+        return null;
     }
 
     /**

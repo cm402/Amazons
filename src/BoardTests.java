@@ -575,36 +575,7 @@ public class BoardTests {
         assertTrue(secondEvaluationTime < firstEvaluationTime);
     }
 
-    /**
-     * Testing storing and retrieving the Endgame Database from file works correctly.
-     */
-    @Test
-    public void testPartitionsDBSaved(){
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-
-        // first evaluation, will actually evaluate the board
-        long start = System.currentTimeMillis();
-        GameValue evaluatedGameValue = board.evaluate(partitionsDB);
-        long end = System.currentTimeMillis();
-        long firstEvaluationTime = end - start;
-
-        // Storing in the endgame database
-        FileInputOutput fio = new FileInputOutput();
-        fio.outputDB(partitionsDB);
-
-        // Retrieving the endgame database, from file
-        HashMap<Integer, GameValue> retrievedPartitionsDB = fio.getPartitionsDB();
-
-        // second evaluation, will retrieve from the partitions DB
-        start = System.currentTimeMillis();
-        GameValue retrievedGameValue = board.evaluate(retrievedPartitionsDB);
-        end = System.currentTimeMillis();
-        long secondEvaluationTime = end - start;
-
-        assertTrue(evaluatedGameValue.equals(retrievedGameValue));
-        assertTrue(secondEvaluationTime < firstEvaluationTime);
-    }
 
     /**
      * Testing that the rotatePoint() method works correctly

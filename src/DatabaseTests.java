@@ -19,17 +19,6 @@ public class DatabaseTests {
 
     String url = "jdbc:h2:file:" + "./testDatabase";
 
-    /* CREATE TABLE endgameDatabase (
-            key  INT,
-            value MEDIUMBLOB
-            PRIMARY KEY (key)
-       );
-
-       SELECT * FROM endgameDatabase
-
-       java -jar h2*.jar to open console window
-    */
-
     /**
      * Testing that we can connect to the database successfully.
      */
@@ -49,7 +38,7 @@ public class DatabaseTests {
     }
 
     /**
-     * Testing that we can connect to the database on file successfully.
+     * Testing that we can create and connect to a database on file successfully.
      */
     @Test
     public void testConnectionFile(){
@@ -66,37 +55,6 @@ public class DatabaseTests {
     }
 
     /**
-     * Creating the endgame database file and adding a table
-     * TODO- move this to FileInputOutput, allowing the user to reset the database
-     */
-    @Test
-    public void createEndgameDatabase(){
-
-        String databaseURL = "jdbc:h2:file:" + "./src/endgameDatabase";
-
-        try{
-
-            Connection connection = DriverManager.getConnection(databaseURL, "connorMacfarlane", "password");
-
-            String createTable = "CREATE TABLE testDatabase (" +
-                    "key  INT," +
-                    "value MEDIUMBLOB," +
-                    "PRIMARY KEY (key)" +
-                    ");";
-
-            Statement statement = connection.createStatement();
-
-            statement.executeUpdate("DROP TABLE IF EXISTS testDatabase");
-            statement.executeUpdate(createTable);
-
-            connection.close();
-
-        } catch (SQLException e ){
-            System.out.println(e);
-        }
-    }
-
-    /**
      * Testing that we can create a table in the database
      */
     @Test
@@ -104,8 +62,7 @@ public class DatabaseTests {
 
         try{
 
-            Connection connection = DriverManager.getConnection(
-                    url, "connorMacfarlane", "password");
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
             String createTable = "CREATE TABLE testDatabase (" +
                                     "key  INT," +
@@ -126,20 +83,19 @@ public class DatabaseTests {
     }
 
     /**
-     * Testing that we can create a table in the database
+     * Testing that we can insert a row into the database
      */
     @Test
     public void testInsert(){
 
         try{
 
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
             String insertStatement = "INSERT INTO testDatabase (key) VALUES (1)";
 
             Statement statement = connection.createStatement();
-            int result = statement.executeUpdate(insertStatement);
+            statement.executeUpdate(insertStatement);
 
             connection.close();
 
@@ -149,36 +105,14 @@ public class DatabaseTests {
     }
 
     /**
-     * Testing that we can create a table in the database
-     */
-    @Test
-    public void testClearDatabase(){
-
-        try{
-
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
-
-            Statement statement = connection.createStatement();
-            int result = statement.executeUpdate("DELETE FROM testDatabase");
-
-            connection.close();
-
-        } catch (SQLException e ){
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * Testing that we can read from a table
+     * Testing that we can return a whole table from the database
      */
     @Test
     public void testSelect(){
 
         try{
 
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
             String selectQuery = "SELECT * FROM testDatabase";
 
@@ -200,6 +134,26 @@ public class DatabaseTests {
     }
 
     /**
+     * Testing that we can clear a table in the database
+     */
+    @Test
+    public void testClearDatabase(){
+
+        try{
+
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("DELETE FROM testDatabase");
+
+            connection.close();
+
+        } catch (SQLException e ){
+            System.out.println(e);
+        }
+    }
+
+    /**
      * Testing inserting a row into the database, with a testing
      * key value of 1, and a GameValue object
      */
@@ -210,18 +164,17 @@ public class DatabaseTests {
 
             GameValue gameValue = new GameValue();
             gameValue.left.add(new GameValue());
-            gameValue.right.add(new GameValue());
+            //gameValue.right.add(new GameValue());
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(gameValue);
 
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
             byte[] gameValueAsBytes = baos.toByteArray();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO testDatabase (key, value) VALUES (1, ?)");
+                    "INSERT INTO testDatabase (key, value) VALUES (2, ?)");
             ByteArrayInputStream bais = new ByteArrayInputStream(gameValueAsBytes);
 
             preparedStatement.setBinaryStream(1, bais, gameValueAsBytes.length);
@@ -235,7 +188,7 @@ public class DatabaseTests {
     }
 
     /**
-     * Testing retrieving a row from the database, and convert
+     * Testing retrieving all rows from the database, and convert
      * the value back to our original object type, a GameValue
      */
     @Test
@@ -243,8 +196,7 @@ public class DatabaseTests {
 
         try{
 
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
             Statement statement = connection.createStatement();
 
@@ -275,43 +227,49 @@ public class DatabaseTests {
         }
     }
 
-
     /**
-     * Testing that filling the endgame database with
-     * all board combinations up to 2x2, and then retrieving
-     * this from the database, returns the same HashMap.
+     * Testing retrieving a specific keys row from the database, and convert
+     * the value back to our original object type, a GameValue
      */
     @Test
-    public void testFillingAndRetrievingDatabase(){
+    public void testQueryForKey(){
 
-        DatabaseFiller databaseFiller = new DatabaseFiller();
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
+        try{
 
-        // Getting all possible board variations, up to specified size
-        ArrayList<Board> boards = databaseFiller.generateAllBoardCombinations(2);
+            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
-        // Evaluating each board, storing the GameValues in the HashMap
-        for(Board board: boards){
+            Statement statement = connection.createStatement();
 
-            board.evaluate(partitionsDB);
-        }
+            int key = 3;
+            String query = "SELECT * FROM testDatabase WHERE key = " + String.valueOf(key);
 
-        FileInputOutput fio = new FileInputOutput();
+            ResultSet resultSet = statement.executeQuery(query);
 
-        fio.fillDatabase(partitionsDB);
+            // Check if value found
+            if(resultSet.next()){
 
-        HashMap<Integer, GameValue> retrievedPartitionsDB = fio.retrievePartitionsDatabase();
+                Blob blob = resultSet.getBlob("value");
 
-        // Checking that the partitions HashMap is the same before and
-        // after it goes into the Database
-        assertEquals(partitionsDB.size(), retrievedPartitionsDB.size());
+                int blobLength = (int) blob.length();
+                byte[] blobAsBytes = blob.getBytes(1, blobLength);
+                blob.free();
 
-        for(int key: partitionsDB.keySet()) {
+                ByteArrayInputStream baip = new ByteArrayInputStream(blobAsBytes);
+                ObjectInputStream ois = new ObjectInputStream(baip);
 
-            GameValue gameValue = partitionsDB.get(key);
-            GameValue retrievedGameValue = partitionsDB.get(key);
+                GameValue gameValue = (GameValue) ois.readObject();
 
-            assertTrue(gameValue.equals(retrievedGameValue));
+                int returnedKey = resultSet.getInt("key");
+                System.out.println(returnedKey + " " + gameValue);
+            } else {
+
+                System.out.print("key not found");
+            }
+            resultSet.close();
+            connection.close();
+
+        } catch (Exception e ){
+            System.out.println(e);
         }
     }
 

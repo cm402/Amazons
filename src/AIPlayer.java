@@ -14,7 +14,6 @@ import java.util.Random;
 public class AIPlayer extends Player implements Serializable {
 
     private static final long serialVersionUID = 4L;
-    HashMap<Integer, GameValue> partitionsDB;
     String AIType;
 
     public AIPlayer(boolean white){
@@ -22,16 +21,9 @@ public class AIPlayer extends Player implements Serializable {
         this.AIType = "Heuristic";
     }
 
-    public AIPlayer(boolean white, String AIType, HashMap<Integer, GameValue> partitionsDB){
+    public AIPlayer(boolean white, String AIType){
         super(white, false);
         this.AIType = AIType;
-        this.partitionsDB = partitionsDB;
-    }
-
-    public AIPlayer(boolean white, HashMap<Integer, GameValue> partitionsDB) {
-        super(white, false);
-        this.partitionsDB = partitionsDB;
-        AIType = "Heuristic";
     }
 
     public void setAIType(String AIType){
@@ -98,7 +90,7 @@ public class AIPlayer extends Player implements Serializable {
         // evaluate the board object, into a GameValue
         Thread evaluateThread = new Thread(() -> {
 
-            GameValue gameValue = board.evaluate(partitionsDB);
+            GameValue gameValue = board.evaluate(null);
             gameValue.simplify();
 
             if(isWhite){

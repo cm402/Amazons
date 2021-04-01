@@ -461,6 +461,29 @@ public class IO {
     }
 
     /**
+     * Getting how maximum number of empty squares on a board
+     * for filling the endgame database
+     * @return maximum board size
+     */
+    public int getMaxEmptySquares(){
+
+        while(true){
+
+            int maxBoardSize = getUserInputInteger("Please enter how the maximum number of empty squares for each board");
+
+            if(maxBoardSize < 2 || maxBoardSize > 10){
+
+                System.out.println("Please enter a valid number of simulations (2 - 10)");
+                continue;
+
+            } else {
+
+                return maxBoardSize;
+            }
+        }
+    }
+
+    /**
      * Getting the dimensions for a partition board, from the user
      * @param setup Partition setup object, to be updated
      */
