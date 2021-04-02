@@ -1,5 +1,7 @@
 import java.util.ArrayList;
-import java.util.HashMap;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 /**
  * Used to run the Amazons program, containing methods to play the game,
@@ -456,6 +458,15 @@ public class GameEngine {
 
                 int firstPlayerWins = engine.simulateGames(noOfSimulations, AITypes.get(0), AITypes.get(1));
                 System.out.println(AITypes.get(0) + " won " + firstPlayerWins + " games out of " + noOfSimulations + " against " + AITypes.get(1));
+
+            } else if(Args[0].equals("unitTests")){
+
+                Result result = JUnitCore.runClasses(BoardTests.class);
+
+                for(Failure failure: result.getFailures()){
+
+                    System.out.println(failure.toString());
+                }
 
             } else if(Args[0].equals("fillDatabase")){
 

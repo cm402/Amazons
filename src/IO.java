@@ -428,7 +428,7 @@ public class IO {
 
             if(runTime < 0 || runTime > 600){
 
-                System.out.println("Please enter a valid number of simulations (0 - 600)");
+                System.out.println("Please enter a run time (0 - 600)");
                 continue;
 
             } else {

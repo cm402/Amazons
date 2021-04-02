@@ -77,15 +77,33 @@ public class AIPlayer extends Player implements Serializable {
 
     /**
      * Returns a move that is chosen using the Combinatorial Game Theory strategy,
-     * of evaluating a board into a GameValue, coupled with the endgame database optimisations
+     * of evaluating a board into a GameValue, coupled with the endgame database.
+     * Attempts to get a GameValue from the endgame database, if not found then
+     * using the Monte-Carlo strategy to return a move instead.
      * @param board current board
      * @return selected move
      */
     public Move getCGTMove(Board board){
 
+        GameValue gameValue = board.evaluate();
+
+        if(gameValue != null){
+
+            if(this.isWhite()){
+                return gameValue.right.get(0).move;
+            } else {
+                return gameValue.left.get(0).move;
+            }
+
+        } else {
+
+            return getMonteCarloMove(board);
+        }
+
+        /*
+
         final boolean isWhite = this.isWhite();
         final Move[] gameValueMove = new Move[1];
-
         // Creating a new thread that executes a lambda function to
         // evaluate the board object, into a GameValue
         Thread evaluateThread = new Thread(() -> {
@@ -129,6 +147,7 @@ public class AIPlayer extends Player implements Serializable {
 
         // in case of an exception, just return a heuristic move
         return getHeuristicMove(board);
+        */
     }
 
     /**
