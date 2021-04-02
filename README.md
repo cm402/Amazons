@@ -6,6 +6,18 @@ https://en.wikipedia.org/wiki/Game_of_the_Amazons
 # Run Instructions
 In order to compile and run the program, you must be within the "src" folder.
 
-Compile with: "javac -cp ".:../lib/junit-4.13.2.jar:../lib/h2-1.4.200.jar" *.java" 
+Compile with: "javac -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../lib/h2-1.4.200.jar" *.java" 
 
-Run using: "java -cp ".:../lib/junit-4.13.2.jar:../lib/h2-1.4.200.jar" GameEngine"
+Run using: "java -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../lib/h2-1.4.200.jar" GameEngine"
+
+Command Line Argument options-
+
+"experiments": allows the user to specify 2 AI Types to run some simulation games with
+
+"unitTests": runs the unit tests
+
+"fillDatabase": fills the endgame database with partitions up to specified size
+
+"resetDatabase": drops the current database table, and creates a new one
+
+"databaseSize": checks the number of entries in the endgame database
