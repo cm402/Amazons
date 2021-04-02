@@ -10,7 +10,7 @@ Compile with: "javac -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:
 
 Run using: "java -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../lib/h2-1.4.200.jar" GameEngine"
 
-Command Line Argument options-
+# Command Line Argument options
 
 "experiments": allows the user to specify 2 AI Types to run some simulation games with
 
