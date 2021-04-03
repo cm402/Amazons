@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.ArrayList;
 import org.junit.BeforeClass;
@@ -328,41 +329,39 @@ public class BoardTests {
     }
 
     /**
-     * Testing evaluating of a 4 square long line board partition
-     *  with one of each piece, which evaluates to "-1*"
+     * Testing evaluating of a 3 square line board partition
+     *  with one of each piece, which evaluates to "1"
      */
     @Test
-    public void testEvalutate(){
+    public void testEvaluate(){
 
-        Board board = new Board(4, 1);
+        Board board = new Board(3, 1);
         board.setupBoard();
 
         ArrayList<Piece> blackPieces = new ArrayList<Piece>();
         blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board.getSquare(0,0));
-        board.addPiece(0, 0, blackPieces.get(0));
+        blackPieces.get(0).setPosition(board.getSquare(1,0));
+        board.addPiece(1, 0, blackPieces.get(0));
 
         ArrayList<Piece> whitePieces = new ArrayList<Piece>();
         whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board.getSquare(2,0));
-        board.addPiece(2, 0, whitePieces.get(0));
+        whitePieces.get(0).setPosition(board.getSquare(0,0));
+        board.addPiece(0, 0, whitePieces.get(0));
 
         GameValue zero = new GameValue();
-        GameValue minusOne = new GameValue();
-        minusOne.right.add(zero);
-        GameValue minusOneStar = new GameValue();
-        minusOneStar.left.add(minusOne);
-        minusOneStar.right.add(minusOne);
+        GameValue one = new GameValue();
+        one.left.add(zero);
+
 
         GameValue gameValue = board.evaluate();
-        assertTrue(gameValue.equals(minusOneStar));
+        assertTrue(gameValue.equals(one));
     }
 
     /**
      * Testing evaluating a 3x2 partition, with 1 of each piece
      */
     @Test
-    public void testEvalutate2(){
+    public void testEvaluate2(){
 
         Board board = new Board(3, 2);
         board.setupBoard();
@@ -394,7 +393,7 @@ public class BoardTests {
     }
 
     /**
-     * Testing evaluating a 3x3 board, takes roughly 20 seconds, no asserts used
+     * Testing evaluating a 3x3 board
      */
     @Test
     public void testEvaluateLarger(){
@@ -414,7 +413,6 @@ public class BoardTests {
         board.addPiece(1, 0, whitePieces.get(0));
 
         GameValue gameValue = board.evaluate();
-
     }
 
     /**
@@ -423,14 +421,37 @@ public class BoardTests {
     @Test
     public void testEvaluateEmpty(){
 
-        Board board = new Board(3, 2);
+        Board board = new Board(2, 2);
         board.setupBoard();
 
         GameValue zero = new GameValue();
 
         GameValue gameValue = board.evaluate();
 
-        // testing empty board, should return "0"
+        assertTrue(gameValue.equals(zero));
+    }
+
+    /**
+     * Testing evaluating an full board, should evaluate to "0"
+     */
+    @Test
+    public void testEvaluateFull(){
+
+        Board board = new Board(2, 2);
+        board.setupBoard();
+
+        board.getSquare(0,0).burnSquare();
+        board.getSquare(1,0).burnSquare();
+        board.getSquare(1, 1).burnSquare();
+
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(1, 0));
+        board.addPiece(1, 0, whitePiece);
+
+        GameValue zero = new GameValue();
+
+        GameValue gameValue = board.evaluate();
+
         assertTrue(gameValue.equals(zero));
     }
 
@@ -552,32 +573,6 @@ public class BoardTests {
     }
 
     /**
-     * Testing the speed increase shown by using the Endgame Database optimisation
-     */
-    @Test
-    public void testPartitionsDBSpeed(){
-
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-
-        // first evaluation, will actually evaluate the board
-        long start = System.currentTimeMillis();
-        GameValue evaluatedGameValue = board.evaluate();
-        long end = System.currentTimeMillis();
-        long firstEvaluationTime = end - start;
-
-        // second evaluation, will retrieve from the partitions DB
-        start = System.currentTimeMillis();
-        GameValue retrievedGameValue = board.evaluate();
-        end = System.currentTimeMillis();
-        long secondEvaluationTime = end - start;
-
-        assertTrue(evaluatedGameValue.equals(retrievedGameValue));
-        assertTrue(secondEvaluationTime < firstEvaluationTime);
-    }
-
-
-
-    /**
      * Testing that the rotatePoint() method works correctly
      */
     @Test
@@ -618,7 +613,11 @@ public class BoardTests {
      */
     public boolean containsMove(Move move, ArrayList<Move> validMoves){
 
+        System.out.println("move =  " + move);
+
         for(Move validMove: validMoves){
+
+            System.out.println("valid move = " + validMove);
 
             if(move.toString().equals(validMove.toString())){
                 return true;
@@ -629,11 +628,18 @@ public class BoardTests {
     }
 
     /**
-     * Checking that both the evaluated and retrieved moves are valid, given the board
-     * @param evaluatedGameValue The GameValue object evaluated at run-time
-     * @param retrievedGameValue The transformed GameValue object retrieved from the Endgame Database
+     * Checking that all the moves for left and right stored in a game value object are valid
+     * @param gameValue The transformed GameValue object retrieved from the Endgame Database
      */
-    public void checkMoves(GameValue evaluatedGameValue, GameValue retrievedGameValue, Board board,
+
+    /**
+     * Checking that all the moves for left and right stored in a game value object are valid
+     * @param gameValue GameValue object to check moves of
+     * @param board board that we are checking against
+     * @param blackPieces black pieces on the board
+     * @param whitePieces white pieces on the board
+     */
+    public void checkMoves(GameValue gameValue, Board board,
                            ArrayList<Piece> blackPieces, ArrayList<Piece> whitePieces){
 
         AIPlayer blackPlayer = new AIPlayer(false);
@@ -644,20 +650,16 @@ public class BoardTests {
         ArrayList<Move> blackValidMoves = blackPlayer.getValidMoves(board);
         ArrayList<Move> whiteValidMoves = whitePlayer.getValidMoves(board);
 
-        for(int i = 0; i < evaluatedGameValue.left.size(); i++){
+        for(int i = 0; i < gameValue.left.size(); i++){
 
-            Move evaluatedBlackMove = evaluatedGameValue.left.get(i).move;
-            Move retrievedBlackMove = retrievedGameValue.left.get(i).move;
-            assertTrue(containsMove(evaluatedBlackMove, blackValidMoves));
-            assertTrue(containsMove(retrievedBlackMove, blackValidMoves));
+            Move blackMove = gameValue.left.get(i).move;
+            assertTrue(containsMove(blackMove, blackValidMoves));
         }
 
-        for(int i = 0; i < evaluatedGameValue.right.size(); i++){
+        for(int i = 0; i < gameValue.right.size(); i++){
 
-            Move evaluatedWhiteMove = evaluatedGameValue.right.get(i).move;
-            Move retrievedWhiteMove = retrievedGameValue.right.get(i).move;
-            assertTrue(containsMove(evaluatedWhiteMove, whiteValidMoves));
-            assertTrue(containsMove(retrievedWhiteMove, whiteValidMoves));
+            Move whiteMove = gameValue.right.get(i).move;
+            assertTrue(containsMove(whiteMove, whiteValidMoves));
         }
     }
 
@@ -694,11 +696,9 @@ public class BoardTests {
         board.burnSquare(0, 0);
         board.burnSquare(2, 0);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        GameValue gameValue = board.evaluate();
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        checkMoves(gameValue, board, blackPieces, whitePieces);
     }
 
     /**
@@ -731,11 +731,9 @@ public class BoardTests {
         whitePiece.setPosition(board.getSquare(2,0));
         board.addPiece(2, 0, whitePiece);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        GameValue gameValue = board.evaluate();
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        checkMoves(gameValue, board, blackPieces, whitePieces);
     }
 
     /**
@@ -768,11 +766,9 @@ public class BoardTests {
         whitePiece.setPosition(board.getSquare(1,0));
         board.addPiece(1, 0, whitePiece);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        GameValue gameValue = board.evaluate();
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        checkMoves(gameValue, board, blackPieces, whitePieces);
     }
 
     /**
@@ -805,11 +801,11 @@ public class BoardTests {
         whitePiece.setPosition(board.getSquare(2,1));
         board.addPiece(2, 1, whitePiece);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        System.out.println("test move 3");
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        GameValue gameValue = board.evaluate();
+
+        checkMoves(gameValue, board, blackPieces, whitePieces);
     }
 
     /**
@@ -847,11 +843,9 @@ public class BoardTests {
         board.burnSquare(0, 2);
         board.burnSquare(2, 1);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        GameValue gameValue = board.evaluate();
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        checkMoves(gameValue, board, blackPieces, whitePieces);
 
     }
 
@@ -890,11 +884,9 @@ public class BoardTests {
         board.burnSquare(0, 2);
         board.burnSquare(1, 2);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        GameValue gameValue = board.evaluate();
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        checkMoves(gameValue, board, blackPieces, whitePieces);
 
     }
 
@@ -933,11 +925,9 @@ public class BoardTests {
         board.burnSquare(0, 2);
         board.burnSquare(1, 1);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        GameValue gameValue = board.evaluate();
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        checkMoves(gameValue, board, blackPieces, whitePieces);
     }
 
     /**
@@ -975,11 +965,9 @@ public class BoardTests {
         board.burnSquare(0, 2);
         board.burnSquare(1, 1);
 
-        HashMap<Integer, GameValue> partitionsDB = new HashMap<>();
-        GameValue evaluatedGameValue = board.evaluate();
-        GameValue retrievedGameValue = board.evaluate();
+        GameValue gameValue = board.evaluate();
 
-        checkMoves(evaluatedGameValue, retrievedGameValue, board, blackPieces, whitePieces);
+        checkMoves(gameValue, board, blackPieces, whitePieces);
 
     }
 

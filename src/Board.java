@@ -592,41 +592,22 @@ public class Board {
     }
 
     /**
-     * Checks if the board has any empty squares
-     * @return true if board has an empty square, false otherwise
+     * Checking if all the squares on the board are burnt
+     * @return true if all squares are burnt, false otherwise
      */
-    public boolean containsEmptySquares(){
+    public boolean allSquaresBurnt(){
 
         for(int x = 0; x < this.getColumnBoardSize(); x++){
             for(int y = 0; y < this.getRowBoardSize(); y++){
 
-                if(this.isSquareEmpty(this.getSquare(x, y))){
+                // found un-burnt square, return false
+                if(!this.getSquare(x, y).isBurnt()){
 
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
-    }
-
-    /**
-     * Returns the number of burnt squares, on "this" board
-     * @return number of burnt squares
-     */
-    public int getNumberOfBurntSquares(){
-
-        int burntSquares = 0;
-
-        for(int x = 0; x < this.getColumnBoardSize(); x++){
-            for(int y = 0; y < this.getRowBoardSize(); y++){
-
-                if(this.getSquare(x, y).isBurnt()){
-
-                    burntSquares++;
-                }
-            }
-        }
-        return burntSquares;
+        return true;
     }
 
     /**
@@ -1005,7 +986,7 @@ public class Board {
      * @param depth Depth of current recursive call, used for testing purposes
      * @return GameValue object for the current board object
      */
-    private GameValue evaluate(int depth){
+    public GameValue evaluate(int depth){
 
         ArrayList<Move> blackMoves = this.getAllPossibleMoves(false);
         ArrayList<Move> whiteMoves = this.getAllPossibleMoves(true);

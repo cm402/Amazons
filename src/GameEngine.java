@@ -463,9 +463,13 @@ public class GameEngine {
 
                 Result result = JUnitCore.runClasses(BoardTests.class);
 
+                System.out.println(result.getRunCount() + " tests completed");
+                System.out.println(result.getRunCount() - result.getFailureCount() + " tests successful");
+                System.out.println(result.getFailureCount() + " tests failed");
+
                 for(Failure failure: result.getFailures()){
 
-                    System.out.println(failure.toString());
+                    System.out.println(failure.getTestHeader() + failure.getTrimmedTrace());
                 }
 
             } else if(Args[0].equals("fillDatabase")){

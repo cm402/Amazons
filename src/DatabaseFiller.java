@@ -85,12 +85,10 @@ public class DatabaseFiller{
 
         // not storing partitions with
         // - over 2 pieces of either colour
-        // - no pieces of any colour
-        // - only 1 square
+        // - all squares burnt
         // - more than specified maximum number of empty squares
         if(whitePieces.size() > 2 || blackPieces.size() > 2
-                || (whitePieces.size() == 0 && blackPieces.size() == 0)
-                || board.getRowBoardSize() == 1 && board.getColumnBoardSize() == 1
+                || board.allSquaresBurnt()
                 || board.getNumberOfEmptySquares() > maxEmptySquares){
             return null;
         }
