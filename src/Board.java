@@ -340,10 +340,11 @@ public class Board {
 
     /**
      * Splits the current board object into partitions, if possible due to burnt rows or columns.
-     * Utilises Connected-Components Graph Algorithm
+     * Utilises Connected-Components Graph Algorithm.
+     * Also stores the partitions starting squares in the list passed into the method.
      * @return ArrayList of board partitions, or our original board
      */
-    public ArrayList<Board> split() {
+    public ArrayList<Board> split(ArrayList<Square> partitionStartSquares) {
 
         ArrayList<Board> partitions = new ArrayList<>();
 
@@ -420,6 +421,9 @@ public class Board {
 
             // 3.2. Use dimensions to create a new board partition
             partitions.add(boardCopy.newBoard(minX, minY, maxX, maxY, i));
+
+            // Adding the partitions starting square location to the arraylist passed into the method
+            partitionStartSquares.add(new Square(minX, minY, null, false));
         }
         return partitions;
     }
@@ -1101,12 +1105,15 @@ public class Board {
             return gameValue;
         }
 
-        ArrayList<Board> partitions = this.split();
+        ArrayList<Square> partitionsStartingSquares = new ArrayList<>();
+        ArrayList<Board> partitions = this.split(partitionsStartingSquares);
 
         // Game can be split into partitions, so check if the partitions are stored in the database
         if(partitions.size() > 1){
 
             GameValue gameValueTotal = new GameValue();
+
+            int partitionCounter = 0;
 
             for(Board partition: partitions){
 
@@ -1120,8 +1127,19 @@ public class Board {
                 // GameValue is stored, add it to the total
                 } else {
 
+                    Square startingSquare = partitionsStartingSquares.get(partitionCounter);
+
+                    // If partition doesn't start at co-ordinates (0,0)
+                    if(startingSquare.getX() != 0 || startingSquare.getY() != 0){
+
+                        partitionGameValue.addMoveOffset(startingSquare);
+
+                    }
+
                     gameValueTotal.left.addAll(partitionGameValue.left);
                     gameValueTotal.right.addAll(partitionGameValue.right);
+
+                    partitionCounter++;
                 }
             }
 

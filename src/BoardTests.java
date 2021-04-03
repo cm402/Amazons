@@ -276,7 +276,7 @@ public class BoardTests {
         partition3.setupBoard();
         partition3.getSquare(1, 0).setAmazon(new Piece(true));
 
-        ArrayList<Board> partitions = board1.split();
+        ArrayList<Board> partitions = board1.split(new ArrayList<>());
 
         assertTrue(partition0.equals(partitions.get(0)));
         assertTrue(partition1.equals(partitions.get(1)));
@@ -321,7 +321,7 @@ public class BoardTests {
         partition2.setupBoard();
         partition2.getSquare(0, 0).setAmazon(new Piece(false));
 
-        ArrayList<Board> partitions = board1.split();
+        ArrayList<Board> partitions = board1.split(new ArrayList<>());
 
         assertTrue(partition1.equals(partitions.get(0)));
         assertTrue(partition2.equals(partitions.get(1)));
@@ -613,11 +613,11 @@ public class BoardTests {
      */
     public boolean containsMove(Move move, ArrayList<Move> validMoves){
 
-        System.out.println("move =  " + move);
+        //System.out.println("move =  " + move);
 
         for(Move validMove: validMoves){
 
-            System.out.println("valid move = " + validMove);
+            //System.out.println("valid move = " + validMove);
 
             if(move.toString().equals(validMove.toString())){
                 return true;
@@ -801,8 +801,6 @@ public class BoardTests {
         whitePiece.setPosition(board.getSquare(2,1));
         board.addPiece(2, 1, whitePiece);
 
-        System.out.println("test move 3");
-
         GameValue gameValue = board.evaluate();
 
         checkMoves(gameValue, board, blackPieces, whitePieces);
@@ -968,51 +966,91 @@ public class BoardTests {
         GameValue gameValue = board.evaluate();
 
         checkMoves(gameValue, board, blackPieces, whitePieces);
-
     }
 
-    /** Testing evaluate when board can be split into partitions
-     *   -----------------
-     * 3 | X | X | X | W |
-     *   -----------------
-     * 2 | W |   | X |   |
-     *   -----------------
-     * 1 | B |   | X | B |
-     *   -----------------
-     * 0 |   |   | X |   |
-     *   -----------------
-     *     A   B   C   D
+    /** Testing evaluate() in case where board can be split into partitions.
+     * 4 partitions, 2 of which have pieces.
+     * Board only has 1 good move for black, c1 -> b2 and shoot c1.
+     *    -------------------------
+     * 5 |   | X | X | B |   |   |
+     *   -------------------------
+     * 4 |   | X | X |   |   | W |
+     *   -------------------------
+     * 3 | X | X | X | X | X | X |
+     *   -------------------------
+     * 2 | X |   | W | X | X |   |
+     *   -------------------------
+     * 1 |   | X | B | X | X |   |
+     *   -------------------------
+     * 0 |   |   |   | X |   |   |
+     *   -------------------------
+     *     A   B   C   D   E   F
      */
     @Test
     public void testEvaluateWithSplit(){
 
-        board = new Board(4, 4);
+        board = new Board(6, 6);
         board.setupBoard();
 
+        // First partition w/ pieces
         Piece blackPiece = new Piece(false);
-        blackPiece.setPosition(board.getSquare(0,1));
-        board.addPiece(0, 1, blackPiece);
+        blackPiece.setPosition(board.getSquare(2,1));
+        board.addPiece(2, 1, blackPiece);
 
         Piece whitePiece = new Piece(true);
-        whitePiece.setPosition(board.getSquare(0,2));
-        board.addPiece(0, 2, whitePiece);
+        whitePiece.setPosition(board.getSquare(2,2));
+        board.addPiece(2, 2, whitePiece);
 
+        board.burnSquare(0, 2);
+        board.burnSquare(1, 1);
+
+        // Second partition w/ pieces
         Piece blackPiece2 = new Piece(false);
-        blackPiece2.setPosition(board.getSquare(3, 1));
-        board.addPiece(3,1, blackPiece2);
+        blackPiece2.setPosition(board.getSquare(3, 5));
+        board.addPiece(3,5, blackPiece2);
 
         Piece whitePiece2 = new Piece(true);
-        whitePiece2.setPosition(board.getSquare(3,3));
-        board.addPiece(3, 3, whitePiece2);
+        whitePiece2.setPosition(board.getSquare(5,4));
+        board.addPiece(5, 4, whitePiece2);
 
-        board.burnSquare(2, 0);
-        board.burnSquare(2, 1);
-        board.burnSquare(2, 2);
+        ArrayList<Piece> blackPieces = new ArrayList<>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
+        blackPieces.add(blackPiece);
+        blackPieces.add(blackPiece2);
+        whitePieces.add(whitePiece);
+        whitePieces.add(whitePiece2);
+
+        // Filling in other parts of board
         board.burnSquare(0, 3);
         board.burnSquare(1, 3);
+        board.burnSquare(1, 4);
+        board.burnSquare(1, 5);
         board.burnSquare(2, 3);
+        board.burnSquare(2, 4);
+        board.burnSquare(2, 5);
+        board.burnSquare(3, 0);
+        board.burnSquare(3, 1);
+        board.burnSquare(3, 2);
+        board.burnSquare(3, 3);
+        board.burnSquare(4, 1);
+        board.burnSquare(4, 2);
+        board.burnSquare(4, 3);
+        board.burnSquare(5, 3);
 
         GameValue gameValue = board.evaluate();
+
+        checkMoves(gameValue, board, blackPieces, whitePieces);
+
+        Move blackMove = gameValue.left.get(0).move;
+
+        assertTrue(blackMove.getStartPosition().getX() == 2);
+        assertTrue(blackMove.getStartPosition().getY() == 1);
+
+        assertTrue(blackMove.getEndPosition().getX() == 1);
+        assertTrue(blackMove.getEndPosition().getY() == 2);
+
+        assertTrue(blackMove.getBurnedSquare().getX() == 2);
+        assertTrue(blackMove.getBurnedSquare().getY() == 1);
     }
 
 }

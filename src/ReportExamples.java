@@ -99,7 +99,7 @@ public class ReportExamples {
         partition2.setupBoard();
         partition2.getSquare(1, 0).setAmazon(new Piece(true));
 
-        ArrayList<Board> partitions = board1.split();
+        ArrayList<Board> partitions = board1.split(new ArrayList<>());
 
         for(Board partition: partitions){
             partition.printBoard();

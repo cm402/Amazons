@@ -31,6 +31,24 @@ public class GameValue implements Serializable{
     }
 
     /**
+     * Adding an offset to each of the moves stored at depth 1
+     * of "this" GameValue object
+     * @param startingSquare offset square
+     */
+    public void addMoveOffset(Square startingSquare){
+
+        for(GameValue leftGameValue: this.left){
+
+            leftGameValue.move.addOffset(startingSquare);
+        }
+
+        for(GameValue rightGameValue: this.right){
+
+            rightGameValue.move.addOffset(startingSquare);
+        }
+    }
+
+    /**
      * Returns a deep-copy of the "this" GameValue
      * @return Duplicate of "this" GameValue object
      */

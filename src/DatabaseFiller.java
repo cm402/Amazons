@@ -97,7 +97,10 @@ public class DatabaseFiller{
     }
 
     /**
-     * Helper method for generateCombinations(), recursively generating the combinations.
+     * Helper method for generateCombinations(), recursively adding to the combination
+     * list. Once at base case, generates a board object using the list and if it's not
+     * already stored in the database, evaluates the board and adds the game value to
+     * the database.
      * @param n size of the list
      * @param position index to add a number to the list
      * @param value integer value to add to the list, at given position
@@ -111,7 +114,6 @@ public class DatabaseFiller{
 
         // Base case: we can now have enough values to generate & evaluate the board
         if(position == n - 1){
-
 
             // once we reach finish time, output all game values to database
             if(System.currentTimeMillis() >= finishTime){
@@ -148,7 +150,7 @@ public class DatabaseFiller{
     }
 
     /**
-     * Given a range of values (0 to maxValue), returns all possible combinations
+     * Given a range of values (0 to maxValue), generates all possible combinations
      * of a list of values of size n.
      * @param n size of the list of values
      * @param maxValue maximum value that an integer in the list can take

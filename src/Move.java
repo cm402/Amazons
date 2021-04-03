@@ -42,6 +42,21 @@ public class Move implements Serializable {
                 " and arrow shot at " + toAlgebraic(squareBurned.getX(), squareBurned.getY());
     }
 
+    /**
+     * Adding an offset to each of this moves co-ordinates
+     */
+    public void addOffset(Square offsetSquare){
+
+        this.getStartPosition().setX(this.getStartPosition().getX() + offsetSquare.getX());
+        this.getStartPosition().setY(this.getStartPosition().getY() + offsetSquare.getY());
+
+        this.getEndPosition().setX(this.getEndPosition().getX() + offsetSquare.getX());
+        this.getEndPosition().setY(this.getEndPosition().getY() + offsetSquare.getY());
+
+        this.getBurnedSquare().setX(this.getBurnedSquare().getX() + offsetSquare.getX());
+        this.getBurnedSquare().setY(this.getBurnedSquare().getY() + offsetSquare.getY());
+    }
+
     public Player getPlayer(){
         return this.player;
     }
