@@ -1076,7 +1076,6 @@ public class BoardTests {
     @Test
     public void testEvaluateWithSplit2(){
 
-
         board = new Board(6, 6);
         board.setupBoard();
 

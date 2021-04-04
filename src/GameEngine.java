@@ -215,6 +215,44 @@ public class GameEngine {
     }
 
     /**
+     * Checks if a given board object can be evaluated fully,
+     * using the combinatorial game theory strategy. If it can,
+     * outputs the game value associated with each partition,
+     * the boards game value and the move options for both players.
+     * @param board
+     */
+    public void outputCGTExplanation(Board board){
+
+        GameValue boardGameValue = board.evaluate();
+
+        // Checking board can be evaluated fully
+        if(boardGameValue != null){
+
+            ArrayList<Board> partitions = board.split(new ArrayList<>());
+
+            int partitionCounter = 1;
+
+            for(Board partition: partitions){
+
+                GameValue partitionGameValue = partition.evaluate();
+
+                System.out.println("Partition " + partitionCounter + " is shown below");
+
+                partition.printBoard();
+
+                System.out.println("This evaluates to the game value: " + partitionGameValue.toString());
+                System.out.println("\n\n");
+
+                partitionCounter++;
+            }
+
+            System.out.println("After adding all the partition game values, and simplifying, the resultant \n" +
+                    " game value for the board is: " + boardGameValue);
+        }
+
+    }
+
+    /**
      * Reviewing a game, allowing the user to go through the moves
      * in the most recent game, navigating forwards and  backwards
      * through moves or selecting a specific move number.
@@ -283,6 +321,8 @@ public class GameEngine {
                 boards.get(moveCounter).printBoard();
                 System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
 
+                outputCGTExplanation(boards.get(moveCounter));
+
             } else if (userInput.equals("b")) {
 
                 if (moveCounter == 0) {
@@ -298,6 +338,8 @@ public class GameEngine {
                 } else {
                     System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
                 }
+
+                outputCGTExplanation(boards.get(moveCounter));
 
             } else if (userInput.equals("help")) {
 
@@ -320,6 +362,8 @@ public class GameEngine {
                 } else {
                     System.out.println("move " + moveCounter + ": " + moves.get(moveCounter - 1).toString());
                 }
+
+                outputCGTExplanation(boards.get(moveCounter));
             }
         }
     }
