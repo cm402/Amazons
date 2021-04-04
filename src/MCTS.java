@@ -3,8 +3,6 @@ import java.util.*;
 
 /**
  * Monte-Carlo Tree Search algorithm implementation
- * Adapted from https://www.baeldung.com/java-monte-carlo-tree-search
- * https://www.cs.swarthmore.edu/~bryce/cs63/s16/reading/mcts.html
  */
 public class MCTS {
 

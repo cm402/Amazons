@@ -90,7 +90,19 @@ public class GameEngine {
      */
     public void updateBoard(Move nextMove, Board board, boolean printBoard){
 
-        board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
+        //if(nextMove.getPiece() != null){
+            //board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), nextMove.getPiece());
+        //} else {
+
+        if(board.getSquare(nextMove.getStartPosition().getX(), nextMove.getStartPosition().getY()) == null){
+
+            System.out.println("null piece");
+        }
+
+        Piece piece = board.getSquare(nextMove.getStartPosition().getX(), nextMove.getStartPosition().getY()).getAmazon();
+        board.setSquarePiece(nextMove.getEndPosition().getX(), nextMove.getEndPosition().getY(), piece);
+        //}
+
         board.burnSquare(nextMove.getBurnedSquare().getX(), nextMove.getBurnedSquare().getY());
 
         if(printBoard){
@@ -405,7 +417,6 @@ public class GameEngine {
                     if(currentPlayer.equals(p2)){
 
                         AIType1Wins++;
-
                     }
                     break;
                 }

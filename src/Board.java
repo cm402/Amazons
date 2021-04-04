@@ -1097,14 +1097,6 @@ public class Board {
      */
     public GameValue evaluate(){
 
-        // Checking if it's stored in the endgame database
-        GameValue gameValue = this.getFromDatabase();
-
-        // Found in database, so return
-        if(gameValue != null){
-            return gameValue;
-        }
-
         ArrayList<Square> partitionsStartingSquares = new ArrayList<>();
         ArrayList<Board> partitions = this.split(partitionsStartingSquares);
 
@@ -1129,7 +1121,7 @@ public class Board {
 
                     Square startingSquare = partitionsStartingSquares.get(partitionCounter);
 
-                    // If partition doesn't start at co-ordinates (0,0)
+                    // If partition doesn't start at co-ordinates (0,0), add offset of partition to moves
                     if(startingSquare.getX() != 0 || startingSquare.getY() != 0){
 
                         partitionGameValue.addMoveOffset(startingSquare);
@@ -1147,10 +1139,14 @@ public class Board {
             gameValueTotal.simplify();
 
             return gameValueTotal;
-        }
 
-        // Not found in database, and isn't split into partitions, therefore can't evaluate so returning null
-        return null;
+
+
+        // Board can't be split into partitions, look for it in endgame database
+        } else {
+
+            return this.getFromDatabase();
+        }
     }
 
     /**

@@ -1053,4 +1053,90 @@ public class BoardTests {
         assertTrue(blackMove.getBurnedSquare().getY() == 1);
     }
 
+    /**
+     * Testing evaluate() in case where board can be split into partitions.
+     * Whites move is to shoot back at the starting square, so this tests
+     * that the starting and burned squares offset values are applied correctly,
+     * when both the starting and burned squares refer to the same square object.
+     *   -------------------------
+     * 5 | X | X | X |   | X |   |
+     *   -------------------------
+     * 4 | X | X | B | X | X | X |
+     *   -------------------------
+     * 3 | X | X | X | X | W | X |
+     *   -------------------------
+     * 2 | X | X | X | X |   | X |
+     *   -------------------------
+     * 1 | W | X | B | X | X | X |
+     *   -------------------------
+     * 0 | X | X | X |   | X | X |
+     *   -------------------------
+     *     A   B   C   D   E   F
+     */
+    @Test
+    public void testEvaluateWithSplit2(){
+
+
+        board = new Board(6, 6);
+        board.setupBoard();
+
+        Piece blackPiece = new Piece(false);
+        blackPiece.setPosition(board.getSquare(2,1));
+        board.addPiece(2, 1, blackPiece);
+
+        Piece whitePiece = new Piece(true);
+        whitePiece.setPosition(board.getSquare(0,1));
+        board.addPiece(0, 1, whitePiece);
+
+        Piece blackPiece2 = new Piece(false);
+        blackPiece2.setPosition(board.getSquare(2, 4));
+        board.addPiece(2,4, blackPiece2);
+
+        Piece whitePiece2 = new Piece(true);
+        whitePiece2.setPosition(board.getSquare(4,3));
+        board.addPiece(4, 3, whitePiece2);
+
+        ArrayList<Piece> blackPieces = new ArrayList<>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
+        blackPieces.add(blackPiece);
+        blackPieces.add(blackPiece2);
+        whitePieces.add(whitePiece);
+        whitePieces.add(whitePiece2);
+
+        // Filling in other parts of board
+        board.burnSquare(0, 0);
+        board.burnSquare(0, 2);
+        board.burnSquare(0, 3);
+        board.burnSquare(0, 4);
+        board.burnSquare(0, 5);
+        board.burnSquare(1, 0);
+        board.burnSquare(1, 1);
+        board.burnSquare(1, 2);
+        board.burnSquare(1, 3);
+        board.burnSquare(1, 4);
+        board.burnSquare(1, 5);
+        board.burnSquare(2, 0);
+        board.burnSquare(2, 2);
+        board.burnSquare(2, 3);
+        board.burnSquare(2, 5);
+        board.burnSquare(3, 1);
+        board.burnSquare(3, 2);
+        board.burnSquare(3, 3);
+        board.burnSquare(3, 4);
+        board.burnSquare(4, 0);
+        board.burnSquare(4, 1);
+        board.burnSquare(4, 4);
+        board.burnSquare(4, 5);
+        board.burnSquare(5, 0);
+        board.burnSquare(5, 1);
+        board.burnSquare(5, 2);
+        board.burnSquare(5, 3);
+        board.burnSquare(5, 4);
+
+        GameValue gameValue = board.evaluate();
+
+        checkMoves(gameValue, board, blackPieces, whitePieces);
+
+    }
+
 }

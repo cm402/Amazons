@@ -39,12 +39,26 @@ public class GameValue implements Serializable{
 
         for(GameValue leftGameValue: this.left){
 
-            leftGameValue.move.addOffset(startingSquare);
+            // Creating a new move object, in case the starting square and burned square refer to the same square object
+            // As the offset will be applied twice
+            Move oldMove = leftGameValue.move;
+            Square newBurnedSquare = new Square(oldMove.getBurnedSquare().getX(), oldMove.getBurnedSquare().getY(), null, false);
+
+            Move newMove = new Move(oldMove.getPlayer(), oldMove.getStartPosition(), oldMove.getEndPosition(), newBurnedSquare);
+            newMove.addOffset(startingSquare);
+
+            leftGameValue.move = newMove;
         }
 
         for(GameValue rightGameValue: this.right){
 
-            rightGameValue.move.addOffset(startingSquare);
+            Move oldMove = rightGameValue.move;
+            Square newBurnedSquare = new Square(oldMove.getBurnedSquare().getX(), oldMove.getBurnedSquare().getY(), null, false);
+
+            Move newMove = new Move(oldMove.getPlayer(), oldMove.getStartPosition(), oldMove.getEndPosition(), newBurnedSquare);
+            newMove.addOffset(startingSquare);
+
+            rightGameValue.move = newMove;
         }
     }
 

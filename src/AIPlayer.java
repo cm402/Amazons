@@ -86,68 +86,25 @@ public class AIPlayer extends Player implements Serializable {
     public Move getCGTMove(Board board){
 
         GameValue gameValue = board.evaluate();
-
+	
         if(gameValue != null){
+	
+	        Move move;
+	
+	        if(this.isWhite()){
+	            move =  gameValue.right.get(0).move;
+	        } else {
+	            move =  gameValue.left.get(0).move;
+	        }
 
-            if(this.isWhite()){
-                return gameValue.right.get(0).move;
-            } else {
-                return gameValue.left.get(0).move;
+	        if(move != null) {
+
+                return move;
             }
 
-        } else {
+	    }
 
-            return getMonteCarloMove(board);
-        }
-
-        /*
-
-        final boolean isWhite = this.isWhite();
-        final Move[] gameValueMove = new Move[1];
-        // Creating a new thread that executes a lambda function to
-        // evaluate the board object, into a GameValue
-        Thread evaluateThread = new Thread(() -> {
-
-            GameValue gameValue = board.evaluate();
-            gameValue.simplify();
-
-            if(isWhite){
-
-                gameValueMove[0] = gameValue.right.get(0).move;
-
-            } else {
-
-                gameValueMove[0] = gameValue.left.get(0).move;
-            }
-        });
-
-        // Spawning a new thread, to try and evaluate board to a GameValue
-        evaluateThread.start();
-
-        try{
-
-            // Waiting 5 seconds
-            Thread.sleep(5000);
-
-            // if other thread still evaluating, return a heuristic move
-            if(evaluateThread.isAlive()){
-
-                evaluateThread.interrupt();
-                return getHeuristicMove(board);
-
-            // otherwise, return evaluated move
-            } else {
-
-                return gameValueMove[0];
-            }
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        // in case of an exception, just return a heuristic move
-        return getHeuristicMove(board);
-        */
+	    return getMonteCarloMove(board);
     }
 
     /**
