@@ -10,14 +10,14 @@ a heuristic-based implementation, as well as a random choice AI. <br />
 
 https://en.wikipedia.org/wiki/Game_of_the_Amazons
 
-# Run Instructions
+## Run Instructions
 In order to compile and run the program, you must be within the "src" folder.
 
 Compile with: "javac -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../lib/h2-1.4.200.jar" *.java" 
 
 Run using: "java -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../lib/h2-1.4.200.jar" GameEngine [option]"
 
-# Command Line Argument options
+### Command Line Argument options
 
 "experiments": allows the user to specify 2 AI Types to run some simulation games with
 
