@@ -4,9 +4,9 @@ Walter Zamkauskas. It is played on a 10 by 10 board and combines elements of che
 (queen moves specifically) with the idea of removing squares from play, until one <br />
 of the two players is unable to move and must concede. My intention with this project <br />
 is to develop a program to allow users to play the game of Amazons, as well as develop <br />
-different AIs that will play using a variety of strategies. The AIs include a <br />
-combinatorial game theory implementation, with an endgame database optimisation, <br />
-a monte-carlo tree search,a heuristic-based implementation, as well as a random choice AI. <br />
+different AIs that will play using a variety of strategies. The AIs include a combinatorial <br />
+game theory implementation, with an endgame database optimisation, a monte-carlo tree search, <br />
+a heuristic-based implementation, as well as a random choice AI. <br />
 
 https://en.wikipedia.org/wiki/Game_of_the_Amazons
 
