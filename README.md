@@ -1,7 +1,7 @@
 # Amazons
 Amazons (or Game of the Amazons) is a combinatorial game that was invented in 1988 by <br />
 Walter Zamkauskas. It is played on a 10 by 10 board and combines elements of chess <br /> 
-(queen moves specifically) with the idea of removing squares <br />from play, until one <br />
+(queen moves specifically) with the idea of removing squares from play, until one <br />
 of the two players is unable to move and must concede. My intention with this project <br />
 is to develop a program to allow users to play the game of Amazons, as well as develop <br />
 different AIs that will play using a variety of strategies. The AIs include a <br />
