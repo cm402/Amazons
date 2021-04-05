@@ -1,3 +1,0 @@
-2021-03-31 16:14:01 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TESTDATABASE" not found; SQL statement:
-SELECT * FROM testDatabase [42102-200]
