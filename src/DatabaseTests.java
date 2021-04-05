@@ -1,8 +1,9 @@
+import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import static org.junit.Assert.*;
+
+import java.io.*;
 import java.sql.*;
 
 /**
@@ -12,62 +13,45 @@ import java.sql.*;
  */
 public class DatabaseTests {
 
-    String url = "jdbc:h2:file:" + "./testDatabase";
+    static String url = "jdbc:h2:file:" + "./endgameDatabase";
+    static String tableName = "testingTable";
+    static GameValue gameValue;
+    static byte[] gameValueAsBytes;
 
     /**
-     * Testing that we can connect to the database successfully.
+     * Before running any database tests, drop the old table and
+     * create a new one.
      */
-    @Test
-    public void testConnection(){
+    @BeforeClass
+    public static void setup(){
 
-        try{
+        // Generating a GameValue to be used during testing, as an object and as a byte array
+        try {
+            gameValue = new GameValue();
+            gameValue.left.add(new GameValue());
 
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:h2:~/test", "connorMacfarlane", "password");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(gameValue);
+            gameValueAsBytes = baos.toByteArray();
 
-            connection.close();
-
-        } catch (SQLException e ){
+        } catch (IOException e){
             System.out.println(e);
         }
-    }
-
-    /**
-     * Testing that we can create and connect to a database on file successfully.
-     */
-    @Test
-    public void testConnectionFile(){
 
         try{
 
             Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
-            connection.close();
-
-        } catch (SQLException e ){
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * Testing that we can create a table in the database
-     */
-    @Test
-    public void testCreateTable(){
-
-        try{
-
-            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
-
-            String createTable = "CREATE TABLE testDatabase (" +
-                                    "key  INT," +
-                                    "value MEDIUMBLOB," +
-                                    "PRIMARY KEY (key)" +
-                                 ");";
+            String createTable = "CREATE TABLE " + tableName + " (" +
+                    "key  INT," +
+                    "value MEDIUMBLOB," +
+                    "PRIMARY KEY (key)" +
+                    ");";
 
             Statement statement = connection.createStatement();
 
-            statement.executeUpdate("DROP TABLE IF EXISTS testDatabase");
+            statement.executeUpdate("DROP TABLE IF EXISTS " + tableName);
             statement.executeUpdate(createTable);
 
             connection.close();
@@ -78,19 +62,19 @@ public class DatabaseTests {
     }
 
     /**
-     * Testing that we can insert a row into the database
+     * Before each test, we must clear all rows from the table,
+     * to ensure that each test starts with a fresh table,
+     * as we can't ensure the ordering of the tests
      */
-    @Test
-    public void testInsert(){
+    @Before
+    public void clearTable(){
 
         try{
 
             Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
-            String insertStatement = "INSERT INTO testDatabase (key) VALUES (1)";
-
             Statement statement = connection.createStatement();
-            statement.executeUpdate(insertStatement);
+            statement.executeUpdate("DELETE FROM " + tableName);
 
             connection.close();
 
@@ -100,117 +84,40 @@ public class DatabaseTests {
     }
 
     /**
-     * Testing that we can return a whole table from the database
+     * Testing adding 3 rows, retrieving all rows from the
+     * database, and returning the size of the database.
      */
     @Test
-    public void testSelect(){
+    public void testRetrieveDatabaseSize(){
+
+        int databaseSize = 0;
 
         try{
 
             Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
-            String selectQuery = "SELECT * FROM testDatabase";
-
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(selectQuery);
-
-            while (resultSet.next()){
-
-                int key = resultSet.getInt("key");
-                System.out.println("key = " + key);
-
-            }
-
-            connection.close();
-
-        } catch (SQLException e ){
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * Testing that we can clear a table in the database
-     */
-    @Test
-    public void testClearDatabase(){
-
-        try{
-
-            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
-
-            Statement statement = connection.createStatement();
-            statement.executeUpdate("DELETE FROM testDatabase");
-
-            connection.close();
-
-        } catch (SQLException e ){
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * Testing inserting a row into the database, with a testing
-     * key value of 1, and a GameValue object
-     */
-    @Test
-    public void testInsertObjects(){
-
-        try{
-
-            GameValue gameValue = new GameValue();
-            gameValue.left.add(new GameValue());
-            //gameValue.right.add(new GameValue());
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(gameValue);
-
-            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
-
-            byte[] gameValueAsBytes = baos.toByteArray();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO testDatabase (key, value) VALUES (2, ?)");
+                    "INSERT INTO " + tableName + " (key, value) VALUES (?, ?)");
+
             ByteArrayInputStream bais = new ByteArrayInputStream(gameValueAsBytes);
+            preparedStatement.setBinaryStream(2, bais, gameValueAsBytes.length);
 
-            preparedStatement.setBinaryStream(1, bais, gameValueAsBytes.length);
+            // 1. Storing 3 rows in database
+            preparedStatement.setInt(1, 1);
             preparedStatement.executeUpdate();
-            connection.commit();
-            connection.close();
+            preparedStatement.setInt(1, 2);
+            preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, 3);
+            preparedStatement.executeUpdate();
 
-        } catch (Exception e ){
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * Testing retrieving all rows from the database, and convert
-     * the value back to our original object type, a GameValue
-     */
-    @Test
-    public void testSelectObjects(){
-
-        try{
-
-            Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
-
+            // 2. Retrieving rows from database
             Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
 
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM testDatabase");
-
+            // 3. Counting number of rows
             while(resultSet.next()){
 
-                Blob blob = resultSet.getBlob("value");
-
-                int blobLength = (int) blob.length();
-                byte[] blobAsBytes = blob.getBytes(1, blobLength);
-                blob.free();
-
-                ByteArrayInputStream baip = new ByteArrayInputStream(blobAsBytes);
-                ObjectInputStream ois = new ObjectInputStream(baip);
-
-                GameValue gameValue = (GameValue) ois.readObject();
-
-                System.out.println(gameValue);
+                databaseSize++;
             }
 
             statement.close();
@@ -220,24 +127,44 @@ public class DatabaseTests {
         } catch (Exception e ){
             System.out.println(e);
         }
+
+        assertTrue(databaseSize == 3);
     }
 
     /**
-     * Testing retrieving a specific keys row from the database, and convert
-     * the value back to our original object type, a GameValue
+     * Testing adding and retrieving a specific row from the database using a key,
+     * and convert the value back to our original object type, a GameValue
      */
     @Test
     public void testQueryForKey(){
+
+        GameValue retrievedGameValue = null;
 
         try{
 
             Connection connection = DriverManager.getConnection(url, "connorMacfarlane", "password");
 
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO " + tableName + " (key, value) VALUES (?, ?)");
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(gameValueAsBytes);
+            preparedStatement.setBinaryStream(2, bais, gameValueAsBytes.length);
+
+            // Part 1- Storing 3 rows in database
+
+            preparedStatement.setInt(1, 1);
+            preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, 123123);
+            preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, 3);
+            preparedStatement.executeUpdate();
+
+            // PART 2- Retrieving row from database
+
+            int key = 123123;
+            String query = "SELECT * FROM " + tableName + " WHERE key = " + String.valueOf(key);
+
             Statement statement = connection.createStatement();
-
-            int key = 3;
-            String query = "SELECT * FROM testDatabase WHERE key = " + String.valueOf(key);
-
             ResultSet resultSet = statement.executeQuery(query);
 
             // Check if value found
@@ -252,13 +179,12 @@ public class DatabaseTests {
                 ByteArrayInputStream baip = new ByteArrayInputStream(blobAsBytes);
                 ObjectInputStream ois = new ObjectInputStream(baip);
 
-                GameValue gameValue = (GameValue) ois.readObject();
+                retrievedGameValue = (GameValue) ois.readObject();
 
-                int returnedKey = resultSet.getInt("key");
-                System.out.println(returnedKey + " " + gameValue);
+
             } else {
 
-                System.out.print("key not found");
+                System.out.println("key not found");
             }
             resultSet.close();
             connection.close();
@@ -266,6 +192,8 @@ public class DatabaseTests {
         } catch (Exception e ){
             System.out.println(e);
         }
+
+        assertTrue(gameValue.equals(retrievedGameValue));
     }
 
 }

@@ -479,6 +479,26 @@ public class GameEngine {
         return AIType1Wins;
     }
 
+
+    public void testClass(Class testClass){
+
+        System.out.println(testClass.toString());
+
+        Result result = JUnitCore.runClasses(testClass);
+
+        System.out.println(result.getRunCount() + " tests completed");
+        System.out.println(result.getRunCount() - result.getFailureCount() + " tests successful");
+        System.out.println(result.getFailureCount() + " tests failed");
+
+        for(Failure failure: result.getFailures()){
+
+            System.out.println(failure.getTestHeader() + failure.getTrimmedTrace());
+        }
+
+        System.out.println("");
+    }
+
+
     public static void main(String Args[]){
 
         GameEngine engine = new GameEngine();
@@ -516,16 +536,10 @@ public class GameEngine {
 
             } else if(Args[0].equals("unitTests")){
 
-                Result result = JUnitCore.runClasses(BoardTests.class);
-
-                System.out.println(result.getRunCount() + " tests completed");
-                System.out.println(result.getRunCount() - result.getFailureCount() + " tests successful");
-                System.out.println(result.getFailureCount() + " tests failed");
-
-                for(Failure failure: result.getFailures()){
-
-                    System.out.println(failure.getTestHeader() + failure.getTrimmedTrace());
-                }
+                engine.testClass(BoardTests.class);
+                engine.testClass(GameValueTests.class);
+                engine.testClass(DatabaseTests.class);
+                engine.testClass(AITests.class);
 
             } else if(Args[0].equals("fillDatabase")){
 

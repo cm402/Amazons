@@ -22,12 +22,12 @@ public class BoardTests {
         board = new Board(3, 2);
         board.setupBoard();
 
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        ArrayList<Piece> blackPieces = new ArrayList<>();
         blackPieces.add(new Piece(false));
         blackPieces.get(0).setPosition(board.getSquare(0,0));
         board.addPiece(0, 0, blackPieces.get(0));
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
         whitePieces.add(new Piece(true));
         whitePieces.get(0).setPosition(board.getSquare(1,0));
         board.addPiece(1, 0, whitePieces.get(0));
@@ -613,11 +613,7 @@ public class BoardTests {
      */
     public boolean containsMove(Move move, ArrayList<Move> validMoves){
 
-        //System.out.println("move =  " + move);
-
         for(Move validMove: validMoves){
-
-            //System.out.println("valid move = " + validMove);
 
             if(move.toString().equals(validMove.toString())){
                 return true;
@@ -626,11 +622,6 @@ public class BoardTests {
 
         return false;
     }
-
-    /**
-     * Checking that all the moves for left and right stored in a game value object are valid
-     * @param gameValue The transformed GameValue object retrieved from the Endgame Database
-     */
 
     /**
      * Checking that all the moves for left and right stored in a game value object are valid
