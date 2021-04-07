@@ -26,6 +26,8 @@ public class SimulatePartitions {
 
             Move nextMove = currentPlayer.getMove(board);
 
+            board.printBoard();
+
             if(nextMove == null){
                 return currentPlayer.isWhite();
             }
@@ -46,13 +48,16 @@ public class SimulatePartitions {
     public int simulatePartitionGames(int noOfSimulations, Board partition, int firstToMove, BoardPartitionSetup setup){
 
         int whiteWins = 0;
+        ArrayList<Player> partitionPlayers = engine.setupPlayers(0);
 
         for(int i = 0; i < noOfSimulations; i++){
 
-            ArrayList<Player> partitionPlayers = engine.setupPlayers(0);
-
             // uses setup object to burn squares / place pieces
             partition.setupPartitionPieces(setup, partitionPlayers);
+
+            if(i == 0){
+                partition.printBoard();
+            }
 
             Player partitionCurrentPlayer;
 
@@ -492,8 +497,8 @@ public class SimulatePartitions {
         partition.setupBoard();
 
         // 3. store burnt squares
-        ArrayList<Integer> xBurntCoordinates = new ArrayList<Integer>();
-        ArrayList<Integer> yBurntCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> xBurntCoordinates = new ArrayList<>();
+        ArrayList<Integer> yBurntCoordinates = new ArrayList<>();
 
         // choose a random number of squares to burn
         int noOfBurntSquares = getRandomNumber(setup.getNoOfColumns() * setup.getNoOfRows());
@@ -507,16 +512,16 @@ public class SimulatePartitions {
         setup.setYBurntSquareCoordinates(yBurntCoordinates);
 
         // 4. store black and white pieces
-        ArrayList<Integer> whiteXCoordinates = new ArrayList<Integer>();
-        ArrayList<Integer> whiteYCoordinates = new ArrayList<Integer>();
-        ArrayList<Integer> blackXCoordinates = new ArrayList<Integer>();
-        ArrayList<Integer> blackYCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> whiteXCoordinates = new ArrayList<>();
+        ArrayList<Integer> whiteYCoordinates = new ArrayList<>();
+        ArrayList<Integer> blackXCoordinates = new ArrayList<>();
+        ArrayList<Integer> blackYCoordinates = new ArrayList<>();
 
         generateCoordinates(setup, xBurntCoordinates, yBurntCoordinates, whiteXCoordinates, whiteYCoordinates);
 
         // storing all the coordinates used for both burnt squares and white pieces in 2 arraylists
-        ArrayList<Integer> usedXCoordinates = new ArrayList<Integer>();
-        ArrayList<Integer> usedYCoordinates = new ArrayList<Integer>();
+        ArrayList<Integer> usedXCoordinates = new ArrayList<>();
+        ArrayList<Integer> usedYCoordinates = new ArrayList<>();
         usedXCoordinates.addAll(xBurntCoordinates);
         usedXCoordinates.addAll(whiteXCoordinates);
         usedYCoordinates.addAll(yBurntCoordinates);

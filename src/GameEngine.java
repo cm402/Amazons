@@ -561,6 +561,24 @@ public class GameEngine {
                 int noOfEntries = fio.getEndgameDatabaseSize();
                 System.out.println("Endgame database has " + noOfEntries + " entries");
 
+            }  else if(Args[0].equals("simulatePartitions")){
+
+                SimulatePartitions simulatePartitions = new SimulatePartitions();
+
+                String partitionChoice = io.getPartitionChoice("What kind of partition do you want to simulate? (\"random\" or \"specify\")?");
+                int noOfSimulations = io.getNoOfSimulations();
+
+                if(partitionChoice.equals("random")){
+
+                    simulatePartitions.testRandom(noOfSimulations);
+
+                } else {
+
+                    simulatePartitions.testIO(noOfSimulations);
+
+                }
+
+
             } else if(Args[0].equals("reportExamples")){
 
                 ReportExamples reportExamples = new ReportExamples();

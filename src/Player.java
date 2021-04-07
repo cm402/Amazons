@@ -47,7 +47,7 @@ public class Player implements Serializable {
      */
     public ArrayList<Move> getValidMoves(Board board){
 
-        ArrayList<Move> validMoves = new ArrayList<Move>();
+        ArrayList<Move> validMoves = new ArrayList<>();
 
         // looping through amazon pieces
         for(Piece piece: pieces){
@@ -71,10 +71,6 @@ public class Player implements Serializable {
 
     public boolean isWhite(){
         return this.white;
-    }
-
-    public boolean isHuman(){
-        return this.human;
     }
 
 

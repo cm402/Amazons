@@ -306,40 +306,6 @@ public class IO {
     }
 
     /**
-     * Asking the user if they want to use the endgame database
-     * optimisation for the CGT strategy
-     * @return true if answer was "yes", false if answer was "no"
-     */
-    public boolean getEndgameDatabasePreference(){
-
-        boolean endgameDatabase;
-
-        while(true){
-
-            System.out.println("Would you like to use the endgame database optimisation? (\"yes\" or \"no\")");
-
-            String response = getUserInputString();
-
-            if(response.equals("yes")){
-
-                endgameDatabase = true;
-                break;
-
-            } else if(response.equals("no")){
-
-                endgameDatabase = false;
-                break;
-
-            } else {
-
-                System.out.println("Error, please enter yes or no");
-            }
-        }
-
-        return endgameDatabase;
-    }
-
-    /**
      * Getting an AI type from the user, and validating it, before returning it
      * @param prompt message to the user, requesting the AI type
      * @return validated AI type, from the user
@@ -651,5 +617,35 @@ public class IO {
             }
         }
         return firstToMove;
+    }
+
+    /**
+     * Getting a choice of partition generation from the user, before returning it
+     * @param prompt message to the user, requesting partition generation type
+     * @return validated partition choice, from the user
+     */
+    public String getPartitionChoice(String prompt){
+
+        String partitionChoice;
+
+        while(true){
+
+            System.out.println(prompt);
+
+            partitionChoice = getUserInputString();
+
+            if(partitionChoice.equals("random") || partitionChoice.equals("specify")){
+
+                break;
+
+            } else {
+
+                System.out.println("Error, please enter a valid choice");
+
+            }
+        }
+
+        return partitionChoice;
+
     }
 }

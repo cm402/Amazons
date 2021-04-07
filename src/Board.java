@@ -1370,8 +1370,8 @@ public class Board {
             this.burnSquare(setup.getXBurntSquareCoordinates().get(i), setup.getYBurntSquareCoordinates().get(i));
         }
 
-        ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-        ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+        ArrayList<Piece> whitePieces = new ArrayList<>();
+        ArrayList<Piece> blackPieces = new ArrayList<>();
 
         for(int i = 0; i < setup.getXWhitePieceCoordinates().size(); i++){
 
