@@ -28,3 +28,5 @@ Run using: "java -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../l
 "resetDatabase": drops the current database table, and creates a new one
 
 "databaseSize": checks the number of entries in the endgame database
+
+"simulatePartitions": simulates a number of games on either a randomly generated or specified partition
