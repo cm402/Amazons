@@ -28,8 +28,9 @@ public class SimulatePartitions {
 
             board.printBoard();
 
+            // if game finished, return the player who isn't next to move
             if(nextMove == null){
-                return currentPlayer.isWhite();
+                return !currentPlayer.isWhite();
             }
 
             engine.updateBoard(nextMove, board, false);
@@ -41,11 +42,10 @@ public class SimulatePartitions {
      * Simulates a partition game a number of times, was used during development to test specific partitions
      * @param noOfSimulations The number of simulations games that will be run
      * @param partition The partition board shape used for the simulation games
-     * @param firstToMove Indicates which player will move first, 0 or 1
      * @param setup Stores the pieces and burnt squares information for the partition
      * @return The number of times white wins
      */
-    public int simulatePartitionGames(int noOfSimulations, Board partition, int firstToMove, BoardPartitionSetup setup){
+    public int simulatePartitionGames(int noOfSimulations, Board partition, BoardPartitionSetup setup){
 
         int whiteWins = 0;
         ArrayList<Player> partitionPlayers = engine.setupPlayers(0);
@@ -59,15 +59,7 @@ public class SimulatePartitions {
                 partition.printBoard();
             }
 
-            Player partitionCurrentPlayer;
-
-            if(firstToMove == 0){
-                partitionCurrentPlayer = partitionPlayers.get(0);
-            } else {
-                partitionCurrentPlayer = partitionPlayers.get(1);
-            }
-
-            if(simulateGame(partition, partitionCurrentPlayer, partitionPlayers)){
+            if(simulateGame(partition, partitionPlayers.get(0), partitionPlayers)){
                 whiteWins++;
             }
 
@@ -95,11 +87,8 @@ public class SimulatePartitions {
         io.getPartitionBurntSquares(partition, setup);
         io.getPartitionPieces(partition, setup);
 
-        // 0 = white to move, 1 = black to move
-        int firstToMove = io.getPartitionFirstToMove();
-
         // running through simulations
-        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
     }
@@ -110,8 +99,6 @@ public class SimulatePartitions {
      * @param noOfSimulations The number of simulation games
      */
     public void testL(int size, int noOfSimulations){
-
-        int firstToMove = 0; // white first to move
 
         BoardPartitionSetup setup = new BoardPartitionSetup();
 
@@ -154,7 +141,7 @@ public class SimulatePartitions {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
     }
@@ -165,8 +152,6 @@ public class SimulatePartitions {
      * @param noOfSimulations The number of simulation games
      */
     public void testU(int size, int noOfSimulations){
-
-        int firstToMove = 0; // white first to move
 
         BoardPartitionSetup setup = new BoardPartitionSetup();
 
@@ -209,7 +194,7 @@ public class SimulatePartitions {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
     }
@@ -220,8 +205,6 @@ public class SimulatePartitions {
      * @param noOfSimulations The number of simulation games
      */
     public void testO(int size, int noOfSimulations){
-
-        int firstToMove = 0; // white first to move
 
         BoardPartitionSetup setup = new BoardPartitionSetup();
 
@@ -264,7 +247,7 @@ public class SimulatePartitions {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
     }
@@ -275,8 +258,6 @@ public class SimulatePartitions {
      * @param noOfSimulations The number of simulation games
      */
     public void testLine(int length, int noOfSimulations){
-
-        int firstToMove = 0; // white first to move
 
         BoardPartitionSetup setup = new BoardPartitionSetup();
 
@@ -312,7 +293,7 @@ public class SimulatePartitions {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
     }
@@ -323,8 +304,6 @@ public class SimulatePartitions {
      * @param noOfSimulations The number of simulation games
      */
     public void testStaircase(int size, int noOfSimulations){
-
-        int firstToMove = 0; // white first to move
 
         BoardPartitionSetup setup = new BoardPartitionSetup();
 
@@ -372,7 +351,7 @@ public class SimulatePartitions {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
     }
@@ -484,8 +463,6 @@ public class SimulatePartitions {
      */
     public void testRandom(int noOfSimulations){
 
-        int firstToMove = 0; // white first to move
-
         BoardPartitionSetup setup = new BoardPartitionSetup();
 
         // 1. store board size, random number between 1 and 10
@@ -535,7 +512,7 @@ public class SimulatePartitions {
         setup.setYBlackPieceCoordinates(blackYCoordinates);
 
         // 5. simulating the games
-        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, firstToMove, setup);
+        int totalWhiteWins = simulatePartitionGames(noOfSimulations, partition, setup);
 
         System.out.println("From " + noOfSimulations + " simulations, white wins " + totalWhiteWins + " times");
     }

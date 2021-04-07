@@ -561,7 +561,7 @@ public class GameEngine {
                 int noOfEntries = fio.getEndgameDatabaseSize();
                 System.out.println("Endgame database has " + noOfEntries + " entries");
 
-            }  else if(Args[0].equals("simulatePartitions")){
+            }  else if(Args[0].equals("simulatePartition")){
 
                 SimulatePartitions simulatePartitions = new SimulatePartitions();
 

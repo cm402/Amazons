@@ -261,9 +261,28 @@ public class IO {
     private int getUserInputInteger(String inputPrompt){
 
         Scanner sc = new Scanner(System.in);
-        System.out.println(inputPrompt);
-        String in = sc.nextLine().trim().toLowerCase();
-        return Integer.parseInt(in);
+
+        int inputValue;
+
+        while(true){
+
+            System.out.println(inputPrompt);
+            String inputString = sc.nextLine();
+
+            try {
+
+                inputValue = Integer.parseInt(inputString);
+                break;
+
+
+            } catch(NumberFormatException e){
+
+                System.out.println("Error, please enter a valid integer");
+            }
+
+        }
+
+        return inputValue;
     }
 
     /**
