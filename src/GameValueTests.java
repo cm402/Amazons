@@ -349,18 +349,18 @@ public class GameValueTests {
     @Test
     public void testOutcomeClassZero(){
 
-        Board board1 = new Board(4, 1);
+        Board board1 = new Board(2, 2);
         board1.setupBoard();
 
         ArrayList<Piece> blackPieces = new ArrayList<>();
         blackPieces.add(new Piece(false));
-        blackPieces.get(0).setPosition(board1.getSquare(1,0));
-        board1.addPiece(1, 0, blackPieces.get(0));
+        blackPieces.get(0).setPosition(board1.getSquare(0,1));
+        board1.addPiece(0, 1, blackPieces.get(0));
 
         ArrayList<Piece> whitePieces = new ArrayList<>();
         whitePieces.add(new Piece(true));
-        whitePieces.get(0).setPosition(board1.getSquare(2,0));
-        board1.addPiece(2, 0, whitePieces.get(0));
+        whitePieces.get(0).setPosition(board1.getSquare(1,1));
+        board1.addPiece(1, 1, whitePieces.get(0));
 
         GameValue gameValue = board1.evaluate();
         assertEquals(gameValue.getOutcomeClass(), "Second");
