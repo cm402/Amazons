@@ -11,11 +11,25 @@ a heuristic-based implementation, as well as a random choice AI. <br />
 https://en.wikipedia.org/wiki/Game_of_the_Amazons
 
 ## Run Instructions
-In order to compile and run the program, you must be within the "src" folder.
+In order to compile and run the program, you must be within the "Amazons-main" folder.
 
-Compile with: "javac -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../lib/h2-1.4.200.jar" *.java" 
+The project can be compiled using the command:
 
-Run using: "java -cp ".:../lib/junit-4.13.2.jar:../lib/hamcrest-all-1.3.jar:../lib/h2-1.4.200.jar" GameEngine [option]"
+./build.sh
+
+To the run the program, use the command:
+
+./amazons.sh [Option]
+
+If either of these shell scripts return the output:
+
+-bash: ./build.sh: Permission denied
+
+You must first give the shell scripts execution permission with the commands:
+
+chmod +x ./build.sh
+
+chmod +x ./amazons.sh
 
 ### Options
 
