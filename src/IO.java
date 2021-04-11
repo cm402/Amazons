@@ -366,14 +366,14 @@ public class IO {
         if(noOfAIPlayers > 0){
 
             AITypes.add(getAIType("Please enter an AI type for the first AI player" +
-                    " (\"MCTS\", \"Heurisitc\", \"CGT\", or \"Random\")"));
+                    " (\"MCTS\", \"Heuristic\", \"CGT\", or \"Random\")"));
 
         }
 
         if(noOfAIPlayers > 1){
 
             AITypes.add(getAIType("Please enter an AI type for the second AI player" +
-                    " (\"MCTS\", \"Heurisitc\", \"CGT\", or \"Random\")"));
+                    " (\"MCTS\", \"Heuristic\", \"CGT\", or \"Random\")"));
         }
 
         return AITypes;
