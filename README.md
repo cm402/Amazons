@@ -33,14 +33,14 @@ chmod +x ./amazons.sh
 
 ### Options
 
-"experiments": allows the user to specify 2 AI Types to run some simulation games with
+experiments: allows the user to specify 2 AI Types to run some simulation games with
 
-"unitTests": runs the unit tests
+unitTests: runs the unit tests
 
-"fillDatabase": fills the endgame database with partitions up to specified size
+fillDatabase: fills the endgame database with partitions up to specified size
 
-"resetDatabase": drops the current database table, and creates a new one
+resetDatabase: drops the current database table, and creates a new one
 
-"databaseSize": checks the number of entries in the endgame database
+databaseSize: checks the number of entries in the endgame database
 
-"simulatePartition": simulates a number of games on either a randomly generated or specified partition
+simulatePartition: simulates a number of games on either a randomly generated or specified partition
