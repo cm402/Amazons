@@ -245,9 +245,6 @@ public class GameEngine {
 
                 partitionCounter++;
             }
-
-            System.out.println("After adding all the partition game values, and simplifying, the resultant \n" +
-                    " game value for the board is: " + boardGameValue);
         }
 
     }
