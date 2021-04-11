@@ -31,7 +31,7 @@ chmod +x ./build.sh
 
 chmod +x ./amazons.sh
 
-### Options
+### Options Usage
 
 experiments: allows the user to specify 2 AI Types to run some simulation games with
 
