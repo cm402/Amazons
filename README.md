@@ -11,7 +11,7 @@ a heuristic-based implementation, as well as a random choice AI. <br />
 https://en.wikipedia.org/wiki/Game_of_the_Amazons
 
 ## Run Instructions
-In order to compile and run the program, you must be within the "Amazons-main" folder.
+In order to compile and run the program, you must be within the "Amazons" folder.
 
 The project can be compiled using the command:
 
